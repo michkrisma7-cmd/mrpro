@@ -1,4 +1,4 @@
-import { getAuth, authConfigured } from "@/lib/auth";
+import { getAuth, authConfigured } from "@/lib/auth-server";
 import { NextRequest } from "next/server";
 export async function GET(
   request: NextRequest,

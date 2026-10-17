@@ -1,28 +1,13 @@
 import "server-only";
-import { createNeonAuth } from "@neondatabase/auth/next/server";
 import { cache } from "react";
 import { redirect } from "next/navigation";
 import { db, databaseConfigured } from "./db";
-export const authConfigured = Boolean(
-  process.env.NEON_AUTH_URL &&
-  process.env.NEON_AUTH_COOKIE_SECRET &&
-  process.env.NEON_AUTH_COOKIE_SECRET.length >= 32,
-);
-let instance: ReturnType<typeof createNeonAuth> | undefined;
-export function getAuth() {
-  if (!authConfigured) throw new Error("Login belum dikonfigurasi.");
-  return (instance ??= createNeonAuth({
-    baseUrl: process.env.NEON_AUTH_URL!,
-    cookies: {
-      secret: process.env.NEON_AUTH_COOKIE_SECRET!,
-      sessionDataTtl: 60,
-    },
-    logLevel: "error",
-  }));
-}
+import { getAuth, authConfigured } from "./auth-server";
+export { getAuth, authConfigured } from "./auth-server";
 export const currentUser = cache(async () => {
   if (!authConfigured || !databaseConfigured) return null;
   const { data, error } = await getAuth().getSession();
+  if (error?.status === 401) return null;
   if (error) throw new Error("Sesi tidak dapat diperiksa. Coba lagi.");
   if (!data?.user) return null;
   const user = data.user;

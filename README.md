@@ -16,16 +16,16 @@ Website katalog properti dan layanan tukang berbahasa Indonesia. Bagian properti
 
 Gunakan Bun **1.4.3** dan Node **24**. Isi runtime environment atau `.env.local` dari [.env.example](.env.example). Jangan commit nilai rahasia.
 
-| Variabel | Kegunaan |
-| --- | --- |
-| `DATABASE_URL` | URL PostgreSQL Neon dengan TLS, untuk data aplikasi Prisma |
-| `NEON_AUTH_URL` | URL endpoint Neon Auth terkelola; menggunakan API Better Auth |
-| `NEON_AUTH_COOKIE_SECRET` | Secret acak aplikasi, minimal 32 karakter; buat dengan `openssl rand -base64 32` dan simpan aman |
-| `NEXT_PUBLIC_SITE_URL` | Origin HTTPS kanonis produksi; saat lokal gunakan origin port yang dipakai |
-| `AWS_ENDPOINT_URL_S3` | Endpoint layanan S3/S3-compatible |
-| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | Kredensial server yang dapat menandatangani request S3 |
-| `AWS_REGION` | Region bucket |
-| `AWS_S3_BUCKET` | Default **`bucket`**, sesuai bucket publik yang sudah dibuat pemilik |
+| Variabel                                     | Kegunaan                                                                                         |
+| -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `DATABASE_URL`                               | URL PostgreSQL Neon dengan TLS, untuk data aplikasi Prisma                                       |
+| `NEON_AUTH_URL`                              | URL endpoint Neon Auth terkelola; menggunakan API Better Auth                                    |
+| `NEON_AUTH_COOKIE_SECRET`                    | Secret acak aplikasi, minimal 32 karakter; buat dengan `openssl rand -base64 32` dan simpan aman |
+| `NEXT_PUBLIC_SITE_URL`                       | Origin HTTPS kanonis produksi; saat lokal gunakan origin port yang dipakai                       |
+| `AWS_ENDPOINT_URL_S3`                        | Endpoint layanan S3/S3-compatible                                                                |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | Kredensial server yang dapat menandatangani request S3                                           |
+| `AWS_REGION`                                 | Region bucket                                                                                    |
+| `AWS_S3_BUCKET`                              | Default **`bucket`**, sesuai bucket publik yang sudah dibuat pemilik                             |
 
 `DATABASE_URL` dan kredensial AWS signing memerlukan nilai runtime asli, bukan placeholder injeksi proxy HTTP. Secret hanya dibaca di modul server. Daftarkan origin aplikasi sebagai trusted/allowed origin pada Neon Auth. Aktifkan email/password di Neon Auth dan konfigurasi verifikasi email sesuai kebijakan proyek.
 
@@ -54,6 +54,33 @@ bun run start --hostname 0.0.0.0
 ```
 
 Gambar dan font contoh tersedia lokal. Foto rumah contoh dibuat untuk pratinjau, bukan listing properti nyata. Apabila `DATABASE_URL` belum tersedia, aplikasi menampilkan data contoh berlabel. Ketika database tersedia, hanya data dari database yang dipakai. Login dinonaktifkan bila konfigurasi Neon Auth belum lengkap. Dashboard pratinjau hanya baca, tidak menyediakan bypass autentikasi.
+
+## Setup login lokal (Neon Auth)
+
+Setelah `NEON_AUTH_URL` dan `DATABASE_URL` tersedia di `.env` atau `.env.local` pada Mac:
+
+```sh
+git pull origin main
+bun install
+bun auth:setup
+bun dev --port 3000
+```
+
+`auth:setup` membuat `NEON_AUTH_COOKIE_SECRET` acak di `.env.local` hanya bila belum ada. Nilai lama dan isi file lain dipertahankan; nilai rahasia tidak ditampilkan. Skrip memeriksa konfigurasi, endpoint sesi Neon, format/akses JWKS bila disediakan, serta akses read-only ke tabel `AppUser`. Jalankan `bun auth:check` untuk pemeriksaan ulang tanpa menulis secret.
+
+Di pengaturan Neon Auth, aktifkan login email/password dan izinkan origin lokal **`http://localhost:3000`**. Buka aplikasi menggunakan origin yang sama; `localhost`, `127.0.0.1`, port lain, dan domain produksi adalah origin berbeda. Gunakan `NEXT_PUBLIC_SITE_URL` sesuai origin yang sedang dipakai. Setelah mengubah environment, restart server. Buka `/login`, daftar akun, ikuti verifikasi email jika diminta, lalu masuk dan pastikan halaman `/akun` menampilkan nama Anda.
+
+`JWKS_NEON` boleh berupa URL HTTPS JWKS atau JSON JWKS publik. Ini adalah kunci publik untuk verifikasi JWT, bukan cookie signing secret. Login web memakai SDK Neon Auth yang memeriksa sesi melalui layanan Neon dan cookie bertanda tangan; JWKS tidak menggantikan `NEON_AUTH_URL` atau `NEON_AUTH_COOKIE_SECRET`. `auth:check` memeriksa format/ketersediaan JWKS tetapi tidak mengklaim akun sudah berhasil login. Jangan menyalin private key atau token akses ke variabel JWKS.
+
+Next.js `proxy.ts` memperbarui cookie sesi sebelum halaman akun/admin dirender. Hak admin tetap diperiksa di server dari `AppUser.role`; role dari input browser tidak dipercaya. Koneksi profil Prisma memakai implementasi WebSocket eksplisit agar bekerja pada Node 20, sama seperti seed.
+
+Pengujian alur lengkap lokal:
+
+```sh
+bun run test:auth
+```
+
+Pengujian ini memakai layanan Better Auth terisolasi dengan protokol cookie Neon, PostgreSQL PGlite melalui WebSocket, dan browser Chromium. Ia menguji daftar, login, profil database, penolakan akses admin, logout, dan pembaruan cookie. Tidak memakai database/akun Neon produksi. Pengujian tersebut tidak menggantikan verifikasi login pada proyek Neon Anda.
 
 ## Admin pertama
 

@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { createAuthClient } from "@neondatabase/auth/next";
+import { createAuthClient, isAuthError } from "@neondatabase/auth/next";
+import { authErrorMessage } from "@/lib/auth-feedback";
+const authClient = createAuthClient();
 import {
   ArrowUpRight,
   Eye,
@@ -18,18 +19,19 @@ export function AuthForm({
   configured: boolean;
   next: string;
 }) {
-  const router = useRouter();
   const [register, setRegister] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
+  const [notice, setNotice] = useState("");
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
     setError("");
+    setNotice("");
     const f = new FormData(e.currentTarget);
     try {
-      const auth = createAuthClient();
+      const auth = authClient;
       const result = register
         ? await auth.signUp.email({
             email: String(f.get("email")),
@@ -41,17 +43,23 @@ export function AuthForm({
             password: String(f.get("password")),
           });
       if (result.error) {
-        setError(
-          register
-            ? "Pendaftaran belum berhasil. Periksa data atau gunakan email lain."
-            : "Email atau kata sandi belum cocok, atau akun belum diverifikasi.",
+        setError(authErrorMessage(result.error, register));
+      } else if (register && !result.data?.token) {
+        setNotice(
+          "Akun berhasil dibuat. Periksa email bila ada permintaan verifikasi, lalu masuk dengan akun Anda.",
         );
+        setRegister(false);
       } else {
-        router.push(next);
-        router.refresh();
+        // Neon sets cookies through an API route; discard prefetched redirects
+        // from the anonymous Router Cache by starting a fresh document.
+        window.location.assign(next);
       }
-    } catch {
-      setError("Layanan login belum dapat dijangkau. Silakan coba lagi.");
+    } catch (error) {
+      setError(
+        isAuthError(error)
+          ? authErrorMessage(error, register)
+          : "Layanan login belum dapat dijangkau. Silakan coba lagi.",
+      );
     } finally {
       setBusy(false);
     }
@@ -152,6 +160,11 @@ export function AuthForm({
             {error}
           </p>
         )}
+        {notice && (
+          <p className="form-message success" role="status">
+            {notice}
+          </p>
+        )}
         {!configured && (
           <p className="notice">
             Login belum tersedia. Pengelola sedang menyiapkan koneksi akun.
@@ -179,7 +192,6 @@ export function AuthForm({
   );
 }
 export function SignOutButton() {
-  const router = useRouter();
   const [busy, setBusy] = useState(false);
   return (
     <button
@@ -188,10 +200,11 @@ export function SignOutButton() {
       onClick={async () => {
         setBusy(true);
         try {
-          const result = await createAuthClient().signOut();
+          const result = await authClient.signOut();
           if (result.error) throw new Error();
-          router.push("/");
-          router.refresh();
+          // Discard private pages cached under the previous session.
+          // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Authentication state changed outside a Server Action.
+          window.location.assign("/");
         } catch {
           setBusy(false);
         }
