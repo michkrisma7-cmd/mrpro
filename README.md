@@ -1,36 +1,90 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MR Properti
 
-## Getting Started
+Website katalog properti dan layanan tukang berbahasa Indonesia. Bagian properti dan layanan dipisahkan. Dibangun dengan Next.js App Router, Prisma, Neon PostgreSQL, Neon Auth terkelola (Better Auth API), dan S3.
 
-First, run the development server:
+## Fitur
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Beranda responsif, pencarian properti, filter jenis/transaksi/harga, pagination, urutan harga, favorit per perangkat, galeri, dan detail SEO.
+- Katalog/detail layanan: jenis layanan, nama tukang, skill, tarif mulai dari, dan koordinasi lewat WhatsApp admin. Tukang tidak memerlukan akun.
+- Login/daftar Neon Auth, akun pengguna, kirim properti, serta pantau status tinjauan.
+- Dashboard `/admin`: statistik, tinjau/terbitkan/arsipkan properti, edit informasi properti, CRUD definisi field, tambah/edit/nonaktifkan layanan, serta pengaturan hero/kontak/area.
+- Field dinamis: teks, angka, harga, select, multi select; wajib/opsional; form/kartu/detail dikontrol terpisah; label kartu kosong memakai nama field. Galeri, judul, dan deskripsi merupakan field inti. WhatsApp diperlukan untuk listing.
+- Semua mutasi admin memeriksa role di server. Pendaftaran tidak dapat memilih role. Kiriman pengguna selalu `PENDING`. Field khusus form disaring sebelum data publik dikirim.
+- Unggah gambar JPG/PNG/WebP maksimal 5 MB, maksimal 12 foto per listing. Gambar didekode, dibatasi 25 megapiksel, metadata dibuang, dan disimpan sebagai WebP di S3. Endpoint unggah memerlukan sesi pengguna dan pemeriksaan origin. Batas dasar 36 unggahan/user/jam; pertimbangkan rate limit terdistribusi di gateway untuk beban besar.
+
+## Konfigurasi
+
+Gunakan Bun **1.4.3** dan Node **24**. Isi runtime environment atau `.env.local` dari [.env.example](.env.example). Jangan commit nilai rahasia.
+
+| Variabel | Kegunaan |
+| --- | --- |
+| `DATABASE_URL` | URL PostgreSQL Neon dengan TLS, untuk data aplikasi Prisma |
+| `NEON_AUTH_URL` | URL endpoint Neon Auth terkelola; menggunakan API Better Auth |
+| `NEON_AUTH_COOKIE_SECRET` | Secret acak aplikasi, minimal 32 karakter; buat dengan `openssl rand -base64 32` dan simpan aman |
+| `NEXT_PUBLIC_SITE_URL` | Origin HTTPS kanonis produksi; saat lokal gunakan origin port yang dipakai |
+| `AWS_ENDPOINT_URL_S3` | Endpoint layanan S3/S3-compatible |
+| `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` | Kredensial server yang dapat menandatangani request S3 |
+| `AWS_REGION` | Region bucket |
+| `AWS_S3_BUCKET` | Default **`bucket`**, sesuai bucket publik yang sudah dibuat pemilik |
+
+`DATABASE_URL` dan kredensial AWS signing memerlukan nilai runtime asli, bukan placeholder injeksi proxy HTTP. Secret hanya dibaca di modul server. Daftarkan origin aplikasi sebagai trusted/allowed origin pada Neon Auth. Aktifkan email/password di Neon Auth dan konfigurasi verifikasi email sesuai kebijakan proyek.
+
+S3 menggunakan path-style endpoint agar mendukung layanan S3-compatible. Galeri menyimpan referensi media milik pengguna. Endpoint aplikasi membaca objek dari S3 sehingga URL gambar stabil dan dapat dioptimasi Next.js. Foto kiriman belum terbit hanya ditampilkan aplikasi kepada pemilik/admin. Karena bucket dipilih publik oleh pemilik, URL objek S3 itu sendiri bersifat publik; jangan unggah dokumen sensitif. `GetObject`, `PutObject`, dan `DeleteObject` diperlukan (delete untuk membersihkan unggahan yang gagal tersimpan di database).
+
+## Menjalankan
+
+```sh
+bun install --frozen-lockfile
+bun run db:generate
+# Hanya setelah DATABASE_URL menunjuk branch/database tujuan yang benar:
+bun run db:deploy
+bun run db:seed
+bun run dev --hostname 0.0.0.0
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Migrasi awal membuat tabel aplikasi saja, tidak mengelola tabel internal Neon Auth. Jangan gunakan `prisma migrate reset`. Seed bersifat berulang dan hanya membuat field/pengaturan yang belum ada; seed tidak membuat listing, tukang, admin, atau kredensial contoh.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Prisma memakai `engineType = client` dan adapter Neon. `db:generate` menggunakan parser WASM dan protokol generator resmi dari versi Prisma yang dipin sehingga tidak memerlukan unduhan native query engine. `db:deploy` memakai Prisma Migrate dan membutuhkan akses `binaries.prisma.sh` serta koneksi ke database. Jangan menonaktifkan pemeriksaan checksum atau TLS bila jaringan menolak unduhan.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Produksi:
 
-## Learn More
+```sh
+bun run build
+bun run start --hostname 0.0.0.0
+```
 
-To learn more about Next.js, take a look at the following resources:
+Gambar dan font contoh tersedia lokal. Foto rumah contoh dibuat untuk pratinjau, bukan listing properti nyata. Apabila `DATABASE_URL` belum tersedia, aplikasi menampilkan data contoh berlabel. Ketika database tersedia, hanya data dari database yang dipakai. Login dinonaktifkan bila konfigurasi Neon Auth belum lengkap. Dashboard pratinjau hanya baca, tidak menyediakan bypass autentikasi.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Admin pertama
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Buat akun melalui `/login`, lalu masuk sehingga `AppUser` terbentuk dari sesi Neon yang valid.
+2. Pemilik proyek memverifikasi ID user pada Neon Auth.
+3. Jalankan dari lingkungan tepercaya:
 
-## Deploy on Vercel
+```sh
+bun run admin:grant <Neon-Auth-user-id>
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Role admin disimpan di database aplikasi dan dibaca ulang saat otorisasi. Tidak ada admin otomatis berdasarkan email atau user pertama. User biasa yang membuka dashboard mendapat penolakan akses. Pengguna memantau kiriman di `/akun` dan admin melakukan koreksi serta peninjauan di `/admin`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## SEO dan kecepatan
+
+Konten publik dirender server; beranda direvalidasi 60 detik. Definisi field, pengaturan, layanan, dan detail memakai cache bertag yang dibatalkan saat admin mengubah konten. Katalog menggunakan filter dan pagination di PostgreSQL agar tidak mengirim seluruh listing ke browser. Detail hanya memilih listing `PUBLISHED`. Gambar memakai `next/image`, WebP, dan pemuatan malas; gambar hero diprioritaskan. Font disimpan lokal dan tidak memerlukan Google Fonts.
+
+Metadata Indonesia, canonical, Open Graph, structured data properti/layanan, sitemap listing terbit, dan robots sudah disiapkan. Mode contoh/lokal tidak diindeks. Setelah domain HTTPS dan database terhubung, publikasikan situs, verifikasi domain di Google Search Console, lalu kirim `/sitemap.xml`. Implementasi SEO tidak menjamin peringkat atau waktu indeks Google.
+
+## Validasi
+
+```sh
+bun run lint
+bun run typecheck
+bun run test
+bun run build
+bun run test:e2e
+```
+
+Unit/integration tests memvalidasi field dinamis, perlindungan unggah, role/status awal, dan constraint skema PostgreSQL. PGlite menjalankan migrasi SQL nyata secara lokal; ini bukan pengujian koneksi Neon. Playwright menguji pratinjau tanpa kredensial di Chromium desktop dan ponsel (server port 3100). Gunakan `PLAYWRIGHT_CHROMIUM_EXECUTABLE` bila lokasi browser berbeda.
+
+Pada implementasi awal, variabel Neon/AWS belum terinjeksi ke mesin sehingga alur login Neon nyata, penerbitan ke Neon, unggah S3 nyata, dan WhatsApp bisnis belum dapat diverifikasi. Setelah konfigurasi aktif, uji: daftar/login → unggah foto → kirim properti → status pending → tinjau/terbitkan admin → katalog/detail publik. Pastikan user biasa ditolak oleh seluruh aksi admin. Isi kontak WhatsApp yang benar dari dashboard; contoh tidak memakai nomor bisnis palsu.
+
+Template ZIP WordPress dipakai sebagai referensi visual dan perilaku field. ZIP tidak berisi database konten WordPress; listing, media, akun, dan URL lama belum dimigrasikan. Migrasi konten memerlukan ekspor dan pemetaan URL/redirect terpisah.

@@ -1,0 +1,108 @@
+import { test, expect } from "@playwright/test";
+test("landing separates properties and services, with responsive navigation", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Ruang baru",
+  );
+  await expect(page.locator("#properti .property-card")).toHaveCount(3);
+  await expect(page.locator(".services-section .service-card")).toHaveCount(4);
+  await expect(page.locator("#properti .service-card")).toHaveCount(0);
+  await expect(page.locator(".services-section .property-card")).toHaveCount(0);
+  await expect(page.locator(".hero-photo img")).toBeVisible();
+  const fits = await page.evaluate(
+    () => document.documentElement.scrollWidth <= window.innerWidth,
+  );
+  expect(fits).toBe(true);
+});
+test("search filters listings and displays useful empty state", async ({
+  page,
+}) => {
+  await page.goto("/properti");
+  await page.getByPlaceholder("Mau tinggal di mana?").fill("Bintaro");
+  await page.getByRole("button", { name: "Cari Properti" }).click();
+  await expect(page.locator(".property-card")).toHaveCount(1);
+  await expect(
+    page.getByRole("heading", { name: "Rumah tropis modern di Bintaro" }),
+  ).toBeVisible();
+  await page.getByPlaceholder("Mau tinggal di mana?").fill("TidakAdaKotaIni");
+  await page.getByRole("button", { name: "Cari Properti" }).click();
+  await expect(page.getByText("Belum menemukan yang cocok?")).toBeVisible();
+});
+test("favorites persist on the current device", async ({ page }) => {
+  await page.goto("/properti");
+  await page.getByRole("button", { name: "Simpan properti" }).first().click();
+  await page.goto("/properti?favorit=1");
+  await expect(page.locator(".property-card")).toHaveCount(1);
+  await page.getByRole("button", { name: "Hapus dari tersimpan" }).click();
+  await expect(page.getByText("Belum ada properti tersimpan")).toBeVisible();
+});
+test("property details have metadata and gallery navigation", async ({
+  page,
+}) => {
+  await page.goto("/properti/rumah-tropis-modern-bintaro");
+  await expect(page).toHaveTitle(/Rumah tropis modern di Bintaro/);
+  await expect(
+    page.getByRole("heading", { name: "Spesifikasi properti" }),
+  ).toBeVisible();
+  await expect(page.locator('script[type="application/ld+json"]')).toHaveCount(
+    1,
+  );
+  await page.getByRole("button", { name: "Lihat 2 foto" }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.getByRole("button", { name: "Foto berikutnya" }).click();
+  await expect(page.locator(".lightbox-position")).toHaveText("2 / 2");
+  await page.getByRole("button", { name: "Tutup galeri" }).click();
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+});
+test("admin preview is read-only and field editor lists all visibility options", async ({
+  page,
+}) => {
+  await page.goto("/admin?tab=field");
+  await expect(
+    page.getByText("Pratinjau dashboard — hanya baca."),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Tambah Field" }).click();
+  await expect(page.getByText("Tampil di form", { exact: true })).toBeVisible();
+  await expect(
+    page.getByText("Tampil di kartu", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("Tampil di detail", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Simpan Field" }),
+  ).toBeDisabled();
+});
+test("login and submission do not pretend to work without configured credentials", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await expect(
+    page.getByRole("button", { name: "Masuk ke Akun" }),
+  ).toBeDisabled();
+  await page.getByRole("button", { name: "Daftar Akun" }).click();
+  await expect(page.getByLabel("Nama lengkap")).toBeVisible();
+  await page.goto("/titip-properti");
+  await expect(
+    page.getByText("Masuk untuk menitipkan properti."),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Kirim untuk Ditinjau" }),
+  ).toBeDisabled();
+});
+test("unavailable and unauthorized APIs fail safely", async ({ request }) => {
+  const auth = await request.get("/api/auth/get-session");
+  expect(auth.status()).toBe(503);
+  const upload = await request.post("/api/upload", {
+    headers: { origin: "http://127.0.0.1:3100" },
+  });
+  expect(upload.status()).toBe(401);
+  const crossOrigin = await request.post("/api/upload", {
+    headers: { origin: "https://evil.example" },
+  });
+  expect(crossOrigin.status()).toBe(403);
+  const absent = await request.get("/properti/properti-tidak-ada");
+  expect(absent.status()).toBe(404);
+});

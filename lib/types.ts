@@ -1,0 +1,50 @@
+export type FieldType = "TEXT" | "NUMBER" | "PRICE" | "SELECT" | "MULTISELECT";
+export type Field = {
+  id: string;
+  key: string;
+  name: string;
+  type: FieldType;
+  options: string[];
+  required: boolean;
+  showInForm: boolean;
+  showOnCard: boolean;
+  showOnDetail: boolean;
+  cardLabel: string;
+  position: number;
+};
+export type Values = Record<string, string | number | string[]>;
+export type Listing = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  gallery: string[];
+  values: Values;
+  whatsapp: string;
+  status: string;
+  featured: boolean;
+  ownerId: string;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+};
+export type Service = {
+  id: string;
+  slug: string;
+  type: string;
+  workerName: string;
+  skills: string[];
+  description: string;
+  minPrice: number;
+  unit: string;
+  image: string;
+  whatsapp: string;
+  active: boolean;
+};
+export type Settings = {
+  heroTitle: string;
+  heroDescription: string;
+  whatsapp: string;
+  email: string;
+  area: string;
+};
+export type ActionState = { error?: string; success?: string };
