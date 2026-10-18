@@ -1,5 +1,5 @@
 import { z } from "zod";
-export const blogSchema = z.object({
+export const blogFields = z.object({
   title: z.string().trim().min(3, "Judul minimal 3 karakter.").max(160),
   slug: z
     .string()
@@ -18,3 +18,23 @@ export const blogSchema = z.object({
     .max(50000),
   published: z.boolean(),
 });
+
+export function prepareBlogInput(value: unknown) {
+  if (!value || typeof value !== "object") return value;
+  const input = value as Record<string, unknown>;
+  if (typeof input.slug === "string" && input.slug.trim()) return value;
+  if (input.slug != null && typeof input.slug !== "string") return value;
+  const slug =
+    typeof input.title === "string"
+      ? input.title
+          .normalize("NFKD")
+          .replace(/[\u0300-\u036f]/g, "")
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "")
+          .slice(0, 160)
+          .replace(/-$/, "")
+      : "";
+  return { ...input, slug: slug || "artikel" };
+}
+export const blogSchema = z.preprocess(prepareBlogInput, blogFields);

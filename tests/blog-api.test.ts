@@ -2,9 +2,10 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { runInNewContext } from "node:vm";
+import { z } from "zod";
 import * as crypto from "node:crypto";
 import ts from "typescript";
-import { blogSchema } from "../lib/blog-validation";
+import * as blogValidation from "../lib/blog-validation";
 
 const article = {
   title: "Panduan rumah pertama",
@@ -30,8 +31,9 @@ test("blog API requires a key, validates input, creates drafts or published post
     Response,
     process: { env },
     require: (name: string) => {
+      if (name === "zod") return { z };
       if (name === "node:crypto") return crypto;
-      if (name === "@/lib/blog-validation") return { blogSchema };
+      if (name === "@/lib/blog-validation") return blogValidation;
       if (name === "next/cache")
         return { revalidatePath: (path: string) => paths.push(path) };
       if (name === "@/lib/db")
@@ -97,6 +99,13 @@ test("blog API requires a key, validates input, creates drafts or published post
     "/sitemap.xml",
   ])
     assert.ok(paths.includes(path));
+  for (const slug of [undefined, "", "   "]) {
+    const generated = await exports.POST(
+      request({ ...article, slug }, "test-secret"),
+    );
+    assert.equal(generated.status, 201);
+    assert.equal((await generated.json()).data.slug, "panduan-rumah-pertama");
+  }
   failure = { code: "P2002" };
   assert.equal(
     (await exports.POST(request(article, "test-secret"))).status,

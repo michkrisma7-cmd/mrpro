@@ -1,15 +1,17 @@
-import { createHash, timingSafeEqual } from "node:crypto";
+import { createHash, timingSafeEqual, randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { db, databaseConfigured } from "@/lib/db";
-import { blogSchema } from "@/lib/blog-validation";
+import { z } from "zod";
+import { blogFields, prepareBlogInput } from "@/lib/blog-validation";
 
 export const runtime = "nodejs";
 
-const inputSchema = blogSchema
-  .extend({
-    published: blogSchema.shape.published.default(false),
-  })
-  .strict();
+const inputSchema = z.preprocess(
+  prepareBlogInput,
+  blogFields
+    .extend({ published: blogFields.shape.published.default(false) })
+    .strict(),
+);
 
 export async function POST(request: Request) {
   const expected = process.env.BLOG_API_KEY;
@@ -62,7 +64,27 @@ export async function POST(request: Request) {
 
   let post;
   try {
-    post = await db().blogPost.create({ data: input.data });
+    const automaticSlug = !String(
+      (body as Record<string, unknown>).slug || "",
+    ).trim();
+    const baseSlug = input.data.slug;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        post = await db().blogPost.create({ data: input.data });
+        break;
+      } catch (error) {
+        if (
+          !automaticSlug ||
+          attempt >= 3 ||
+          !error ||
+          typeof error !== "object" ||
+          !("code" in error) ||
+          error.code !== "P2002"
+        )
+          throw error;
+        input.data.slug = `${baseSlug}-${randomUUID().slice(0, 8)}`;
+      }
+    }
   } catch (error) {
     if (
       error &&
