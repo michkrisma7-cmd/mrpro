@@ -202,7 +202,13 @@ Image `ghcr.io/michkrisma7-cmd/mrpro:migrate` berisi Prisma CLI dan folder `pris
 ```sh
 cd ~/web-me
 docker pull ghcr.io/michkrisma7-cmd/mrpro:migrate
-docker run --rm --network hostme --env-file .env ghcr.io/michkrisma7-cmd/mrpro:migrate
+docker compose -f docker-compose.yaml -f - run --rm --no-deps -T web bun run db:deploy <<'MIGRATION'
+services:
+  web:
+    image: ghcr.io/michkrisma7-cmd/mrpro:migrate
+MIGRATION
 ```
 
 Pastikan `DATABASE_URL` menunjuk database tujuan yang benar. Database yang sudah berisi tabel dari proses lain mungkin memerlukan baseline Prisma terlebih dahulu; jangan memakai `migrate reset` pada produksi. Migrasi yang berhasil tidak otomatis di-rollback bila deployment berikutnya gagal.
+
+Migrasi memakai Compose yang sama dengan service web, dengan override image sementara melalui stdin. Environment dan network mengikuti service web; file Compose di VPS tidak diubah. Ini menghindari perbedaan parsing `.env` antara `docker run --env-file` dan Compose, termasuk tanda kutip serta interpolasi variabel.

@@ -65,6 +65,9 @@ jobs:
             printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
             docker compose pull
             docker pull ghcr.io/michkrisma7-cmd/mrpro:migrate
-            docker run --rm --network hostme --env-file .env \
-              ghcr.io/michkrisma7-cmd/mrpro:migrate
+            docker compose -f docker-compose.yaml -f - run --rm --no-deps -T web bun run db:deploy <<'MIGRATION'
+            services:
+              web:
+                image: ghcr.io/michkrisma7-cmd/mrpro:migrate
+            MIGRATION
             docker compose up -d
