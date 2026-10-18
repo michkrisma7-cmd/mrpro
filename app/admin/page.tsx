@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   LayoutDashboard,
+  BookOpen,
   House,
   Wrench,
   SlidersHorizontal,
@@ -27,6 +28,7 @@ import {
   SettingsForm,
 } from "@/components/admin-forms";
 import { redirect } from "next/navigation";
+import { BlogEditor } from "@/components/blog-editor";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Dashboard Admin",
@@ -37,12 +39,13 @@ const tabs = [
   ["properti", "Properti & Kiriman", House],
   ["field", "Field Dinamis", SlidersHorizontal],
   ["layanan", "Layanan Tukang", Wrench],
+  ["blog", "Blog", BookOpen],
   ["pengaturan", "Pengaturan Website", Settings],
 ] as const;
 export default async function Admin({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; edit?: string }>;
+  searchParams: Promise<{ tab?: string; edit?: string; tersimpan?: string }>;
 }) {
   const user = await currentUser();
   const preview = !authConfigured || !databaseConfigured;
@@ -58,7 +61,7 @@ export default async function Admin({
         </Link>
       </div>
     );
-  const { tab = "ringkasan", edit } = await searchParams;
+  const { tab = "ringkasan", edit, tersimpan } = await searchParams;
   const [fields, settings] = await Promise.all([getFields(), getSettings()]);
   const properties: Listing[] = preview
     ? demoListings
@@ -69,6 +72,13 @@ export default async function Admin({
   const services: Service[] = preview
     ? demoServices
     : await db().service.findMany({ orderBy: { createdAt: "desc" } });
+  const posts =
+    tab === "blog" && !preview
+      ? await db().blogPost.findMany({
+          orderBy: { createdAt: "desc" },
+          take: 200,
+        })
+      : [];
   const selected = properties.find((p) => p.id === edit);
   return (
     <div className="admin-shell container">
@@ -302,6 +312,52 @@ export default async function Admin({
                 <ServiceEditor
                   key={edit}
                   service={services.find((s) => s.id === edit)}
+                  disabled={preview}
+                />
+              </div>
+            )}
+          </div>
+        )}
+        {tab === "blog" && (
+          <div className="admin-panel">
+            <div className="panel-heading">
+              <div>
+                <h2>Artikel blog</h2>
+                <p>Hanya artikel terbit yang ditampilkan kepada pengunjung.</p>
+              </div>
+              <Link className="outline-button" href="/admin?tab=blog&edit=baru">
+                Tambah Artikel
+              </Link>
+            </div>
+            {tersimpan === "1" && (
+              <p role="status">Artikel berhasil disimpan.</p>
+            )}
+            {posts.map((post) => (
+              <div className="service-admin-row" key={post.id}>
+                <div>
+                  <strong>{post.title}</strong>
+                  <small>/blog/{post.slug}</small>
+                </div>
+                <span
+                  className={`status-label ${post.published ? "published" : "archived"}`}
+                >
+                  {post.published ? "Terbit" : "Draf"}
+                </span>
+                <Link
+                  className="text-button"
+                  href={`/admin?tab=blog&edit=${post.id}`}
+                >
+                  Edit
+                </Link>
+              </div>
+            ))}
+            {!posts.length && <p>Belum ada artikel.</p>}
+            {edit && (edit === "baru" || posts.some((p) => p.id === edit)) && (
+              <div className="edit-panel">
+                <h3>{edit === "baru" ? "Tambah artikel" : "Edit artikel"}</h3>
+                <BlogEditor
+                  key={edit}
+                  post={posts.find((p) => p.id === edit)}
                   disabled={preview}
                 />
               </div>

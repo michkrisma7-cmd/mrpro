@@ -25,6 +25,7 @@ export function Header() {
             ["/", "Beranda"],
             ["/properti", "Properti"],
             ["/layanan", "Layanan Tukang"],
+            ["/blog", "Blog"],
             ["/#tentang", "Tentang Kami"],
           ].map(([href, label]) => (
             <Link

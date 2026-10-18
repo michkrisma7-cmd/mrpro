@@ -19,13 +19,16 @@ import { PropertyCard } from "@/components/property-card";
 import { ServiceCard } from "@/components/service-card";
 import { SearchForm } from "@/components/search-form";
 import { whatsappLink } from "@/lib/format";
+import { getBlogPosts } from "@/lib/blog";
+import { BlogList } from "@/components/blog-list";
 export const revalidate = 60;
 export default async function Home() {
-  const [fields, properties, services, settings] = await Promise.all([
+  const [fields, properties, services, settings, posts] = await Promise.all([
     getFields(),
     getListings(),
     getServices(),
     getSettings(),
+    getBlogPosts(3),
   ]);
   const wa = whatsappLink(
     settings.whatsapp,
@@ -323,6 +326,18 @@ export default async function Home() {
             </div>
           ))}
         </div>
+      </section>
+      <section className="section container" id="blog">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">JURNAL MR PROPERTI</p>
+            <h2>Inspirasi & panduan rumah.</h2>
+          </div>
+          <Link className="outline-button" href="/blog">
+            Semua Artikel <ArrowUpRight size={17} />
+          </Link>
+        </div>
+        <BlogList posts={posts} />
       </section>
       <section className="container faq-section">
         <div>

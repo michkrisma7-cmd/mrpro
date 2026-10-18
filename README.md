@@ -179,3 +179,9 @@ docker compose --env-file .env.production run --rm tools bun run admin:grant <Ne
 ```
 
 Container tidak menjalankan migrasi/seed setiap restart. Simpan backup database di layanan Neon dan kebijakan backup media di S3; mengganti image tidak menghapus data layanan tersebut. Untuk produksi pertama, pastikan environment lengkap: tanpa database aplikasi masih mendukung mode demo dan tanpa auth lengkap login dinonaktifkan.
+
+## Blog
+
+Admin mengelola artikel lewat `/admin?tab=blog`: judul, slug unik, ringkasan, dan isi teks biasa. Simpan sebagai draf atau centang **Terbitkan di website**. Hapus centang untuk menarik artikel dari publik. Penyimpanan selalu memeriksa sesi dan role `ADMIN` di server. Tiga artikel terbit terbaru muncul di beranda; `/blog` menampilkan maksimal 30 artikel terbaru, dengan detail pada `/blog/<slug>`. Draf tidak tersedia di halaman publik atau sitemap. Isi dirender sebagai teks aman, tanpa HTML.
+
+Sebelum menjalankan versi ini pada database yang sudah ada, jalankan `bun run db:generate`, lalu `bun run db:deploy` dengan `DATABASE_URL` database tujuan yang benar. Migrasi `202610180001_blog` menambahkan tabel blog tanpa mengubah data properti. Tanpa database, bagian blog menampilkan keadaan kosong dan dashboard tetap hanya baca.

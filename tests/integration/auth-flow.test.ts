@@ -66,6 +66,12 @@ test(
           "utf8",
         ),
       );
+      await database.exec(
+        await readFile(
+          "prisma/migrations/202610180001_blog/migration.sql",
+          "utf8",
+        ),
+      );
       for (const f of defaultFields)
         await database.query(
           'INSERT INTO "PropertyField" (id,key,name,type,options,required,"showInForm","showOnCard","showOnDetail","cardLabel",position) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
