@@ -39,6 +39,14 @@ jobs:
           push: true
           tags: ghcr.io/michkrisma7-cmd/mrpro:latest
 
+      - name: Build dan Push Image Migrasi
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: tools
+          push: true
+          tags: ghcr.io/michkrisma7-cmd/mrpro:migrate
+
       - name: Deploy ke VPS
         uses: appleboy/ssh-action@v1.2.0
         env:
@@ -56,4 +64,7 @@ jobs:
             cd "$HOME/web-me"
             printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
             docker compose pull
+            docker pull ghcr.io/michkrisma7-cmd/mrpro:migrate
+            docker run --rm --network hostme --env-file .env \
+              ghcr.io/michkrisma7-cmd/mrpro:migrate
             docker compose up -d

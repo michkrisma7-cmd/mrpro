@@ -152,9 +152,9 @@ docker compose pull
 docker compose up -d
 ```
 
-Siapkan reverse proxy HTTPS menuju port aplikasi 3000. Login produksi membutuhkan HTTPS. Izinkan request body minimal 6 MB untuk unggahan gambar. Migrasi dan seed database dijalankan terpisah dari workflow deploy.
+Siapkan reverse proxy HTTPS menuju port aplikasi 3000. Login produksi membutuhkan HTTPS. Izinkan request body minimal 6 MB untuk unggahan gambar. Workflow deploy menjalankan migrasi sebelum memperbarui container web. Seed tetap dijalankan terpisah.
 
-Dockerfile memakai tahap builder dan runner dengan base Node 24 bersama. Bun memasang dependency dan membangun Next.js; runtime menjalankan output standalone sebagai user non-root. Dockerfile ini digunakan oleh proses pembuat image, bukan oleh workflow SSH di bawah.
+Dockerfile memakai tahap tools (Prisma CLI dan file migrasi), builder, serta runner dengan base Node 24 bersama. Bun memasang dependency dan membangun Next.js; runtime menjalankan output standalone sebagai user non-root. Dockerfile ini digunakan oleh proses pembuat image, bukan oleh workflow SSH di bawah.
 
 ## Blog
 
@@ -185,7 +185,7 @@ Field wajib: `title` (3–160 karakter), `slug` (1–180 karakter; huruf kecil, 
 
 Workflow `.github/workflows/deploy-vps.yml` berjalan saat push ke `main` (termasuk merge PR ke `main`) atau manual melalui Actions. Membuka/memperbarui PR tidak melakukan deploy.
 
-Alur: checkout → Docker Buildx → login GHCR → build dan push `ghcr.io/michkrisma7-cmd/mrpro:latest` → login SSH ke `116.212.73.143` menggunakan user/password lewat `appleboy/ssh-action` → login GHCR di VPS → `cd ~/web-me` → `docker compose pull` → `docker compose up -d`.
+Alur: checkout → Docker Buildx → login GHCR → build dan push `ghcr.io/michkrisma7-cmd/mrpro:latest` → login SSH ke `116.212.73.143` menggunakan user/password lewat `appleboy/ssh-action` → login GHCR di VPS → `cd ~/web-me` → `docker compose pull` → jalankan image `mrpro:migrate` pada network `hostme` dengan `.env` VPS → `docker compose up -d`.
 
 Isi GitHub repository **Settings → Secrets and variables → Actions**:
 
@@ -195,4 +195,14 @@ Isi GitHub repository **Settings → Secrets and variables → Actions**:
 
 Login GHCR di runner dan VPS memakai `GITHUB_TOKEN` bawaan Actions; tidak perlu secret GHCR tambahan atau `VPS_KNOWN_HOSTS`. Workflow diberi izin `packages: write`. Jika package `mrpro` sudah ada, pastikan repository ini mendapat akses Actions untuk membaca/menulis package tersebut melalui pengaturan package GHCR.
 
-User SSH harus bisa menjalankan Docker tanpa prompt sudo. `docker-compose.yaml` dan `.env` sudah tersedia di `~/web-me` pada VPS, dengan image yang sama seperti tag workflow. Workflow tidak mengirim source/Compose, mengubah env aplikasi, atau menjalankan migrasi. Build image tidak meminta konfigurasi `NEXT_PUBLIC_SITE_URL` dari GitHub.
+User SSH harus bisa menjalankan Docker tanpa prompt sudo. `docker-compose.yaml` dan `.env` sudah tersedia di `~/web-me` pada VPS, dengan image yang sama seperti tag workflow. Workflow tidak mengirim source/Compose, atau mengubah env aplikasi. Migrasi Prisma dijalankan otomatis; jika gagal, workflow berhenti sebelum mengganti container web. Build image tidak meminta konfigurasi `NEXT_PUBLIC_SITE_URL` dari GitHub.
+
+Image `ghcr.io/michkrisma7-cmd/mrpro:migrate` berisi Prisma CLI dan folder `prisma/migrations`; image web tetap memakai output standalone. Untuk menerapkan migrasi secara manual setelah image baru dipublikasikan:
+
+```sh
+cd ~/web-me
+docker pull ghcr.io/michkrisma7-cmd/mrpro:migrate
+docker run --rm --network hostme --env-file .env ghcr.io/michkrisma7-cmd/mrpro:migrate
+```
+
+Pastikan `DATABASE_URL` menunjuk database tujuan yang benar. Database yang sudah berisi tabel dari proses lain mungkin memerlukan baseline Prisma terlebih dahulu; jangan memakai `migrate reset` pada produksi. Migrasi yang berhasil tidak otomatis di-rollback bila deployment berikutnya gagal.

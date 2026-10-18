@@ -5,12 +5,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && rm -rf /var/lib/apt/lists/*
 ENV NEXT_TELEMETRY_DISABLED=1
 
-FROM base AS builder
+FROM base AS tools
 COPY --from=oven/bun:1.4.3 /usr/local/bin/bun /usr/local/bin/bun
 COPY package.json bun.lock ./
 COPY patches ./patches
 RUN bun install --frozen-lockfile
 COPY . .
+CMD ["bun", "run", "db:deploy"]
+
+FROM tools AS builder
 ENV DOCKER_BUILD=1
 RUN bun run build
 
