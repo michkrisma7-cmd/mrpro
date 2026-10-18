@@ -1,8 +1,6 @@
 import { loadEnvConfig } from "@next/env";
 import { PrismaClient } from "@prisma/client";
-import { PrismaNeon } from "@prisma/adapter-neon";
-import { neonConfig } from "@neondatabase/serverless";
-import WebSocket from "ws";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 async function main() {
   loadEnvConfig(process.cwd());
@@ -11,9 +9,8 @@ async function main() {
     throw new Error(
       "Gunakan: bun run admin:grant <Neon-Auth-user-id>. DATABASE_URL wajib tersedia.",
     );
-  neonConfig.webSocketConstructor = WebSocket;
   const prisma = new PrismaClient({
-    adapter: new PrismaNeon({
+    adapter: new PrismaPg({
       connectionString: process.env.DATABASE_URL,
       max: 1,
       connectionTimeoutMillis: 15000,

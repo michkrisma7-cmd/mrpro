@@ -79,7 +79,7 @@ test("auth setup generates a private local cookie secret once without overwritin
       "NEXT_PUBLIC_SITE_URL",
       "JWKS_NEON",
     ])
-      delete env[k];
+      env[k] = ""; // Keep repository .env values out of the child process.
     env.DATABASE_URL = "postgresql://test:test@127.0.0.1/test";
     env.NEON_AUTH_URL = "https://auth.example.test/auth";
     env.NEXT_PUBLIC_SITE_URL = "http://localhost:3000";
@@ -101,6 +101,7 @@ test("auth setup generates a private local cookie secret once without overwritin
     assert.ok(secret && secret.length >= 32);
     assert.equal(first.stdout.includes(secret), false);
     assert.equal((await stat(join(cwd, ".env.local"))).isFile(), true);
+    env.NEON_AUTH_COOKIE_SECRET = secret;
     const second = run();
     assert.equal(second.status, 0, second.stderr);
     assert.equal(

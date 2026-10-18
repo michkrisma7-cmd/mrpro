@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { createConnection, createServer as createTcpServer } from "node:net";
+import { createServer as createTcpServer } from "node:net";
 import { createServer } from "node:http";
 import { once } from "node:events";
 import { spawn, type ChildProcess } from "node:child_process";
@@ -13,7 +13,6 @@ import {
   setImmediate as nextTurn,
 } from "node:timers/promises";
 import { chromium } from "@playwright/test";
-import { WebSocketServer, WebSocket } from "ws";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 import { betterAuth } from "better-auth";
@@ -42,7 +41,6 @@ test(
       port: 0,
       maxConnections: 20,
     });
-    const wsProxy = new WebSocketServer({ host: "127.0.0.1", port: 0 });
     const cwd = process.cwd();
     const appPort = await availablePort();
     const appOrigin = `http://127.0.0.1:${appPort}`;
@@ -59,7 +57,6 @@ test(
       args: ["--no-sandbox"],
     });
     try {
-      if (!wsProxy.address()) await once(wsProxy, "listening");
       await database.exec(
         await readFile(
           "prisma/migrations/202610170001_initial/migration.sql",
@@ -102,32 +99,6 @@ test(
       const pgUrl = new URL(
         `postgresql://postgres:postgres@${postgres.getServerConn()}/postgres`,
       );
-      wsProxy.on("connection", (websocket) => {
-        const tcp = createConnection({
-          host: pgUrl.hostname,
-          port: Number(pgUrl.port),
-        });
-        websocket.on("message", (data) => {
-          const bytes = Array.isArray(data)
-            ? Buffer.concat(data)
-            : Buffer.from(data as ArrayBuffer);
-          if (bytes.length === 5 && bytes[0] === 0x58) {
-            tcp.destroy();
-            websocket.close();
-            return;
-          }
-          tcp.write(bytes);
-        });
-        tcp.on("data", (bytes) => {
-          if (websocket.readyState === WebSocket.OPEN) websocket.send(bytes);
-        });
-        tcp.on("error", () => websocket.close());
-        tcp.on("close", () => websocket.close());
-        websocket.on("close", () => tcp.destroy());
-        websocket.on("error", () => tcp.destroy());
-      });
-      const wsAddress = wsProxy.address();
-      assert.ok(wsAddress && typeof wsAddress === "object");
       service.listen(0, "127.0.0.1");
       await once(service, "listening");
       const serviceAddress = service.address();
@@ -154,13 +125,6 @@ test(
         NEON_AUTH_URL: authUrl,
         NEON_AUTH_COOKIE_SECRET: randomBytes(32).toString("base64url"),
         NEXT_PUBLIC_SITE_URL: appOrigin,
-        MR_TEST_WEBSOCKET_PROXY: `127.0.0.1:${wsAddress.port}`,
-        NODE_OPTIONS: [
-          process.env.NODE_OPTIONS,
-          `--import=${JSON.stringify(resolve("tests/fixtures/auth-websocket.mjs"))}`,
-        ]
-          .filter(Boolean)
-          .join(" "),
       };
       next = spawn(
         process.execPath,
@@ -371,8 +335,6 @@ test(
       }
       service.closeAllConnections();
       await new Promise<void>((done) => service.close(() => done()));
-      for (const client of wsProxy.clients) client.terminate();
-      await new Promise<void>((done) => wsProxy.close(() => done()));
       await postgres.stop();
       // Socket handlers schedule rollback/cleanup on the next event-loop turn.
       await nextTurn();

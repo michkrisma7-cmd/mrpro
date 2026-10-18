@@ -1,6 +1,6 @@
 # MR Properti
 
-Website katalog properti dan layanan tukang berbahasa Indonesia. Bagian properti dan layanan dipisahkan. Dibangun dengan Next.js App Router, Prisma, Neon PostgreSQL, Neon Auth terkelola (Better Auth API), dan S3.
+Website katalog properti dan layanan tukang berbahasa Indonesia. Bagian properti dan layanan dipisahkan. Dibangun dengan Next.js App Router, Prisma, PostgreSQL (native atau Neon melalui TCP), Neon Auth terkelola (Better Auth API), dan S3.
 
 ## Fitur
 
@@ -18,7 +18,7 @@ Gunakan Bun **1.4.3** dan Node **24**. Isi runtime environment atau `.env.local`
 
 | Variabel                                     | Kegunaan                                                                                         |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `DATABASE_URL`                               | URL PostgreSQL Neon dengan TLS, untuk data aplikasi Prisma                                       |
+| `DATABASE_URL`                               | URL PostgreSQL TCP untuk data aplikasi Prisma; gunakan TLS untuk database cloud                  |
 | `NEON_AUTH_URL`                              | URL endpoint Neon Auth terkelola; menggunakan API Better Auth                                    |
 | `NEON_AUTH_COOKIE_SECRET`                    | Secret acak aplikasi, minimal 32 karakter; buat dengan `openssl rand -base64 32` dan simpan aman |
 | `NEXT_PUBLIC_SITE_URL`                       | Origin HTTPS kanonis produksi; saat lokal gunakan origin port yang dipakai                       |
@@ -44,7 +44,7 @@ bun run dev --hostname 0.0.0.0
 
 Migrasi awal membuat tabel aplikasi saja, tidak mengelola tabel internal Neon Auth. Jangan gunakan `prisma migrate reset`. Seed bersifat berulang dan hanya membuat field/pengaturan yang belum ada; seed tidak membuat listing, tukang, admin, atau kredensial contoh.
 
-Prisma memakai `engineType = client` dan adapter Neon. `db:generate` menggunakan parser WASM dan protokol generator resmi dari versi Prisma yang dipin sehingga tidak memerlukan unduhan native query engine. `db:deploy` memakai Prisma Migrate dan membutuhkan akses `binaries.prisma.sh` serta koneksi ke database. Jangan menonaktifkan pemeriksaan checksum atau TLS bila jaringan menolak unduhan.
+Prisma memakai `engineType = client` dan adapter PostgreSQL TCP (`@prisma/adapter-pg` dan `pg`). `db:generate` menggunakan parser WASM dan protokol generator resmi dari versi Prisma yang dipin sehingga tidak memerlukan unduhan native query engine. `db:deploy` memakai Prisma Migrate dan membutuhkan akses `binaries.prisma.sh` serta koneksi ke database. Jangan menonaktifkan pemeriksaan checksum atau TLS bila jaringan menolak unduhan.
 
 Produksi:
 
@@ -76,7 +76,7 @@ Versi `@neondatabase/auth@0.6.0-beta` dipatch lewat `patchedDependencies` Bun: b
 
 `JWKS_NEON` boleh berupa URL HTTPS JWKS atau JSON JWKS publik. Ini adalah kunci publik untuk verifikasi JWT, bukan cookie signing secret. Login web memakai SDK Neon Auth yang memeriksa sesi melalui layanan Neon dan cookie bertanda tangan; JWKS tidak menggantikan `NEON_AUTH_URL` atau `NEON_AUTH_COOKIE_SECRET`. `auth:check` memeriksa format/ketersediaan JWKS tetapi tidak mengklaim akun sudah berhasil login. Jangan menyalin private key atau token akses ke variabel JWKS.
 
-Next.js `proxy.ts` memperbarui cookie sesi sebelum halaman akun/admin dirender. Hak admin tetap diperiksa di server dari `AppUser.role`; role dari input browser tidak dipercaya. Koneksi profil Prisma memakai implementasi WebSocket eksplisit agar bekerja pada Node 20, sama seperti seed.
+Next.js `proxy.ts` memperbarui cookie sesi sebelum halaman akun/admin dirender. Hak admin tetap diperiksa di server dari `AppUser.role`; role dari input browser tidak dipercaya. Koneksi Prisma dan script seed/administrasi memakai PostgreSQL TCP; PostgreSQL native tidak memerlukan proxy WebSocket.
 
 Pengujian alur lengkap lokal:
 
@@ -84,7 +84,7 @@ Pengujian alur lengkap lokal:
 bun run test:auth
 ```
 
-Pengujian ini memakai layanan Better Auth terisolasi dengan protokol cookie Neon, PostgreSQL PGlite melalui WebSocket, dan browser Chromium. Ia menguji daftar, login, profil database, penolakan akses admin, logout, dan pembaruan cookie. Tidak memakai database/akun Neon produksi. Pengujian tersebut tidak menggantikan verifikasi login pada proyek Neon Anda.
+Pengujian ini memakai layanan Better Auth terisolasi dengan protokol cookie Neon, PostgreSQL PGlite melalui TCP, dan browser Chromium. Ia menguji daftar, login, profil database, penolakan akses admin, logout, dan pembaruan cookie. Tidak memakai database/akun Neon produksi. Pengujian tersebut tidak menggantikan verifikasi login pada proyek Neon Anda.
 
 ## Admin pertama
 
@@ -130,7 +130,7 @@ Template ZIP WordPress dipakai sebagai referensi visual dan perilaku field. ZIP 
 
 ## Deploy ke Vercel atau VPS
 
-Project siap untuk dua target; database tetap **Neon PostgreSQL**, auth tetap **Neon Auth**, dan media tetap **S3**. Compose tidak menyediakan PostgreSQL lokal karena adapter aplikasi memakai protokol Neon WebSocket. Tidak ada data permanen yang disimpan di container aplikasi.
+Project siap untuk dua target; database memakai **PostgreSQL melalui TCP (native atau Neon)**, auth tetap **Neon Auth**, dan media tetap **S3**. Compose menghubungkan aplikasi ke database melalui `DATABASE_URL` dan tidak membuat server PostgreSQL. Untuk PostgreSQL native di host VPS, gunakan IP gateway Docker dan izinkan subnet network aplikasi di `pg_hba.conf`. Tidak ada data permanen yang disimpan di container aplikasi.
 
 ### Vercel (saat nanti ingin deploy)
 
@@ -180,7 +180,6 @@ curl -X POST 'https://domain-anda/api/blog' \
 ```
 
 Field wajib: `title` (3–160 karakter), `slug` (1–180 karakter; huruf kecil, angka, tanda hubung), `excerpt` (10–350 karakter), dan `content` (20–50.000 karakter; teks biasa). `published` opsional berupa boolean, default `false` (draf); kirim `true` agar artikel langsung tampil di blog. Field tambahan ditolak. Respons sukses `201` berisi `{ "data": { ...artikel } }`, termasuk ID, slug, status publikasi, serta timestamp. Slug yang sudah dipakai menghasilkan `409`; endpoint ini tidak memperbarui artikel lama. API key salah/kosong menghasilkan `401`, JSON/data salah `400`, Content-Type salah `415`, database belum dikonfigurasi `503`, dan kegagalan penyimpanan `500`. Halaman utama, blog, sitemap, dan admin diperbarui pada kunjungan berikutnya. Tidak perlu migration database tambahan untuk endpoint ini.
-
 
 ### GitHub Actions → VPS
 

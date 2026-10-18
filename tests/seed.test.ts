@@ -3,16 +3,13 @@ import assert from "node:assert/strict";
 import { readFile, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { createConnection } from "node:net";
-import { once } from "node:events";
 import { spawn } from "node:child_process";
-import { WebSocketServer, WebSocket } from "ws";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 import { defaultFields } from "../lib/demo";
 
 test(
-  "seed writes through the actual Neon WebSocket adapter and preserves existing records on repeat",
+  "seed writes through the PostgreSQL TCP adapter and preserves existing records on repeat",
   { timeout: 60000 },
   async () => {
     const database = await PGlite.create();
@@ -21,10 +18,8 @@ test(
       host: "127.0.0.1",
       port: 0,
     });
-    const proxy = new WebSocketServer({ host: "127.0.0.1", port: 0 });
     const cwd = await mkdtemp(join(tmpdir(), "mrpro-seed-"));
     try {
-      if (!proxy.address()) await once(proxy, "listening");
       await database.exec(
         await readFile(
           "prisma/migrations/202610170001_initial/migration.sql",
@@ -35,35 +30,6 @@ test(
       const databaseUrl = new URL(
         `postgresql://postgres:postgres@${postgres.getServerConn()}/postgres`,
       );
-      let connections = 0;
-      proxy.on("connection", (websocket) => {
-        connections++;
-        const tcp = createConnection({
-          host: databaseUrl.hostname,
-          port: Number(databaseUrl.port),
-        });
-        websocket.on("message", (data) => {
-          const bytes = Array.isArray(data)
-            ? Buffer.concat(data)
-            : Buffer.from(data as ArrayBuffer);
-          // A real PostgreSQL server closes the transport on Terminate (X).
-          if (bytes.length === 5 && bytes[0] === 0x58) {
-            tcp.destroy();
-            websocket.close();
-            return;
-          }
-          tcp.write(bytes);
-        });
-        tcp.on("data", (bytes) => {
-          if (websocket.readyState === WebSocket.OPEN) websocket.send(bytes);
-        });
-        tcp.on("error", () => websocket.close());
-        tcp.on("close", () => websocket.close());
-        websocket.on("close", () => tcp.destroy());
-        websocket.on("error", () => tcp.destroy());
-      });
-      const address = proxy.address();
-      assert.ok(address && typeof address === "object");
       async function seed() {
         const result = await new Promise<{
           code: number | null;
@@ -80,14 +46,7 @@ test(
               cwd,
               env: {
                 ...process.env,
-                NODE_OPTIONS: [
-                  process.env.NODE_OPTIONS,
-                  `--require=${JSON.stringify(resolve("tests/fixtures/seed-websocket.cjs"))}`,
-                ]
-                  .filter(Boolean)
-                  .join(" "),
                 DATABASE_URL: databaseUrl.href,
-                MR_TEST_WEBSOCKET_PROXY: `127.0.0.1:${(address as { port: number }).port}`,
               },
               stdio: ["ignore", "pipe", "pipe"],
             },
@@ -117,10 +76,6 @@ test(
         assert.match(result.stdout, /Field awal dan pengaturan tersimpan/);
       }
       await seed();
-      assert.ok(
-        connections > 0,
-        "The seed must use a real WebSocket connection.",
-      );
       assert.equal(
         (await database.query('SELECT * FROM "PropertyField"')).rows.length,
         defaultFields.length,
@@ -171,8 +126,6 @@ test(
         1,
       );
     } finally {
-      for (const client of proxy.clients) client.terminate();
-      await new Promise<void>((done) => proxy.close(() => done()));
       await postgres.stop();
       await database.close();
       await rm(cwd, { recursive: true, force: true });

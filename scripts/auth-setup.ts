@@ -3,9 +3,7 @@ import { randomBytes } from "node:crypto";
 import { open, constants } from "node:fs/promises";
 import { resolve } from "node:path";
 import { PrismaClient } from "@prisma/client";
-import { PrismaNeon } from "@prisma/adapter-neon";
-import { neonConfig } from "@neondatabase/serverless";
-import WebSocket from "ws";
+import { PrismaPg } from "@prisma/adapter-pg";
 import { inspectAuthEnvironment } from "../lib/auth-config";
 
 async function main() {
@@ -133,9 +131,8 @@ async function main() {
     }
   } else console.log("INFO: JWKS_NEON opsional untuk login cookie Neon Auth.");
   if (process.env.DATABASE_URL) {
-    neonConfig.webSocketConstructor = WebSocket;
     const prisma = new PrismaClient({
-      adapter: new PrismaNeon({
+      adapter: new PrismaPg({
         connectionString: process.env.DATABASE_URL,
         max: 1,
         connectionTimeoutMillis: 10000,

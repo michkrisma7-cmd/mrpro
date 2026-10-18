@@ -12,7 +12,7 @@ for (const [script, expected] of [
   test(`${script} runs through tsx in CommonJS and exits cleanly for missing configuration`, async () => {
     const cwd = await mkdtemp(join(tmpdir(), "mrpro-cli-"));
     const env = { ...process.env };
-    delete env.DATABASE_URL;
+    env.DATABASE_URL = ""; // Prevent Prisma from loading the repository .env in this isolated test.
     try {
       const result = spawnSync(
         process.execPath,
