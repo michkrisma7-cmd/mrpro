@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { pageMetadata, breadcrumbs, jsonLd } from "@/lib/seo";
+import { siteUrl } from "@/lib/format";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getBlogPost } from "@/lib/blog";
@@ -8,14 +10,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await getBlogPost((await params).slug);
   if (!post)
     return { title: "Artikel tidak ditemukan", robots: { index: false } };
-  return {
+  const metadata = pageMetadata({
     title: post.title,
     description: post.excerpt,
-    alternates: { canonical: `/blog/${post.slug}` },
+    path: `/blog/${post.slug}`,
+  });
+  return {
+    ...metadata,
     openGraph: {
+      ...metadata.openGraph,
       type: "article",
-      title: post.title,
-      description: post.excerpt,
+      publishedTime: post.createdAt.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
     },
   };
 }
@@ -24,6 +30,34 @@ export default async function BlogDetail({ params }: Props) {
   if (!post) notFound();
   return (
     <article className="container section blog-detail">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd([
+            {
+              "@context": "https://schema.org",
+              "@type": "BlogPosting",
+              headline: post.title,
+              description: post.excerpt,
+              url: `${siteUrl()}/blog/${post.slug}`,
+              mainEntityOfPage: `${siteUrl()}/blog/${post.slug}`,
+              datePublished: post.createdAt.toISOString(),
+              dateModified: post.updatedAt.toISOString(),
+              inLanguage: "id-ID",
+              publisher: {
+                "@type": "Organization",
+                name: "MR Properti",
+                url: siteUrl(),
+              },
+            },
+            breadcrumbs([
+              { name: "Beranda", path: "/" },
+              { name: "Blog", path: "/blog" },
+              { name: post.title, path: `/blog/${post.slug}` },
+            ]),
+          ]),
+        }}
+      />
       <Link className="text-button" href="/blog">
         ← Semua artikel
       </Link>

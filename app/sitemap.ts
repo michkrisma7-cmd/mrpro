@@ -1,17 +1,14 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/format";
-import { db, databaseConfigured } from "@/lib/db";
+import { db } from "@/lib/db";
+import { indexingEnabled } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  if (
-    !databaseConfigured ||
-    !process.env.NEXT_PUBLIC_SITE_URL?.startsWith("https://")
-  )
-    return [];
+  if (!indexingEnabled()) return [];
   const [properties, services, posts] = await Promise.all([
     db().property.findMany({
       where: { status: "PUBLISHED" },
-      select: { slug: true, updatedAt: true },
+      select: { slug: true, updatedAt: true, gallery: true },
     }),
     db().service.findMany({ where: { active: true }, select: { slug: true } }),
     db().blogPost.findMany({
@@ -36,6 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
     ...properties.map((p) => ({
       url: `${siteUrl()}/properti/${p.slug}`,
+      images: p.gallery.map((src) => new URL(src, siteUrl()).href),
       lastModified: p.updatedAt,
       priority: 0.8,
     })),

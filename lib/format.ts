@@ -27,5 +27,13 @@ export function whatsappLink(phone: string, message: string) {
     ? `https://wa.me/${n}?text=${encodeURIComponent(message)}`
     : null;
 }
-export const siteUrl = () =>
-  process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+export function siteUrl() {
+  // Read the server runtime value so one Docker image can serve beta and production.
+  const runtimeUrl = Reflect.get(process.env, "NEXT_PUBLIC_SITE_URL") as
+    string | undefined;
+  try {
+    return new URL(runtimeUrl || "http://localhost:3000").origin;
+  } catch {
+    return "http://localhost:3000";
+  }
+}

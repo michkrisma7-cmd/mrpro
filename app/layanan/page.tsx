@@ -1,14 +1,23 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ShieldCheck, MessageCircle, Wrench } from "lucide-react";
 import { getServices } from "@/lib/data";
 import { ServiceCard } from "@/components/service-card";
-export const metadata: Metadata = {
-  title: "Layanan Tukang",
-  description:
-    "Temukan jasa renovasi, pengecatan, kelistrikan, dan sanitasi. Konsultasi dan pemesanan tukang melalui WhatsApp.",
-  alternates: { canonical: "/layanan" },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ jenis?: string }>;
+}): Promise<Metadata> {
+  const { jenis } = await searchParams;
+  return pageMetadata({
+    title: "Jasa Tukang & Renovasi Rumah Cikarang dan Bekasi",
+    description:
+      "Cari jasa tukang renovasi rumah, kelistrikan, baja ringan, kanopi, dan teralis di Cikarang dan Bekasi. Konsultasikan kebutuhan melalui MR Properti.",
+    path: `/layanan${jenis ? `?${new URLSearchParams({ jenis })}` : ""}`,
+    noindex: Boolean(jenis),
+  });
+}
 export default async function Services({
   searchParams,
 }: {

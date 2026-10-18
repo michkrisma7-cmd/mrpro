@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { ArrowUpRight, ClipboardCheck, Check } from "lucide-react";
 import { KprCalculator } from "@/components/kpr-calculator";
 import { kprBanks } from "@/lib/kpr";
 
-export const metadata: Metadata = {
-  title: "Kalkulator KPR BTN & BSI",
+export const metadata: Metadata = pageMetadata({
+  title: "Kalkulator KPR Rumah — Simulasi Cicilan BTN & BSI",
   description:
-    "Simulasi KPR konvensional BTN dan KPR syariah BSI. Hitung uang muka, cicilan bulanan, dan bandingkan tenor 5–25 tahun, lengkap dengan persiapan pengajuan.",
-  alternates: { canonical: "/kalkulator-kpr" },
-};
+    "Hitung simulasi cicilan KPR rumah, uang muka, tenor, dan estimasi total pembayaran. Bandingkan ilustrasi BTN konvensional dan BSI syariah.",
+  path: "/kalkulator-kpr",
+});
 
 export default function KprPage() {
   return (

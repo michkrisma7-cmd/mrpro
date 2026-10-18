@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata, breadcrumbs, jsonLd } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Check, Hammer, MessageCircle, ArrowUpRight } from "lucide-react";
@@ -12,11 +13,12 @@ export async function generateMetadata({
   const slug = (await params).slug;
   const service = (await getServices()).find((x) => x.slug === slug);
   return service
-    ? {
-        title: service.type,
-        description: service.description,
-        alternates: { canonical: `/layanan/${slug}` },
-      }
+    ? pageMetadata({
+        title: `${service.type} — ${service.workerName} di Cikarang dan Bekasi`,
+        description: `${service.type} bersama ${service.workerName} di Cikarang dan Bekasi. Tarif mulai ${money(service.minPrice)} per ${service.unit}. Konsultasi kebutuhan pekerjaan melalui MR Properti.`,
+        path: `/layanan/${slug}`,
+        images: service.image ? [service.image] : undefined,
+      })
     : { title: "Layanan tidak ditemukan", robots: { index: false } };
 }
 export default async function ServiceDetail({
@@ -119,7 +121,14 @@ export default async function ServiceDetail({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schema).replace(/</g, "\\u003c"),
+          __html: jsonLd([
+            schema,
+            breadcrumbs([
+              { name: "Beranda", path: "/" },
+              { name: "Layanan Tukang", path: "/layanan" },
+              { name: s.type, path: `/layanan/${s.slug}` },
+            ]),
+          ]),
         }}
       />
     </div>

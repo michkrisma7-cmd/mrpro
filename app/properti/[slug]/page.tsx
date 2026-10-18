@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata, breadcrumbs, jsonLd } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, ArrowUpRight, ShieldCheck, MessageCircle } from "lucide-react";
@@ -13,16 +14,17 @@ export async function generateMetadata({
   const p = await getListing((await params).slug);
   if (!p)
     return { title: "Properti tidak ditemukan", robots: { index: false } };
-  return {
-    title: p.title,
-    description: p.description.slice(0, 155),
-    alternates: { canonical: `/properti/${p.slug}` },
-    openGraph: {
-      title: p.title,
-      description: p.description.slice(0, 155),
-      images: p.gallery.slice(0, 1),
-    },
-  };
+  const location = typeof p.values.lokasi === "string" ? p.values.lokasi : "";
+  const title =
+    location && !p.title.toLowerCase().includes(location.toLowerCase())
+      ? `${p.title} di ${location}`
+      : p.title;
+  return pageMetadata({
+    title,
+    description: p.description,
+    path: `/properti/${p.slug}`,
+    images: p.gallery.slice(0, 1),
+  });
 }
 export default async function PropertyDetail({
   params,
@@ -133,7 +135,14 @@ export default async function PropertyDetail({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(schema).replace(/</g, "\\u003c"),
+          __html: jsonLd([
+            schema,
+            breadcrumbs([
+              { name: "Beranda", path: "/" },
+              { name: "Properti", path: "/properti" },
+              { name: property.title, path: `/properti/${property.slug}` },
+            ]),
+          ]),
         }}
       />
     </article>

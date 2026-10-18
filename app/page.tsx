@@ -22,6 +22,13 @@ import { SearchForm } from "@/components/search-form";
 import { whatsappLink } from "@/lib/format";
 import { getBlogPosts } from "@/lib/blog";
 import { BlogList } from "@/components/blog-list";
+import { pageMetadata, homeTitle, homeDescription, jsonLd } from "@/lib/seo";
+import { siteUrl } from "@/lib/format";
+export const metadata = pageMetadata({
+  title: homeTitle,
+  description: homeDescription,
+  path: "/",
+});
 export const revalidate = 60;
 export default async function Home() {
   // Database-backed content must wait for a request, including when DATABASE_URL is set during builds.
@@ -39,6 +46,31 @@ export default async function Home() {
   );
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Organization",
+                "@id": `${siteUrl()}/#organization`,
+                name: "MR Properti",
+                url: siteUrl(),
+                ...(settings.email ? { email: settings.email } : {}),
+              },
+              {
+                "@type": "WebSite",
+                "@id": `${siteUrl()}/#website`,
+                name: "MR Properti",
+                url: siteUrl(),
+                inLanguage: "id-ID",
+                publisher: { "@id": `${siteUrl()}/#organization` },
+              },
+            ],
+          }),
+        }}
+      />
       <section className="hero-section">
         <div className="container hero-grid">
           <div className="hero-copy">

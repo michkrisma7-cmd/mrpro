@@ -9,27 +9,22 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { getSettings } from "@/lib/data";
 import { siteUrl } from "@/lib/format";
+import { brand, homeTitle, homeDescription, indexingEnabled } from "@/lib/seo";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "MR Properti — Ruang baru, cerita baru.",
+    default: `${homeTitle} | ${brand}`,
     template: "%s | MR Properti",
   },
-  robots: {
-    index: Boolean(
-      process.env.DATABASE_URL &&
-      process.env.NEXT_PUBLIC_SITE_URL?.startsWith("https://"),
-    ),
-    follow: true,
-  },
-  description:
-    "Temukan properti pilihan untuk dijual atau disewa, titipkan properti Anda, dan hubungi jasa tukang untuk kebutuhan rumah. Bersama MR Properti.",
+  robots: { index: indexingEnabled(), follow: true },
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION || undefined },
+  description: homeDescription,
   openGraph: {
     type: "website",
     locale: "id_ID",
     siteName: "MR Properti",
-    title: "MR Properti — Ruang baru, cerita baru.",
-    description: "Properti pilihan dan layanan untuk setiap rencana Anda.",
+    title: `${homeTitle} | ${brand}`,
+    description: homeDescription,
     images: [{ url: "/images/hero.webp", width: 1536, height: 1024 }],
   },
   twitter: { card: "summary_large_image" },

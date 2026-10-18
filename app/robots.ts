@@ -1,18 +1,14 @@
 import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/format";
+import { indexingEnabled } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 export default function robots(): MetadataRoute.Robots {
-  const live = Boolean(
-    process.env.DATABASE_URL &&
-    process.env.NEXT_PUBLIC_SITE_URL?.startsWith("https://"),
-  );
+  const live = indexingEnabled();
   return {
     rules: {
       userAgent: "*",
-      allow: live ? "/" : undefined,
-      disallow: live
-        ? ["/admin", "/akun", "/login", "/api/", "/titip-properti"]
-        : ["/"],
+      allow: live ? ["/", "/api/media/"] : undefined,
+      disallow: live ? ["/api/"] : ["/"],
     },
     sitemap: live ? `${siteUrl()}/sitemap.xml` : undefined,
   };

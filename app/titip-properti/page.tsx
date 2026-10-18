@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import {
   ArrowUpRight,
@@ -13,12 +14,13 @@ import { databaseConfigured } from "@/lib/db";
 import { storageConfigured } from "@/lib/storage";
 import { PropertyForm } from "@/components/property-form";
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = {
-  title: "Titip Properti",
+export const metadata: Metadata = pageMetadata({
+  title: "Titip Jual & Sewa Properti Cikarang dan Bekasi",
   description:
-    "Titipkan properti Anda bersama MR Properti. Lengkapi informasi dan foto, lalu tim kami membantu meninjau listing Anda.",
-  alternates: { canonical: "/titip-properti" },
-};
+    "Titipkan properti di Cikarang dan Bekasi bersama MR Properti. Kirim informasi dan foto untuk ditinjau tim kami.",
+  path: "/titip-properti",
+  noindex: true,
+});
 export default async function SubmitProperty() {
   const [fields, user] = await Promise.all([getFields(), currentUser()]);
   const enabled = Boolean(user && databaseConfigured);

@@ -78,9 +78,24 @@ Role admin disimpan di database aplikasi dan dibaca ulang saat otorisasi. Tidak 
 
 ## SEO dan kecepatan
 
-Konten publik dirender server saat request; data beranda disimpan dalam cache selama 60 detik. Layout menampilkan navigasi dan loading UI tanpa menunggu query pengaturan footer; footer dimuat terpisah melalui Suspense. Definisi field, pengaturan, layanan, dan detail memakai cache bertag yang dibatalkan saat admin mengubah konten. Katalog menggunakan filter dan pagination di PostgreSQL agar tidak mengirim seluruh listing ke browser. Detail hanya memilih listing `PUBLISHED`. Gambar memakai `next/image`, WebP, dan pemuatan malas; gambar hero diprioritaskan. Font disimpan lokal dan tidak memerlukan Google Fonts.
+Metadata utama menargetkan Cikarang dan Bekasi: jual beli/sewa properti, jasa tukang, dan renovasi. Detail properti memakai judul/lokasi listing; detail layanan memakai jenis pekerjaan dan nama tenaga. Setiap halaman publik memiliki canonical dan metadata Open Graph/Twitter sendiri. Pagination katalog memiliki canonical per halaman; pencarian, filter, urutan alternatif, dan favorit diberi noindex. Halaman akun, admin, login, dan form titip properti juga noindex.
 
-Metadata Indonesia, canonical, Open Graph, structured data properti/layanan, sitemap listing terbit, dan robots sudah disiapkan. Mode contoh/lokal tidak diindeks. Setelah domain HTTPS dan database terhubung, publikasikan situs, verifikasi domain di Google Search Console, lalu kirim `/sitemap.xml`. Implementasi SEO tidak menjamin peringkat atau waktu indeks Google.
+Konfigurasi runtime produksi:
+
+```env
+NEXT_PUBLIC_SITE_URL=https://domain-production-anda
+SEO_INDEXING=true
+# Opsional: isi token HTML verification dari Google Search Console.
+GOOGLE_SITE_VERIFICATION=
+```
+
+Pada beta/staging gunakan `SEO_INDEXING=false`, termasuk bila beta memakai HTTPS dan database nyata. Development, preview Vercel, URL localhost, dan mode tanpa database selalu noindex. Production HTTPS dengan database mengaktifkan indexing secara default kecuali `SEO_INDEXING=false`. Nilai `false` pada `.env.example` perlu diubah untuk production. URL kanonis berasal dari origin `NEXT_PUBLIC_SITE_URL`, tanpa path atau query.
+
+Sitemap `/sitemap.xml` hanya memuat properti PUBLISHED, layanan aktif, artikel terbit, serta halaman publik utama. Gambar properti juga tercantum. Robots mengizinkan media publik di `/api/media/` tanpa membuka API lain. Halaman privat tetap memeriksa autentikasi; robots bukan kontrol akses. Structured data berisi WebSite/Organization pada beranda, RealEstateListing, Service, BlogPosting, dan breadcrumb pada halaman detail. Data yang dirender sebagai JSON-LD di-escape untuk mencegah penutupan tag script dari konten pengguna.
+
+Setelah deploy pada domain production yang benar, verifikasi kepemilikan domain di Google Search Console (DNS atau token HTML di atas), submit `/sitemap.xml`, lalu periksa URL beranda, listing, layanan, dan artikel menggunakan URL Inspection. Gunakan Rich Results Test untuk memeriksa markup yang didukung Google. Schema RealEstateListing/Service membantu mendeskripsikan konten, bukan jaminan rich result atau ranking. Indexing dan perubahan tampilan hasil pencarian memerlukan pemrosesan Google; deployment tidak otomatis mendaftarkan Search Console.
+
+Konten publik dirender server. Data beranda/field/layanan/detail memakai cache 60 detik yang dibatalkan saat mutasi admin. Footer dimuat melalui Suspense. Katalog memakai filter/pagination PostgreSQL; detail hanya menampilkan listing PUBLISHED dan field publik. Gambar memakai next/image, WebP, dan lazy loading; font lokal tidak meminta Google Fonts. UI tidak berubah oleh pengaturan SEO ini. Setelah build, jalankan `bun test:seo` untuk memverifikasi metadata HTML, sitemap publik, canonical domain runtime, structured data, dan beta noindex menggunakan database terisolasi.
 
 ## Kalkulator KPR
 

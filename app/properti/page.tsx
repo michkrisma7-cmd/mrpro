@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
+import { catalogSeo, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { getCatalog, getFields } from "@/lib/data";
 import { SearchForm } from "@/components/search-form";
 import { ListingGrid } from "@/components/listing-grid";
 import { databaseConfigured } from "@/lib/db";
-export const metadata: Metadata = {
-  title: "Temukan Properti",
-  description:
-    "Jelajahi rumah, apartemen, tanah, dan ruko dijual atau disewa. Temukan ruang yang tepat bersama MR Properti.",
-  alternates: { canonical: "/properti" },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}): Promise<Metadata> {
+  const seo = catalogSeo(await searchParams);
+  return pageMetadata({
+    title: `Properti Dijual & Disewa di Cikarang dan Bekasi${seo.page > 1 ? ` — Halaman ${seo.page}` : ""}`,
+    description:
+      "Jelajahi rumah, tanah, apartemen, dan ruko dijual atau disewa di Cikarang dan Bekasi. Bandingkan harga dan spesifikasi properti di MR Properti.",
+    ...seo,
+  });
+}
 export default async function Properties({
   searchParams,
 }: {
