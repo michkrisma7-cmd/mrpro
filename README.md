@@ -195,14 +195,19 @@ Isi GitHub repository **Settings → Secrets and variables → Actions**:
 
 Login GHCR di runner dan VPS memakai `GITHUB_TOKEN` bawaan Actions; tidak perlu secret GHCR tambahan atau `VPS_KNOWN_HOSTS`. Workflow diberi izin `packages: write`. Jika package `mrpro` sudah ada, pastikan repository ini mendapat akses Actions untuk membaca/menulis package tersebut melalui pengaturan package GHCR.
 
-User SSH harus bisa menjalankan Docker tanpa prompt sudo. `docker-compose.yaml` dan `.env` sudah tersedia di `~/web-me` pada VPS, dengan image yang sama seperti tag workflow. Workflow tidak mengirim source/Compose, atau mengubah env aplikasi. Migrasi Prisma dijalankan otomatis; jika gagal, workflow berhenti sebelum mengganti container web. Build image tidak meminta konfigurasi `NEXT_PUBLIC_SITE_URL` dari GitHub.
+User SSH harus bisa menjalankan Docker tanpa prompt sudo. File Compose dan `.env` sudah tersedia di `~/web-me` pada VPS, dengan image yang sama seperti tag workflow. Workflow tidak mengirim source/Compose, atau mengubah env aplikasi. Migrasi Prisma dijalankan otomatis; jika gagal, workflow berhenti sebelum mengganti container web. Build image tidak meminta konfigurasi `NEXT_PUBLIC_SITE_URL` dari GitHub.
 
 Image `ghcr.io/michkrisma7-cmd/mrpro:migrate` berisi Prisma CLI dan folder `prisma/migrations`; image web tetap memakai output standalone. Untuk menerapkan migrasi secara manual setelah image baru dipublikasikan:
 
 ```sh
 cd ~/web-me
 docker pull ghcr.io/michkrisma7-cmd/mrpro:migrate
-docker compose -f docker-compose.yaml -f - run --rm --no-deps -T web bun run db:deploy <<'MIGRATION'
+umask 077
+migration_config=$(mktemp)
+trap 'rm -f "$migration_config"' EXIT
+docker compose config > "$migration_config"
+sed -i 's/\$/$$/g' "$migration_config"
+docker compose --project-directory "$PWD" -f "$migration_config" -f - run --rm --no-deps -T web bun run db:deploy <<'MIGRATION'
 services:
   web:
     image: ghcr.io/michkrisma7-cmd/mrpro:migrate
@@ -212,3 +217,5 @@ MIGRATION
 Pastikan `DATABASE_URL` menunjuk database tujuan yang benar. Database yang sudah berisi tabel dari proses lain mungkin memerlukan baseline Prisma terlebih dahulu; jangan memakai `migrate reset` pada produksi. Migrasi yang berhasil tidak otomatis di-rollback bila deployment berikutnya gagal.
 
 Migrasi memakai Compose yang sama dengan service web, dengan override image sementara melalui stdin. Environment dan network mengikuti service web; file Compose di VPS tidak diubah. Ini menghindari perbedaan parsing `.env` antara `docker run --env-file` dan Compose, termasuk tanda kutip serta interpolasi variabel.
+
+Pull dan up langsung memakai `docker compose` dari `~/web-me`. Migrasi memakai konfigurasi hasil `docker compose config` dalam file sementara dengan izin terbatas yang dihapus setelah proses selesai; nama file Compose di VPS tidak perlu ditentukan.

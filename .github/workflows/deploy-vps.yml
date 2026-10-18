@@ -65,7 +65,13 @@ jobs:
             printf '%s' "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USERNAME" --password-stdin
             docker compose pull
             docker pull ghcr.io/michkrisma7-cmd/mrpro:migrate
-            docker compose -f docker-compose.yaml -f - run --rm --no-deps -T web bun run db:deploy <<'MIGRATION'
+            umask 077
+            migration_config=$(mktemp)
+            trap 'rm -f "$migration_config"' EXIT
+            docker compose config > "$migration_config"
+            # Preserve literal dollar signs when Compose reads the resolved config again.
+            sed -i 's/\$/$$/g' "$migration_config"
+            docker compose --project-directory "$PWD" -f "$migration_config" -f - run --rm --no-deps -T web bun run db:deploy <<'MIGRATION'
             services:
               web:
                 image: ghcr.io/michkrisma7-cmd/mrpro:migrate
