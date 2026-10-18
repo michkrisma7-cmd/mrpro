@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { connection } from "next/server";
 import Image from "next/image";
 import {
   ArrowUpRight,
@@ -23,6 +24,8 @@ import { getBlogPosts } from "@/lib/blog";
 import { BlogList } from "@/components/blog-list";
 export const revalidate = 60;
 export default async function Home() {
+  // Database-backed content must wait for a request, including when DATABASE_URL is set during builds.
+  await connection();
   const [fields, properties, services, settings, posts] = await Promise.all([
     getFields(),
     getListings(),
