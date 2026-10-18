@@ -185,3 +185,22 @@ Container tidak menjalankan migrasi/seed setiap restart. Simpan backup database 
 Admin mengelola artikel lewat `/admin?tab=blog`: judul, slug unik, ringkasan, dan isi teks biasa. Simpan sebagai draf atau centang **Terbitkan di website**. Hapus centang untuk menarik artikel dari publik. Penyimpanan selalu memeriksa sesi dan role `ADMIN` di server. Tiga artikel terbit terbaru muncul di beranda; `/blog` menampilkan maksimal 30 artikel terbaru, dengan detail pada `/blog/<slug>`. Draf tidak tersedia di halaman publik atau sitemap. Isi dirender sebagai teks aman, tanpa HTML.
 
 Sebelum menjalankan versi ini pada database yang sudah ada, jalankan `bun run db:generate`, lalu `bun run db:deploy` dengan `DATABASE_URL` database tujuan yang benar. Migrasi `202610180001_blog` menambahkan tabel blog tanpa mengubah data properti. Tanpa database, bagian blog menampilkan keadaan kosong dan dashboard tetap hanya baca.
+
+### Membuat artikel lewat REST API
+
+Set `BLOG_API_KEY` dengan secret acak (misalnya hasil `openssl rand -hex 32`) di environment server/Vercel, lalu redeploy. Simpan key di pemanggil server, bukan kode frontend atau variabel `NEXT_PUBLIC_*`. Jika key belum diisi, endpoint dinonaktifkan dengan status 503. Endpoint hanya menyediakan pembuatan artikel, tanpa login cookie.
+
+```sh
+curl -X POST 'https://domain-anda/api/blog' \
+  -H "x-api-key: $BLOG_API_KEY" \
+  -H 'Content-Type: application/json' \
+  --data '{
+    "title": "Tips memilih rumah pertama",
+    "slug": "tips-memilih-rumah-pertama",
+    "excerpt": "Panduan singkat sebelum membeli rumah pertama Anda.",
+    "content": "Kenali kebutuhan keluarga dan tentukan anggaran sebelum memilih rumah.",
+    "published": true
+  }'
+```
+
+Field wajib: `title` (3–160 karakter), `slug` (1–180 karakter; huruf kecil, angka, tanda hubung), `excerpt` (10–350 karakter), dan `content` (20–50.000 karakter; teks biasa). `published` opsional berupa boolean, default `false` (draf); kirim `true` agar artikel langsung tampil di blog. Field tambahan ditolak. Respons sukses `201` berisi `{ "data": { ...artikel } }`, termasuk ID, slug, status publikasi, serta timestamp. Slug yang sudah dipakai menghasilkan `409`; endpoint ini tidak memperbarui artikel lama. API key salah/kosong menghasilkan `401`, JSON/data salah `400`, Content-Type salah `415`, database belum dikonfigurasi `503`, dan kegagalan penyimpanan `500`. Halaman utama, blog, sitemap, dan admin diperbarui pada kunjungan berikutnya. Tidak perlu migration database tambahan untuk endpoint ini.
