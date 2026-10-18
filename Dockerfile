@@ -1,28 +1,18 @@
 # syntax=docker/dockerfile:1
-FROM oven/bun:1.4.3 AS bun
 FROM node:24-bookworm-slim AS base
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates openssl \
     && rm -rf /var/lib/apt/lists/*
 ENV NEXT_TELEMETRY_DISABLED=1
 
-FROM base AS dependencies
-COPY --from=bun /usr/local/bin/bun /usr/local/bin/bun
+FROM base AS builder
+COPY --from=oven/bun:1.4.3 /usr/local/bin/bun /usr/local/bin/bun
 COPY package.json bun.lock ./
 COPY patches ./patches
 RUN bun install --frozen-lockfile
-
-# Explicit one-off database commands; never run migrations during image build/start.
-FROM dependencies AS tools
 COPY . .
-RUN bun run db:generate
-CMD ["bun", "run", "db:deploy"]
-
-FROM tools AS builder
-ARG NEXT_PUBLIC_SITE_URL
-ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV DOCKER_BUILD=1
-RUN test -n "$NEXT_PUBLIC_SITE_URL" && bun run build
+RUN bun run build
 
 FROM base AS runner
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0

@@ -136,49 +136,17 @@ Konfigurasi di repository tidak membuat project, menghubungkan akun, atau melaku
 
 ### VPS dengan Docker Compose
 
-Prasyarat: Docker Engine + Compose v2, domain, dan reverse proxy dengan HTTPS (misalnya Nginx/Caddy) pada host. Login Neon menggunakan cookie Secure sehingga HTTPS diperlukan untuk produksi.
+VPS memakai image yang sudah tersedia di registry. Simpan `docker-compose.yaml` dan `.env` produksi di `~/web-me`. Compose membaca environment dari `.env`; isi konfigurasi Neon/S3 dan origin HTTPS aplikasi di sana. Network eksternal `hostme` yang dipakai Compose harus sudah tersedia. Jika image GHCR private, login registry sekali sebagai user SSH yang menjalankan deployment.
 
 ```sh
-cp .env.example .env.production
-# Edit .env.production: isi seluruh konfigurasi Neon/S3 dan origin HTTPS asli.
-# Jaga izin secrets di VPS:
-chmod 600 .env.production
-
-# Build aplikasi; rahasia hanya masuk saat runtime, bukan ke image.
-docker compose --env-file .env.production build web
-
-# Pertama kali / jika ada migrasi: jalankan satu kali sebelum rilis.
-docker compose --env-file .env.production run --rm --build tools bun run db:deploy
-docker compose --env-file .env.production run --rm tools bun run db:seed
-
-docker compose --env-file .env.production up -d web
-docker compose --env-file .env.production ps
-docker compose --env-file .env.production logs --tail=100 web
-curl --fail http://127.0.0.1:3000/api/health
+cd ~/web-me
+docker compose pull
+docker compose up -d
 ```
 
-Compose membaca `.env.production` untuk interpolasi build dan runtime. Jangan memakai `.env` lokal sebagai konfigurasi produksi. `NEXT_PUBLIC_SITE_URL` wajib diisi sebelum build; setelah mengubahnya, build ulang. `APP_PORT` opsional (default 3000) mengubah port host; sesuaikan tujuan reverse proxy.
+Siapkan reverse proxy HTTPS menuju port aplikasi 3000. Login produksi membutuhkan HTTPS. Izinkan request body minimal 6 MB untuk unggahan gambar. Migrasi dan seed database dijalankan terpisah dari workflow deploy.
 
-Arahkan reverse proxy host ke `127.0.0.1:3000`, teruskan `Host`, `X-Forwarded-Host`, dan `X-Forwarded-Proto`, serta izinkan request body minimal **6 MB** untuk unggahan gambar 5 MB beserta multipart overhead. Port aplikasi hanya di-bind ke loopback; akses publik lewat reverse proxy HTTPS. Bila reverse proxy berada di container lain, sesuaikan networking Compose agar proxy dapat mengakses service `web:3000`.
-
-Image memakai multi-stage build, output Next.js standalone, Node 24, dan user non-root. Healthcheck `/api/health` memeriksa proses HTTP saja; status sehat tidak membuktikan koneksi Neon/S3. Halaman membaca data saat request dan tetap memakai cache data aplikasi agar hasil demo dari build tanpa database tidak terbawa ke produksi. Cache Next.js berada di filesystem container, boleh hilang saat container diganti; konfigurasi ini ditujukan untuk satu instance web.
-
-Pembaruan:
-
-```sh
-git pull
-# Jalankan migrasi terlebih dahulu jika versi ini memerlukannya.
-docker compose --env-file .env.production run --rm --build tools bun run db:deploy
-docker compose --env-file .env.production up -d --build web
-```
-
-Tool administrasi tersedia sebagai perintah sekali jalan:
-
-```sh
-docker compose --env-file .env.production run --rm tools bun run admin:grant <Neon-Auth-user-id>
-```
-
-Container tidak menjalankan migrasi/seed setiap restart. Simpan backup database di layanan Neon dan kebijakan backup media di S3; mengganti image tidak menghapus data layanan tersebut. Untuk produksi pertama, pastikan environment lengkap: tanpa database aplikasi masih mendukung mode demo dan tanpa auth lengkap login dinonaktifkan.
+Dockerfile memakai tahap builder dan runner dengan base Node 24 bersama. Bun memasang dependency dan membangun Next.js; runtime menjalankan output standalone sebagai user non-root. Dockerfile ini digunakan oleh proses pembuat image, bukan oleh workflow SSH di bawah.
 
 ## Blog
 
@@ -204,3 +172,20 @@ curl -X POST 'https://domain-anda/api/blog' \
 ```
 
 Field wajib: `title` (3–160 karakter), `slug` (1–180 karakter; huruf kecil, angka, tanda hubung), `excerpt` (10–350 karakter), dan `content` (20–50.000 karakter; teks biasa). `published` opsional berupa boolean, default `false` (draf); kirim `true` agar artikel langsung tampil di blog. Field tambahan ditolak. Respons sukses `201` berisi `{ "data": { ...artikel } }`, termasuk ID, slug, status publikasi, serta timestamp. Slug yang sudah dipakai menghasilkan `409`; endpoint ini tidak memperbarui artikel lama. API key salah/kosong menghasilkan `401`, JSON/data salah `400`, Content-Type salah `415`, database belum dikonfigurasi `503`, dan kegagalan penyimpanan `500`. Halaman utama, blog, sitemap, dan admin diperbarui pada kunjungan berikutnya. Tidak perlu migration database tambahan untuk endpoint ini.
+
+
+### GitHub Actions → VPS
+
+Workflow `.github/workflows/deploy-vps.yml` berjalan saat push ke `main` (termasuk merge PR ke `main`) atau manual melalui Actions. Membuka/memperbarui PR tidak melakukan deploy.
+
+Alur: checkout → Docker Buildx → login GHCR → build dan push `ghcr.io/michkrisma7-cmd/mrpro:latest` → login SSH ke `116.212.73.143` menggunakan user/password lewat `appleboy/ssh-action` → login GHCR di VPS → `cd ~/web-me` → `docker compose pull` → `docker compose up -d`.
+
+Isi GitHub repository **Settings → Secrets and variables → Actions**:
+
+- Secret `VPS_USER`: username SSH VPS.
+- Secret `VPS_PASSWORD`: password SSH VPS.
+- Variable `VPS_PORT` opsional: port SSH, default `22`.
+
+Login GHCR di runner dan VPS memakai `GITHUB_TOKEN` bawaan Actions; tidak perlu secret GHCR tambahan atau `VPS_KNOWN_HOSTS`. Workflow diberi izin `packages: write`. Jika package `mrpro` sudah ada, pastikan repository ini mendapat akses Actions untuk membaca/menulis package tersebut melalui pengaturan package GHCR.
+
+User SSH harus bisa menjalankan Docker tanpa prompt sudo. `docker-compose.yaml` dan `.env` sudah tersedia di `~/web-me` pada VPS, dengan image yang sama seperti tag workflow. Workflow tidak mengirim source/Compose, mengubah env aplikasi, atau menjalankan migrasi. Build image tidak meminta konfigurasi `NEXT_PUBLIC_SITE_URL` dari GitHub.
