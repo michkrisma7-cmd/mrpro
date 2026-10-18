@@ -70,6 +70,10 @@ bun dev --port 3000
 
 Di pengaturan Neon Auth, aktifkan login email/password dan izinkan origin lokal **`http://localhost:3000`**. Buka aplikasi menggunakan origin yang sama; `localhost`, `127.0.0.1`, port lain, dan domain produksi adalah origin berbeda. Gunakan `NEXT_PUBLIC_SITE_URL` sesuai origin yang sedang dipakai. Setelah mengubah environment, restart server. Buka `/login`, daftar akun, ikuti verifikasi email jika diminta, lalu masuk dan pastikan halaman `/akun` menampilkan nama Anda.
 
+SDK Neon Auth memakai cookie `Secure`. Jika login mengembalikan 200 tetapi tetap kembali ke `/login` saat memakai HTTP, gunakan HTTPS lokal: hentikan server, ubah `NEXT_PUBLIC_SITE_URL=https://localhost:3000`, tambahkan `https://localhost:3000` ke origin yang diizinkan di Neon Auth, lalu jalankan `bun dev:https`. Buka `https://localhost:3000/login` dan masuk kembali. Next.js menyiapkan sertifikat lokal pada pemakaian pertama; ikuti permintaan pemasangan sertifikat jika muncul. Form login memeriksa sesi sebelum berpindah halaman dan menampilkan pesan jika cookie tidak tersimpan.
+
+Versi `@neondatabase/auth@0.6.0-beta` dipatch lewat `patchedDependencies` Bun: batas waktu fetch untuk membuat cookie cache sesi dinaikkan dari 3 menjadi 15 detik agar menoleransi cold start/latensi Neon. Patch juga memakai satu respons Neon untuk membuat cookie dan mengembalikan sesi, sehingga cache miss tidak lagi memicu dua request serial. Cache sesi bertanda tangan berlaku 5 menit; role admin tetap dibaca dari database setiap request. Patch tersimpan di `patches/` dan otomatis diterapkan oleh `bun install`, termasuk build Vercel dan Docker. Validasi serta penandatanganan cookie tetap memakai SDK; ini tidak melewati autentikasi. Saat memperbarui SDK, evaluasi ulang patch dan jalankan `node --import tsx --test tests/auth-latency.test.ts`. Restart dev server setelah memasang patch agar bundle SDK lama tidak dipakai.
+
 `JWKS_NEON` boleh berupa URL HTTPS JWKS atau JSON JWKS publik. Ini adalah kunci publik untuk verifikasi JWT, bukan cookie signing secret. Login web memakai SDK Neon Auth yang memeriksa sesi melalui layanan Neon dan cookie bertanda tangan; JWKS tidak menggantikan `NEON_AUTH_URL` atau `NEON_AUTH_COOKIE_SECRET`. `auth:check` memeriksa format/ketersediaan JWKS tetapi tidak mengklaim akun sudah berhasil login. Jangan menyalin private key atau token akses ke variabel JWKS.
 
 Next.js `proxy.ts` memperbarui cookie sesi sebelum halaman akun/admin dirender. Hak admin tetap diperiksa di server dari `AppUser.role`; role dari input browser tidak dipercaya. Koneksi profil Prisma memakai implementasi WebSocket eksplisit agar bekerja pada Node 20, sama seperti seed.
@@ -96,7 +100,7 @@ Role admin disimpan di database aplikasi dan dibaca ulang saat otorisasi. Tidak 
 
 ## SEO dan kecepatan
 
-Konten publik dirender server; beranda direvalidasi 60 detik. Definisi field, pengaturan, layanan, dan detail memakai cache bertag yang dibatalkan saat admin mengubah konten. Katalog menggunakan filter dan pagination di PostgreSQL agar tidak mengirim seluruh listing ke browser. Detail hanya memilih listing `PUBLISHED`. Gambar memakai `next/image`, WebP, dan pemuatan malas; gambar hero diprioritaskan. Font disimpan lokal dan tidak memerlukan Google Fonts.
+Konten publik dirender server saat request; data beranda disimpan dalam cache selama 60 detik. Layout menampilkan navigasi dan loading UI tanpa menunggu query pengaturan footer; footer dimuat terpisah melalui Suspense. Definisi field, pengaturan, layanan, dan detail memakai cache bertag yang dibatalkan saat admin mengubah konten. Katalog menggunakan filter dan pagination di PostgreSQL agar tidak mengirim seluruh listing ke browser. Detail hanya memilih listing `PUBLISHED`. Gambar memakai `next/image`, WebP, dan pemuatan malas; gambar hero diprioritaskan. Font disimpan lokal dan tidak memerlukan Google Fonts.
 
 Metadata Indonesia, canonical, Open Graph, structured data properti/layanan, sitemap listing terbit, dan robots sudah disiapkan. Mode contoh/lokal tidak diindeks. Setelah domain HTTPS dan database terhubung, publikasikan situs, verifikasi domain di Google Search Console, lalu kirim `/sitemap.xml`. Implementasi SEO tidak menjamin peringkat atau waktu indeks Google.
 
@@ -115,3 +119,63 @@ Unit/integration tests memvalidasi field dinamis, perlindungan unggah, role/stat
 Pada implementasi awal, variabel Neon/AWS belum terinjeksi ke mesin sehingga alur login Neon nyata, penerbitan ke Neon, unggah S3 nyata, dan WhatsApp bisnis belum dapat diverifikasi. Setelah konfigurasi aktif, uji: daftar/login → unggah foto → kirim properti → status pending → tinjau/terbitkan admin → katalog/detail publik. Pastikan user biasa ditolak oleh seluruh aksi admin. Isi kontak WhatsApp yang benar dari dashboard; contoh tidak memakai nomor bisnis palsu.
 
 Template ZIP WordPress dipakai sebagai referensi visual dan perilaku field. ZIP tidak berisi database konten WordPress; listing, media, akun, dan URL lama belum dimigrasikan. Migrasi konten memerlukan ekspor dan pemetaan URL/redirect terpisah.
+
+## Deploy ke Vercel atau VPS
+
+Project siap untuk dua target; database tetap **Neon PostgreSQL**, auth tetap **Neon Auth**, dan media tetap **S3**. Compose tidak menyediakan PostgreSQL lokal karena adapter aplikasi memakai protokol Neon WebSocket. Tidak ada data permanen yang disimpan di container aplikasi.
+
+### Vercel (saat nanti ingin deploy)
+
+1. Import repository sebagai framework Next.js, root directory project ini, dan gunakan Node.js **24.x** (juga ditentukan lewat `engines`). `vercel.json` sudah menentukan install Bun 1.4.3 dengan frozen lockfile dan build project. Runtime aplikasi tetap Node.js.
+2. Isi environment dari `.env.example` untuk environment tujuan sebelum build. Gunakan `NEXT_PUBLIC_SITE_URL=https://domain-anda` dan secret cookie yang tetap antar-deploy. Variabel publik ini melekat saat build; perubahan domain memerlukan rebuild. Jangan set `DOCKER_BUILD` di Vercel.
+3. Dari mesin tepercaya yang sudah memiliki Bun/Node dan environment database tujuan, jalankan `bun run db:deploy`, kemudian `bun run db:seed` sebelum deployment pertama. Untuk pembaruan, jalankan migrasi yang diperlukan sebelum merilis versi yang membutuhkannya. Build tidak menjalankan migrasi atau seed otomatis.
+4. Daftarkan origin HTTPS di Neon Auth dan pastikan bucket serta izin S3 sudah tersedia. Untuk preview yang memakai login, daftarkan origin preview juga dan gunakan database/layanan terpisah bila perlu. Nilai `NEXT_PUBLIC_SITE_URL` harus sesuai origin deployment yang diuji.
+5. Deploy menggunakan alur Vercel pilihan Anda. Cek `/api/health`, login, katalog, dan unggah sesudah deploy.
+
+Konfigurasi di repository tidak membuat project, menghubungkan akun, atau melakukan deployment Vercel. Referensi pemilihan versi Bun: [dokumentasi resmi Vercel](https://vercel.com/kb/guide/how-to-pin-a-specific-bun-version-for-vercel-builds).
+
+### VPS dengan Docker Compose
+
+Prasyarat: Docker Engine + Compose v2, domain, dan reverse proxy dengan HTTPS (misalnya Nginx/Caddy) pada host. Login Neon menggunakan cookie Secure sehingga HTTPS diperlukan untuk produksi.
+
+```sh
+cp .env.example .env.production
+# Edit .env.production: isi seluruh konfigurasi Neon/S3 dan origin HTTPS asli.
+# Jaga izin secrets di VPS:
+chmod 600 .env.production
+
+# Build aplikasi; rahasia hanya masuk saat runtime, bukan ke image.
+docker compose --env-file .env.production build web
+
+# Pertama kali / jika ada migrasi: jalankan satu kali sebelum rilis.
+docker compose --env-file .env.production run --rm --build tools bun run db:deploy
+docker compose --env-file .env.production run --rm tools bun run db:seed
+
+docker compose --env-file .env.production up -d web
+docker compose --env-file .env.production ps
+docker compose --env-file .env.production logs --tail=100 web
+curl --fail http://127.0.0.1:3000/api/health
+```
+
+Compose membaca `.env.production` untuk interpolasi build dan runtime. Jangan memakai `.env` lokal sebagai konfigurasi produksi. `NEXT_PUBLIC_SITE_URL` wajib diisi sebelum build; setelah mengubahnya, build ulang. `APP_PORT` opsional (default 3000) mengubah port host; sesuaikan tujuan reverse proxy.
+
+Arahkan reverse proxy host ke `127.0.0.1:3000`, teruskan `Host`, `X-Forwarded-Host`, dan `X-Forwarded-Proto`, serta izinkan request body minimal **6 MB** untuk unggahan gambar 5 MB beserta multipart overhead. Port aplikasi hanya di-bind ke loopback; akses publik lewat reverse proxy HTTPS. Bila reverse proxy berada di container lain, sesuaikan networking Compose agar proxy dapat mengakses service `web:3000`.
+
+Image memakai multi-stage build, output Next.js standalone, Node 24, dan user non-root. Healthcheck `/api/health` memeriksa proses HTTP saja; status sehat tidak membuktikan koneksi Neon/S3. Halaman membaca data saat request dan tetap memakai cache data aplikasi agar hasil demo dari build tanpa database tidak terbawa ke produksi. Cache Next.js berada di filesystem container, boleh hilang saat container diganti; konfigurasi ini ditujukan untuk satu instance web.
+
+Pembaruan:
+
+```sh
+git pull
+# Jalankan migrasi terlebih dahulu jika versi ini memerlukannya.
+docker compose --env-file .env.production run --rm --build tools bun run db:deploy
+docker compose --env-file .env.production up -d --build web
+```
+
+Tool administrasi tersedia sebagai perintah sekali jalan:
+
+```sh
+docker compose --env-file .env.production run --rm tools bun run admin:grant <Neon-Auth-user-id>
+```
+
+Container tidak menjalankan migrasi/seed setiap restart. Simpan backup database di layanan Neon dan kebijakan backup media di S3; mengganti image tidak menghapus data layanan tersebut. Untuk produksi pertama, pastikan environment lengkap: tanpa database aplikasi masih mendukung mode demo dan tanpa auth lengkap login dinonaktifkan.

@@ -51,12 +51,14 @@ export const getListings = cache(
   unstable_cache(
     async (): Promise<Listing[]> => {
       if (!databaseConfigured) return demoListings;
-      const fields = await getFields();
-      const rows = await db().property.findMany({
-        where: { status: "PUBLISHED" },
-        orderBy: { createdAt: "desc" },
-        take: 6,
-      });
+      const [fields, rows] = await Promise.all([
+        getFields(),
+        db().property.findMany({
+          where: { status: "PUBLISHED" },
+          orderBy: { createdAt: "desc" },
+          take: 6,
+        }),
+      ]);
       return rows.map((p) => publicListing(p, fields));
     },
     ["latest-properties"],
@@ -67,9 +69,12 @@ export const getListing = cache(
   unstable_cache(
     async (slug: string): Promise<Listing | undefined> => {
       if (!databaseConfigured) return demoListings.find((p) => p.slug === slug);
-      const p = await db().property.findUnique({ where: { slug } });
+      const [p, fields] = await Promise.all([
+        db().property.findUnique({ where: { slug } }),
+        getFields(),
+      ]);
       if (!p || p.status !== "PUBLISHED") return undefined;
-      return publicListing(p, await getFields());
+      return publicListing(p, fields);
     },
     ["property-detail"],
     { revalidate: 60, tags: ["properties", "content"] },

@@ -50,6 +50,21 @@ export function AuthForm({
         );
         setRegister(false);
       } else {
+        const session = await auth.getSession({
+          query: { disableCookieCache: true },
+        });
+        if (session.error) {
+          setError(authErrorMessage(session.error, register));
+          return;
+        }
+        if (!session.data?.user) {
+          setError(
+            window.location.protocol === "http:"
+              ? "Sesi login belum tersimpan. Jalankan bun dev:https, buka https://localhost:3000, lalu masuk kembali. Cookie login membutuhkan koneksi HTTPS."
+              : "Sesi login belum tersimpan. Izinkan cookie untuk website ini, lalu coba masuk kembali.",
+          );
+          return;
+        }
         // Neon sets cookies through an API route; discard prefetched redirects
         // from the anonymous Router Cache by starting a fresh document.
         window.location.assign(next);

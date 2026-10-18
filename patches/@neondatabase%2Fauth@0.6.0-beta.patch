@@ -1,0 +1,41 @@
+diff --git a/dist/server-pZf5ArnA.mjs b/dist/server-pZf5ArnA.mjs
+index cf35722bd3be58e4f419877d3cc98916884888cf..2b901a341c0e856eb6987dd1fa30662c7bd48705 100644
+--- a/dist/server-pZf5ArnA.mjs
++++ b/dist/server-pZf5ArnA.mjs
+@@ -549,7 +549,8 @@ async function fetchSessionWithCookie(sessionTokenCookie, baseUrl, log) {
+ 	if (!cookieName.includes("session_token")) throw new Error("session_token not found in cookie");
+ 	const response = await fetch(`${baseUrl}/get-session`, {
+ 		headers: injectClientInfo({ Cookie: `${cookieName}=${cookieValue}` }),
+-		signal: AbortSignal.timeout(3e3)
++		// Allow cold starts and cross-region latency when refreshing signed session data.
++		signal: AbortSignal.timeout(15e3)
+ 	});
+ 	if (!response.ok) throw new Error(`Failed to fetch session data: ${response.status} ${response.statusText}`);
+ 	let body;
+@@ -605,9 +606,9 @@ async function validateSessionData(sessionDataString, cookieSecret) {
+ *              Falls back to `console.error` when omitted.
+ * @returns Set-Cookie string or null on error
+ */
+-async function mintSessionDataCookie(sessionTokenCookie, baseUrl, cookieConfig, log) {
++async function mintSessionDataCookie(sessionTokenCookie, baseUrl, cookieConfig, log, verifiedSessionData) {
+ 	try {
+-		const sessionData = await fetchSessionWithCookie(sessionTokenCookie, baseUrl, log);
++		const sessionData = verifiedSessionData ?? await fetchSessionWithCookie(sessionTokenCookie, baseUrl, log);
+ 		if (!sessionData.session) return null;
+ 		const { value: signedData, expiresAt } = await signSessionDataCookie(sessionData, cookieConfig.secret, cookieConfig.sessionDataTtl);
+ 		const maxAge = Math.floor((expiresAt.getTime() - Date.now()) / 1e3);
+@@ -1315,11 +1316,12 @@ async function trySessionCache(request, baseUrl, cookieConfig, log) {
+ 	const mintAndReturn = async () => {
+ 		const sessionTokenCookie = extractSessionTokenCookie(cookieHeader);
+ 		if (!sessionTokenCookie) return null;
+-		const sessionDataCookieString = await mintSessionDataFromToken(sessionTokenCookie, baseUrl, cookieConfig, log);
+-		if (!sessionDataCookieString) return null;
+ 		try {
++			// Reuse this verified upstream response for both the cookie and JSON.
+ 			const sessionData = await fetchSessionWithCookie(sessionTokenCookie, baseUrl, log);
+ 			if (!sessionData.session) return null;
++			const sessionDataCookieString = await mintSessionDataCookie(sessionTokenCookie, baseUrl, cookieConfig, log, sessionData);
++			if (!sessionDataCookieString) return null;
+ 			const response = Response.json(sessionData);
+ 			response.headers.set("Set-Cookie", sessionDataCookieString);
+ 			return response;

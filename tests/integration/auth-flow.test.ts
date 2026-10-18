@@ -292,6 +292,19 @@ test(
         /Email atau kata sandi/,
       );
       await page.getByLabel("Kata sandi", { exact: true }).fill(password);
+      // Simulate a browser rejecting the secure cookies after a successful login.
+      await page.route("**/api/auth/get-session**", async (route) => {
+        const headers = route.request().headers();
+        delete headers.cookie;
+        await route.continue({ headers });
+      });
+      await page.getByRole("button", { name: "Masuk ke Akun" }).click();
+      await page
+        .getByRole("alert")
+        .filter({ hasText: "Sesi login belum tersimpan" })
+        .waitFor();
+      assert.equal(page.url(), `${appOrigin}/login`);
+      await page.unroute("**/api/auth/get-session**");
       await page.getByRole("button", { name: "Masuk ke Akun" }).click();
       await page.waitForURL(`${appOrigin}/akun`);
       await page.reload();

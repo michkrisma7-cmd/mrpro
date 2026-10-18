@@ -1,0 +1,14 @@
+.git
+.next
+node_modules
+.env*
+!.env.example
+.vercel
+.codex
+.agents
+certificates
+*.pem
+*.tsbuildinfo
+coverage
+test-results
+playwright-report

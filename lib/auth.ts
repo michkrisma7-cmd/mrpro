@@ -11,6 +11,11 @@ export const currentUser = cache(async () => {
   if (error) throw new Error("Sesi tidak dapat diperiksa. Coba lagi.");
   if (!data?.user) return null;
   const user = data.user;
+  // Most navigations only need a read. Keep the role fresh without writing
+  // the same profile back to Neon on every page and API request.
+  const profile = await db().appUser.findUnique({ where: { authId: user.id } });
+  if (profile && profile.name === user.name && profile.email === user.email)
+    return profile;
   return db().appUser.upsert({
     where: { authId: user.id },
     create: { authId: user.id, email: user.email, name: user.name },

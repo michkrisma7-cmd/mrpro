@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { connection } from "next/server";
+import { Suspense } from "react";
+import Loading from "./loading";
 import "@fontsource-variable/dm-sans";
 import "@fontsource-variable/manrope";
 import "./globals.css";
@@ -31,20 +34,35 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image" },
 };
-export default async function RootLayout({
+async function SiteFooter() {
+  await connection();
+  return <Footer settings={await getSettings()} />;
+}
+
+export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const settings = await getSettings();
   return (
-    <html lang="id">
+    <html lang="id" data-scroll-behavior="smooth">
       <body>
         <a className="skip-link" href="#konten">
           Langsung ke konten
         </a>
         <Header />
-        <main id="konten">{children}</main>
-        <Footer settings={settings} />
+        <main id="konten">
+          <Suspense fallback={<Loading />}>
+            <RequestContent>{children}</RequestContent>
+          </Suspense>
+        </main>
+        <Suspense>
+          <SiteFooter />
+        </Suspense>
       </body>
     </html>
   );
+}
+
+async function RequestContent({ children }: { children: React.ReactNode }) {
+  await connection();
+  return children;
 }

@@ -11,7 +11,7 @@ export function getAuth() {
     );
   return (instance ??= createNeonAuth({
     baseUrl: config.baseUrl,
-    cookies: { secret: config.cookieSecret, sessionDataTtl: 60 },
+    cookies: { secret: config.cookieSecret, sessionDataTtl: 300 },
     logLevel: "error",
   }));
 }

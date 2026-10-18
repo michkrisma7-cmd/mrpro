@@ -1,5 +1,7 @@
 import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
+  // Vercel uses its native output; Docker requests a self-contained Node server.
+  output: process.env.DOCKER_BUILD === "1" ? "standalone" : undefined,
   poweredByHeader: false,
   serverExternalPackages: [
     "@prisma/client",
