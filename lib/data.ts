@@ -34,14 +34,16 @@ export const getSettings = cache(
   ),
 );
 function publicListing(
-  p: Omit<Listing, "values"> & { values: unknown },
+  p: Omit<Listing, "values"> & { values: unknown; owner?: { name: string } },
   fields: Field[],
 ): Listing {
   const visible = new Set(
     fields.filter((f) => f.showOnCard || f.showOnDetail).map((f) => f.key),
   );
+  const { owner, ...listing } = p;
   return {
-    ...p,
+    ...listing,
+    ownerName: owner?.name || p.ownerName,
     values: Object.fromEntries(
       Object.entries(p.values as Values).filter(([key]) => visible.has(key)),
     ),
@@ -54,6 +56,7 @@ export const getListings = cache(
       const [fields, rows] = await Promise.all([
         getFields(),
         db().property.findMany({
+          include: { owner: { select: { name: true } } },
           where: { status: "PUBLISHED" },
           orderBy: { createdAt: "desc" },
           take: 6,
@@ -70,7 +73,10 @@ export const getListing = cache(
     async (slug: string): Promise<Listing | undefined> => {
       if (!databaseConfigured) return demoListings.find((p) => p.slug === slug);
       const [p, fields] = await Promise.all([
-        db().property.findUnique({ where: { slug } }),
+        db().property.findUnique({
+          where: { slug },
+          include: { owner: { select: { name: true } } },
+        }),
         getFields(),
       ]);
       if (!p || p.status !== "PUBLISHED") return undefined;
@@ -99,6 +105,7 @@ export async function getPublishedByIds(ids: string[]): Promise<Listing[]> {
   const fields = await getFields();
   return (
     await db().property.findMany({
+      include: { owner: { select: { name: true } } },
       where: { status: "PUBLISHED", id: { in: ids } },
       take: 100,
     })

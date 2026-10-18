@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useFavorites } from "@/lib/favorites";
 import {
   Heart,
+  UserRound,
   MapPin,
   BedDouble,
   Bath,
@@ -70,6 +71,12 @@ export function PropertyCard({
             <MapPin size={14} />
             {location.cardLabel || location.name}:{" "}
             {displayValue(location, p.values[location.key])}
+          </p>
+        )}
+        {p.ownerName && (
+          <p className="property-owner">
+            <UserRound size={14} aria-hidden="true" />
+            Pemilik: {p.ownerName}
           </p>
         )}
         <div className="property-specs">

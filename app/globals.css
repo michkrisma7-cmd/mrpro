@@ -3767,3 +3767,16 @@ td .text-button {
     grid-template-columns: 1fr;
   }
 }
+
+.property-owner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: #666;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+.property-owner svg {
+  flex-shrink: 0;
+}

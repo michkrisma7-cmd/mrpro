@@ -39,9 +39,14 @@ test("catalog SQL filters, sorts and paginates published properties without expo
     const visible = new Set(["harga", "lokasi", "jenis", "transaksi"]);
     const run = async (params: Record<string, string>, fields = visible) => {
       const q = catalogQueries(params, fields);
-      return db.query<{ id: string }>(q.list.text, q.list.values);
+      return db.query<{ id: string; ownerName: string }>(
+        q.list.text,
+        q.list.values,
+      );
     };
     assert.equal((await run({})).rows.length, 12);
+    assert.equal((await run({})).rows[0].ownerName, "User");
+    assert.equal("email" in (await run({})).rows[0], false);
     assert.equal((await run({ page: "2" })).rows.length, 2);
     assert.equal(
       (

@@ -46,7 +46,7 @@ export function catalogQueries(
   return {
     page,
     size,
-    list: Prisma.sql`SELECT * FROM "Property" WHERE ${where} ORDER BY ${order} LIMIT ${size} OFFSET ${(page - 1) * size}`,
+    list: Prisma.sql`SELECT "Property".*, (SELECT "name" FROM "AppUser" WHERE "AppUser"."id" = "Property"."ownerId") AS "ownerName" FROM "Property" WHERE ${where} ORDER BY ${order} LIMIT ${size} OFFSET ${(page - 1) * size}`,
     count: Prisma.sql`SELECT COUNT(*) as count FROM "Property" WHERE ${where}`,
   };
 }
