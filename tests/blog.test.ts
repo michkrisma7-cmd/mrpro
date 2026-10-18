@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
@@ -71,6 +72,7 @@ test("blog mutations reject non-admin callers before database access and allow a
   let admin = false;
   let writes = 0;
   let updated: unknown;
+  let collisions = 0;
   const paths: string[] = [];
   const actionModule = {
     exports: {} as {
@@ -84,6 +86,7 @@ test("blog mutations reject non-admin callers before database access and allow a
   runInNewContext(source, {
     exports: actionModule.exports,
     require: (name: string) => {
+      if (name === "node:crypto") return { randomUUID };
       if (name === "./auth")
         return {
           requireAdmin: async () => {
@@ -98,6 +101,10 @@ test("blog mutations reject non-admin callers before database access and allow a
                 writes++;
               },
               update: async (input: unknown) => {
+                if (collisions > 0) {
+                  collisions--;
+                  throw { code: "P2002" };
+                }
                 writes++;
                 updated = input;
               },
@@ -132,6 +139,39 @@ test("blog mutations reject non-admin callers before database access and allow a
     where: { id: "existing" },
     data: { ...article, published: true },
   });
+  form.set("slug", "");
+  collisions = 1;
+  await assert.rejects(actionModule.exports.saveBlogPost({}, form), /redirect/);
+  const saved = JSON.parse(JSON.stringify(updated));
+  assert.match(saved.data.slug, /^panduan-rumah-[a-f0-9]{8}$/);
+  form.set("slug", "alamat-khusus");
+  collisions = 1;
+  const duplicate = (await actionModule.exports.saveBlogPost({}, form)) as {
+    error: string;
+  };
+  assert.equal(duplicate.error, "Slug sudah digunakan artikel lain.");
   assert.ok(paths.includes("/"));
   assert.ok(paths.includes("/blog/[slug]"));
+});
+
+test("empty or omitted blog slugs are generated from the title, preserving custom slugs", () => {
+  for (const slug of [undefined, null, "", "   "]) {
+    assert.equal(
+      blogSchema.parse({ ...article, slug, title: "  Tips Rumah Nyaman!  " })
+        .slug,
+      "tips-rumah-nyaman",
+    );
+  }
+  assert.equal(
+    blogSchema.parse({ ...article, slug: "", title: "Café & Décor" }).slug,
+    "cafe-decor",
+  );
+  assert.equal(
+    blogSchema.parse({ ...article, slug: "", title: "🏡🏡🏡" }).slug,
+    "artikel",
+  );
+  assert.equal(
+    blogSchema.parse({ ...article, slug: "alamat-pilihan" }).slug,
+    "alamat-pilihan",
+  );
 });

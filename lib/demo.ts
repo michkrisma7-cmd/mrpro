@@ -53,6 +53,7 @@ const base = {
   status: "PUBLISHED",
   featured: true,
   ownerId: "demo",
+  ownerName: "Pemilik contoh",
   createdAt: "2026-10-01",
   updatedAt: "2026-10-01",
 };

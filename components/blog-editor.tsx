@@ -30,13 +30,12 @@ export function BlogEditor({
             Slug
             <input
               name="slug"
-              required
               maxLength={180}
               pattern="[a-z0-9]+(-[a-z0-9]+)*"
               defaultValue={post?.slug}
               placeholder="tips-memilih-rumah"
             />
-            <small>Alamat artikel: /blog/slug-artikel</small>
+            <small>Kosongkan untuk membuat slug otomatis dari judul.</small>
           </label>
         </div>
         <label>

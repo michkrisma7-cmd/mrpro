@@ -24,6 +24,7 @@ export type Listing = {
   status: string;
   featured: boolean;
   ownerId: string;
+  ownerName?: string;
   createdAt: Date | string;
   updatedAt: Date | string;
 };

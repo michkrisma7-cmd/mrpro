@@ -29,6 +29,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: p.updatedAt,
       priority: 0.6,
     })),
+    {
+      url: `${siteUrl()}/kalkulator-kpr`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
     ...properties.map((p) => ({
       url: `${siteUrl()}/properti/${p.slug}`,
       lastModified: p.updatedAt,

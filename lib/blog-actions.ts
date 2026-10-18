@@ -1,4 +1,5 @@
 "use server";
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "./auth";
@@ -20,8 +21,26 @@ export async function saveBlogPost(
     });
     if (!input.success) return { error: input.error.issues[0].message };
     const id = String(form.get("id") || "");
-    if (id) await db().blogPost.update({ where: { id }, data: input.data });
-    else await db().blogPost.create({ data: input.data });
+    const automaticSlug = !String(form.get("slug") || "").trim();
+    const baseSlug = input.data.slug;
+    for (let attempt = 0; ; attempt++) {
+      try {
+        if (id) await db().blogPost.update({ where: { id }, data: input.data });
+        else await db().blogPost.create({ data: input.data });
+        break;
+      } catch (error) {
+        if (
+          !automaticSlug ||
+          attempt >= 3 ||
+          !error ||
+          typeof error !== "object" ||
+          !("code" in error) ||
+          error.code !== "P2002"
+        )
+          throw error;
+        input.data.slug = `${baseSlug}-${randomUUID().slice(0, 8)}`;
+      }
+    }
   } catch (error) {
     if (
       error &&

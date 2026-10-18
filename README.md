@@ -104,6 +104,14 @@ Konten publik dirender server saat request; data beranda disimpan dalam cache se
 
 Metadata Indonesia, canonical, Open Graph, structured data properti/layanan, sitemap listing terbit, dan robots sudah disiapkan. Mode contoh/lokal tidak diindeks. Setelah domain HTTPS dan database terhubung, publikasikan situs, verifikasi domain di Google Search Console, lalu kirim `/sitemap.xml`. Implementasi SEO tidak menjamin peringkat atau waktu indeks Google.
 
+## Kalkulator KPR
+
+Halaman `/kalkulator-kpr` tersedia dari tombol utama beranda dan footer bagian Untuk Rumah Anda. Pilihan BTN konvensional memakai anuitas atas sisa pokok: bunga awal berlaku selama masa tetap, lalu angsuran dihitung ulang berdasarkan sisa pokok, sisa tenor, dan asumsi floating. BSI syariah menyediakan ilustrasi angsuran tetap dengan margin ekuivalen efektif; tidak mengasumsikan margin flat atau mereplikasi seluruh pilihan akad/jadwal angsuran BSI. Semua tenor 5–25 tahun dapat dibandingkan.
+
+Harga awal Rp750 juta, DP 20%, bunga/margin ekuivalen 8%, masa tetap BTN 3 tahun, dan floating 12% adalah **contoh asumsi**, bukan tarif resmi bank. Pengguna mengubahnya sesuai penawaran bank. Total DP + cicilan mengecualikan pajak, notaris, administrasi, provisi, asuransi, dan biaya lain. Pembulatan hanya pada tampilan. Persyaratan di bawah kalkulator merupakan panduan dokumen umum; batas usia, tenor, tarif, dan persetujuan final mengikuti bank. Situs resmi BTN/BSI tidak dapat diakses dari lingkungan pengerjaan (kebijakan jaringan), sehingga tarif dan detail syarat terkini belum diverifikasi langsung.
+
+Perhitungan diuji dengan pembayaran acuan, pelunasan pokok setelah perubahan bunga, bunga nol, seluruh 21 tenor, serta penolakan angka tidak valid. Playwright menguji pilihan bank, nilai DP, perubahan tenor, validasi, tautan masuk, dan lebar layar desktop/ponsel.
+
 ## Validasi
 
 ```sh
@@ -150,7 +158,7 @@ Dockerfile memakai tahap builder dan runner dengan base Node 24 bersama. Bun mem
 
 ## Blog
 
-Admin mengelola artikel lewat `/admin?tab=blog`: judul, slug unik, ringkasan, dan isi teks biasa. Simpan sebagai draf atau centang **Terbitkan di website**. Hapus centang untuk menarik artikel dari publik. Penyimpanan selalu memeriksa sesi dan role `ADMIN` di server. Tiga artikel terbit terbaru muncul di beranda; `/blog` menampilkan maksimal 30 artikel terbaru, dengan detail pada `/blog/<slug>`. Draf tidak tersedia di halaman publik atau sitemap. Isi dirender sebagai teks aman, tanpa HTML.
+Admin mengelola artikel lewat `/admin?tab=blog`: judul, slug unik, ringkasan, dan isi teks biasa. Slug boleh dikosongkan agar dibuat otomatis dari judul; jika sudah digunakan, sistem menambahkan akhiran unik. Simpan sebagai draf atau centang **Terbitkan di website**. Hapus centang untuk menarik artikel dari publik. Penyimpanan selalu memeriksa sesi dan role `ADMIN` di server. Tiga artikel terbit terbaru muncul di beranda; `/blog` menampilkan maksimal 30 artikel terbaru, dengan detail pada `/blog/<slug>`. Draf tidak tersedia di halaman publik atau sitemap. Isi dirender sebagai teks aman, tanpa HTML.
 
 Sebelum menjalankan versi ini pada database yang sudah ada, jalankan `bun run db:generate`, lalu `bun run db:deploy` dengan `DATABASE_URL` database tujuan yang benar. Migrasi `202610180001_blog` menambahkan tabel blog tanpa mengubah data properti. Tanpa database, bagian blog menampilkan keadaan kosong dan dashboard tetap hanya baca.
 

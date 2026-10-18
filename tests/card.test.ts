@@ -26,6 +26,7 @@ test("card respects visibility and labels for every configured field, including 
   ];
   const property = {
     ...demoListings[0],
+    ownerName: "Budi Santoso",
     values: {
       ...demoListings[0].values,
       ...Object.fromEntries(extras.map((f, i) => [f.key, `Nilai ${i}`])),
@@ -39,6 +40,7 @@ test("card respects visibility and labels for every configured field, including 
   assert.match(html, /Nilai 5/);
   assert.match(html, /Field 0/);
   assert.doesNotMatch(html, /DATA-PRIVATE-DO-NOT-SHOW/);
+  assert.match(html, /Pemilik: Budi Santoso/);
   assert.match(html, /Harga/);
   assert.match(html, /Lokasi/);
 });
