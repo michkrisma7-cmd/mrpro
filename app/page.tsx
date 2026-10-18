@@ -72,8 +72,8 @@ export default async function Home() {
             </h1>
             <p>{settings.heroDescription}</p>
             <div className="hero-actions">
-              <Link href="/properti" className="button">
-                Temukan Properti <ArrowUpRight size={19} />
+              <Link href="/kalkulator-kpr" className="button">
+                Kalkulator KPR <ArrowUpRight size={19} />
               </Link>
               <Link href={wa || "/#tentang"} className="text-button">
                 Kenali kami <ArrowRight size={17} />

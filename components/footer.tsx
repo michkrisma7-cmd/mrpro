@@ -41,6 +41,7 @@ export function Footer({ settings }: { settings: Settings }) {
             <Link href="/layanan">Layanan tukang</Link>
             <Link href="/layanan?jenis=Renovasi">Renovasi rumah</Link>
             <Link href="/#tentang">Tentang MR Properti</Link>
+            <Link href="/kalkulator-kpr">Kalkulator KPR</Link>
           </div>
           <div>
             <h3>Mari Terhubung</h3>
