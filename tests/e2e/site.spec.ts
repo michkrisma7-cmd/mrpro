@@ -93,7 +93,7 @@ test("login and submission do not pretend to work without configured credentials
   ).toBeDisabled();
 });
 test("unavailable and unauthorized APIs fail safely", async ({ request }) => {
-  const auth = await request.get("/api/auth/get-session");
+  const auth = await request.get("/api/auth/session");
   expect(auth.status()).toBe(503);
   const upload = await request.post("/api/upload", {
     headers: { origin: "http://127.0.0.1:3100" },

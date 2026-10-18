@@ -26,9 +26,9 @@ enum FieldType {
 }
 model AppUser {
   id String @id @default(cuid())
-  authId String @unique
+  passwordHash String
   name String
-  email String
+  email String @unique
   role Role @default(USER)
   properties Property[]
   uploads Media[]
@@ -105,4 +105,11 @@ model BlogPost {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([published, createdAt])
+}
+
+model AuthAttempt {
+  key String @id
+  count Int
+  expiresAt DateTime
+  @@index([expiresAt])
 }

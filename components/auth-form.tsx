@@ -1,9 +1,8 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { createAuthClient, isAuthError } from "@neondatabase/auth/next";
+import { signIn, signOut } from "next-auth/react";
 import { authErrorMessage } from "@/lib/auth-feedback";
-const authClient = createAuthClient();
 import {
   ArrowUpRight,
   Eye,
@@ -31,50 +30,35 @@ export function AuthForm({
     setNotice("");
     const f = new FormData(e.currentTarget);
     try {
-      const auth = authClient;
-      const result = register
-        ? await auth.signUp.email({
-            email: String(f.get("email")),
-            password: String(f.get("password")),
-            name: String(f.get("name")),
-          })
-        : await auth.signIn.email({
-            email: String(f.get("email")),
-            password: String(f.get("password")),
-          });
-      if (result.error) {
-        setError(authErrorMessage(result.error, register));
-      } else if (register && !result.data?.token) {
-        setNotice(
-          "Akun berhasil dibuat. Periksa email bila ada permintaan verifikasi, lalu masuk dengan akun Anda.",
-        );
-        setRegister(false);
-      } else {
-        const session = await auth.getSession({
-          query: { disableCookieCache: true },
+      const credentials = {
+        email: String(f.get("email")),
+        password: String(f.get("password")),
+      };
+      if (register) {
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...credentials, name: String(f.get("name")) }),
         });
-        if (session.error) {
-          setError(authErrorMessage(session.error, register));
+        if (!response.ok) {
+          setError(authErrorMessage({ status: response.status }, true));
           return;
         }
-        if (!session.data?.user) {
-          setError(
-            window.location.protocol === "http:"
-              ? "Sesi login belum tersimpan. Jalankan bun dev:https, buka https://localhost:3000, lalu masuk kembali. Cookie login membutuhkan koneksi HTTPS."
-              : "Sesi login belum tersimpan. Izinkan cookie untuk website ini, lalu coba masuk kembali.",
-          );
-          return;
-        }
-        // Neon sets cookies through an API route; discard prefetched redirects
-        // from the anonymous Router Cache by starting a fresh document.
-        window.location.assign(next);
       }
-    } catch (error) {
-      setError(
-        isAuthError(error)
-          ? authErrorMessage(error, register)
-          : "Layanan login belum dapat dijangkau. Silakan coba lagi.",
-      );
+      const result = await signIn("credentials", {
+        ...credentials,
+        redirect: false,
+      });
+      if (result?.error)
+        setError(
+          authErrorMessage(
+            { status: result.code === "rate_limited" ? 429 : undefined },
+            false,
+          ),
+        );
+      else window.location.assign(next);
+    } catch {
+      setError("Layanan login belum dapat dijangkau. Silakan coba lagi.");
     } finally {
       setBusy(false);
     }
@@ -215,8 +199,7 @@ export function SignOutButton() {
       onClick={async () => {
         setBusy(true);
         try {
-          const result = await authClient.signOut();
-          if (result.error) throw new Error();
+          await signOut({ redirect: false });
           // Discard private pages cached under the previous session.
           // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Authentication state changed outside a Server Action.
           window.location.assign("/");

@@ -4,10 +4,10 @@ import { PrismaPg } from "@prisma/adapter-pg";
 
 async function main() {
   loadEnvConfig(process.cwd());
-  const authId = process.argv[2];
-  if (!authId || !process.env.DATABASE_URL)
+  const email = process.argv[2]?.trim().toLowerCase();
+  if (!email || !process.env.DATABASE_URL)
     throw new Error(
-      "Gunakan: bun run admin:grant <Neon-Auth-user-id>. DATABASE_URL wajib tersedia.",
+      "Gunakan: bun run admin:grant <email>. DATABASE_URL wajib tersedia.",
     );
   const prisma = new PrismaClient({
     adapter: new PrismaPg({
@@ -17,11 +17,9 @@ async function main() {
     }),
   });
   try {
-    const user = await prisma.appUser.findUnique({ where: { authId } });
+    const user = await prisma.appUser.findUnique({ where: { email } });
     if (!user)
-      throw new Error(
-        "User belum terhubung. Minta user login ke aplikasi dahulu, lalu gunakan ID Neon Auth yang telah diverifikasi oleh pemilik proyek.",
-      );
+      throw new Error("User belum terdaftar. Minta user daftar akun dahulu.");
     await prisma.appUser.update({
       where: { id: user.id },
       data: { role: "ADMIN" },

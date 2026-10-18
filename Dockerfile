@@ -15,7 +15,6 @@ CMD ["node", "node_modules/prisma/build/index.js", "migrate", "deploy"]
 FROM base AS builder
 COPY --from=oven/bun:1.4.3 /usr/local/bin/bun /usr/local/bin/bun
 COPY package.json bun.lock ./
-COPY patches ./patches
 RUN bun install --frozen-lockfile
 COPY . .
 ENV DOCKER_BUILD=1

@@ -5,8 +5,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   serverExternalPackages: [
     "@prisma/client",
-    "@prisma/adapter-neon",
-    "@neondatabase/serverless",
+    "@prisma/adapter-pg",
+    "pg",
     "ws",
     "sharp",
   ],

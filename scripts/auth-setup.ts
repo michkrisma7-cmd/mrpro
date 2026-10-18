@@ -10,7 +10,7 @@ async function main() {
   loadEnvConfig(process.cwd());
   const checkOnly = process.argv.includes("--check");
   const offline = process.argv.includes("--offline");
-  if (!checkOnly && !process.env.NEON_AUTH_COOKIE_SECRET) {
+  if (!checkOnly && !process.env.AUTH_SECRET) {
     const secret = randomBytes(32).toString("base64url");
     const file = await open(
       resolve(".env.local"),
@@ -22,14 +22,14 @@ async function main() {
     );
     try {
       await file.write(
-        `\n# Local application session signing secret. Do not commit.\nNEON_AUTH_COOKIE_SECRET=${secret}\n`,
+        `\n# Local application session signing secret. Do not commit.\nAUTH_SECRET=${secret}\n`,
       );
     } finally {
       await file.close();
     }
-    process.env.NEON_AUTH_COOKIE_SECRET = secret;
+    process.env.AUTH_SECRET = secret;
     console.log(
-      "OK: NEON_AUTH_COOKIE_SECRET dibuat di .env.local; nilainya tidak ditampilkan.",
+      "OK: AUTH_SECRET dibuat di .env.local; nilainya tidak ditampilkan.",
     );
   }
   const config = inspectAuthEnvironment(process.env);
@@ -37,99 +37,11 @@ async function main() {
   for (const error of config.invalid)
     console.error(`PERLU DIPERBAIKI: ${error}`);
   if (!process.env.DATABASE_URL) console.error("BELUM TERSEDIA: DATABASE_URL");
-  const origin = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  let originValid = false;
-  try {
-    const url = new URL(origin);
-    originValid =
-      ["http:", "https:"].includes(url.protocol) &&
-      url.origin === origin.replace(/\/$/, "") &&
-      !url.username &&
-      !url.password;
-  } catch {}
-  if (!originValid)
-    console.error(
-      "PERLU DIPERBAIKI: NEXT_PUBLIC_SITE_URL harus origin aplikasi, tanpa path.",
-    );
-  else
-    console.log(
-      "OK: Origin aplikasi valid. Daftarkan origin yang sama pada Trusted Origins Neon Auth.",
-    );
-  let failed = !config.configured || !process.env.DATABASE_URL || !originValid;
+  let failed = !config.configured;
   if (offline) {
-    console.log("Pemeriksaan offline: koneksi Neon belum diuji.");
     process.exitCode = failed ? 1 : 0;
     return;
   }
-  if (config.configured && originValid) {
-    try {
-      const response = await fetch(`${config.baseUrl}/get-session`, {
-        headers: { Origin: origin },
-        signal: AbortSignal.timeout(10000),
-      });
-      const data: unknown = await response.json();
-      if (
-        !response.ok ||
-        (data !== null && (typeof data !== "object" || !("session" in data)))
-      ) {
-        failed = true;
-        console.error(
-          `GAGAL: Endpoint sesi Neon Auth merespons HTTP ${response.status}. Pastikan NEON_AUTH_URL adalah endpoint Auth, bukan URL database atau JWKS.`,
-        );
-      } else console.log("OK: Endpoint sesi Neon Auth dapat dijangkau.");
-    } catch {
-      failed = true;
-      console.error(
-        "GAGAL: Endpoint Neon Auth tidak dapat dijangkau. Periksa URL, jaringan, dan trust sertifikat.",
-      );
-    }
-  }
-  if (process.env.JWKS_NEON) {
-    try {
-      const value = process.env.JWKS_NEON.trim();
-      let jwks: unknown;
-      if (value.startsWith("{")) jwks = JSON.parse(value);
-      else {
-        const url = new URL(value);
-        if (
-          url.protocol !== "https:" &&
-          !(
-            url.protocol === "http:" &&
-            ["127.0.0.1", "localhost"].includes(url.hostname)
-          )
-        )
-          throw new Error();
-        const response = await fetch(url, {
-          signal: AbortSignal.timeout(10000),
-        });
-        if (!response.ok) throw new Error();
-        jwks = await response.json();
-      }
-      if (
-        !jwks ||
-        typeof jwks !== "object" ||
-        !("keys" in jwks) ||
-        !Array.isArray(jwks.keys) ||
-        !jwks.keys.length ||
-        !jwks.keys.every(
-          (k) =>
-            k &&
-            typeof k === "object" &&
-            ["RSA", "EC", "OKP"].includes(k.kty) &&
-            !["d", "p", "q", "dp", "dq", "qi", "k"].some((name) => name in k),
-        )
-      )
-        throw new Error();
-      console.log(
-        "OK: Format public JWKS_NEON dikenali. SDK mengelola sesi login; JWKS tidak menggantikan cookie secret.",
-      );
-    } catch {
-      failed = true;
-      console.error(
-        "GAGAL: JWKS_NEON harus URL JWKS yang dapat dijangkau atau JSON public JWKS yang valid. Nilainya tidak ditampilkan.",
-      );
-    }
-  } else console.log("INFO: JWKS_NEON opsional untuk login cookie Neon Auth.");
   if (process.env.DATABASE_URL) {
     const prisma = new PrismaClient({
       adapter: new PrismaPg({
@@ -139,7 +51,10 @@ async function main() {
       }),
     });
     try {
-      await prisma.appUser.count();
+      await prisma.appUser.findFirst({
+        select: { id: true, passwordHash: true, email: true },
+      });
+      await prisma.authAttempt.count();
       console.log(
         "OK: Database dan tabel AppUser dapat diakses; tidak ada data yang diubah.",
       );
