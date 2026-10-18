@@ -5,15 +5,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
     && rm -rf /var/lib/apt/lists/*
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# Only Prisma CLI and migrations are published in the migration image.
 FROM base AS tools
+RUN npm install --no-save --package-lock=false prisma@6.19.3 \
+    && npm cache clean --force
+COPY prisma ./prisma
+CMD ["node", "node_modules/prisma/build/index.js", "migrate", "deploy"]
+
+FROM base AS builder
 COPY --from=oven/bun:1.4.3 /usr/local/bin/bun /usr/local/bin/bun
 COPY package.json bun.lock ./
 COPY patches ./patches
 RUN bun install --frozen-lockfile
 COPY . .
-CMD ["bun", "run", "db:deploy"]
-
-FROM tools AS builder
 ENV DOCKER_BUILD=1
 RUN bun run build
 

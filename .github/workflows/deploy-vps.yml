@@ -38,6 +38,8 @@ jobs:
           context: .
           push: true
           tags: ghcr.io/michkrisma7-cmd/mrpro:latest
+          cache-from: type=gha,scope=web
+          cache-to: type=gha,mode=max,scope=web
 
       - name: Build dan Push Image Migrasi
         uses: docker/build-push-action@v6
@@ -46,6 +48,8 @@ jobs:
           target: tools
           push: true
           tags: ghcr.io/michkrisma7-cmd/mrpro:migrate
+          cache-from: type=gha,scope=migrate
+          cache-to: type=gha,mode=max,scope=migrate
 
       - name: Deploy ke VPS
         uses: appleboy/ssh-action@v1.2.0
@@ -71,7 +75,7 @@ jobs:
             docker compose config > "$migration_config"
             # Preserve literal dollar signs when Compose reads the resolved config again.
             sed -i 's/\$/$$/g' "$migration_config"
-            docker compose --project-directory "$PWD" -f "$migration_config" -f - run --rm --no-deps -T web bun run db:deploy <<'MIGRATION'
+            docker compose --project-directory "$PWD" -f "$migration_config" -f - run --rm --no-deps -T web node node_modules/prisma/build/index.js migrate deploy <<'MIGRATION'
             services:
               web:
                 image: ghcr.io/michkrisma7-cmd/mrpro:migrate

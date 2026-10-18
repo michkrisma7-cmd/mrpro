@@ -197,7 +197,7 @@ Login GHCR di runner dan VPS memakai `GITHUB_TOKEN` bawaan Actions; tidak perlu 
 
 User SSH harus bisa menjalankan Docker tanpa prompt sudo. File Compose dan `.env` sudah tersedia di `~/web-me` pada VPS, dengan image yang sama seperti tag workflow. Workflow tidak mengirim source/Compose, atau mengubah env aplikasi. Migrasi Prisma dijalankan otomatis; jika gagal, workflow berhenti sebelum mengganti container web. Build image tidak meminta konfigurasi `NEXT_PUBLIC_SITE_URL` dari GitHub.
 
-Image `ghcr.io/michkrisma7-cmd/mrpro:migrate` berisi Prisma CLI dan folder `prisma/migrations`; image web tetap memakai output standalone. Untuk menerapkan migrasi secara manual setelah image baru dipublikasikan:
+Image `ghcr.io/michkrisma7-cmd/mrpro:migrate` hanya memasang Prisma CLI 6.19.3 beserta dependency CLI dan menyalin folder `prisma`, tanpa dependency aplikasi, Bun, atau source Next.js; image web tetap memakai output standalone. Untuk menerapkan migrasi secara manual setelah image baru dipublikasikan:
 
 ```sh
 cd ~/web-me
@@ -207,7 +207,7 @@ migration_config=$(mktemp)
 trap 'rm -f "$migration_config"' EXIT
 docker compose config > "$migration_config"
 sed -i 's/\$/$$/g' "$migration_config"
-docker compose --project-directory "$PWD" -f "$migration_config" -f - run --rm --no-deps -T web bun run db:deploy <<'MIGRATION'
+docker compose --project-directory "$PWD" -f "$migration_config" -f - run --rm --no-deps -T web node node_modules/prisma/build/index.js migrate deploy <<'MIGRATION'
 services:
   web:
     image: ghcr.io/michkrisma7-cmd/mrpro:migrate
@@ -219,3 +219,5 @@ Pastikan `DATABASE_URL` menunjuk database tujuan yang benar. Database yang sudah
 Migrasi memakai Compose yang sama dengan service web, dengan override image sementara melalui stdin. Environment dan network mengikuti service web; file Compose di VPS tidak diubah. Ini menghindari perbedaan parsing `.env` antara `docker run --env-file` dan Compose, termasuk tanda kutip serta interpolasi variabel.
 
 Pull dan up langsung memakai `docker compose` dari `~/web-me`. Migrasi memakai konfigurasi hasil `docker compose config` dalam file sementara dengan izin terbatas yang dihapus setelah proses selesai; nama file Compose di VPS tidak perlu ditentukan.
+
+Build image web dan migrasi memakai cache GitHub Actions terpisah. Perubahan kode aplikasi tidak membatalkan layer instalasi Prisma CLI; perubahan migrasi hanya mengganti layer folder `prisma`.
