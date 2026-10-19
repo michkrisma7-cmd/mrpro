@@ -269,11 +269,12 @@ export function PropertyForm({
           <SubmitButton
             disabled={busy || images.length === 0 || !uploadEnabled}
           >
-            Kirim untuk Ditinjau
+            Tayangkan Properti
           </SubmitButton>
           <p>
             <ShieldCheck size={14} />
-            Listing akan ditinjau admin sebelum tampil di katalog.
+            Selama masa uji coba, properti langsung tayang setelah berhasil
+            dikirim.
           </p>
         </div>
       </fieldset>

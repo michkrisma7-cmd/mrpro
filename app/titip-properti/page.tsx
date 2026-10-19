@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = pageMetadata({
   title: "Titip Jual & Sewa Properti Cikarang dan Bekasi",
   description:
-    "Titipkan properti di Cikarang dan Bekasi bersama MR Properti. Kirim informasi dan foto untuk ditinjau tim kami.",
+    "Titipkan properti di Cikarang dan Bekasi bersama MR Properti. Selama masa uji coba, kiriman baru langsung tayang di katalog.",
   path: "/titip-properti",
   noindex: true,
 });
@@ -64,8 +64,8 @@ export default async function SubmitProperty() {
           </span>
           <h3>Mulai dengan informasi yang tepat.</h3>
           <p>
-            Informasi yang lengkap memudahkan kami meninjau dan membantu
-            memasarkan properti Anda.
+            Informasi yang lengkap memudahkan kami membantu memasarkan properti
+            Anda.
           </p>
           {[
             [
@@ -80,8 +80,8 @@ export default async function SubmitProperty() {
             ],
             [
               CircleCheck,
-              "Tinjauan oleh tim kami",
-              "Status kiriman bisa Anda pantau dari halaman akun.",
+              "Langsung tayang",
+              "Selama masa uji coba, kiriman baru langsung tampil di katalog. Pantau dan buka tautannya dari halaman akun.",
             ],
           ].map(([Icon, title, desc]) => {
             const I = Icon as typeof Camera;

@@ -50,7 +50,8 @@ export async function submitProperty(
       "-" +
       crypto.randomUUID().slice(0, 8);
     await db().property.create({
-      data: { ...input, values, slug, ownerId: user.id, status: "PENDING" },
+      // Trial policy: new consignment listings publish immediately until instructed otherwise.
+      data: { ...input, values, slug, ownerId: user.id, status: "PUBLISHED" },
     });
     refresh();
   } catch (e) {

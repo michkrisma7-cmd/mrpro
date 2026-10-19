@@ -103,7 +103,7 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      <div className="trust-strip">
+      <div className="trust-strip home-trust-strip">
         <div className="container trust-strip-inner">
           <span>
             <ShieldCheck />
@@ -119,7 +119,11 @@ export default async function Home() {
           </span>
         </div>
       </div>
-      <section className="section container" id="properti">
+      <section
+        className="section container"
+        id="properti"
+        aria-label="Properti terbaru"
+      >
         <div className="section-heading">
           <div>
             <p className="eyebrow">PILIHAN UNTUK LANGKAH BARU</p>
@@ -306,7 +310,7 @@ export default async function Home() {
             ],
             [
               "Apakah saya bisa menitipkan properti di sini?",
-              "Tentu. Buat akun, isi formulir Titip Properti, dan unggah foto. Tim kami meninjau informasi sebelum properti ditampilkan.",
+              "Tentu. Buat akun, isi formulir Titip Properti, dan unggah foto. Selama masa uji coba, kiriman baru langsung tayang di katalog setelah berhasil dikirim.",
             ],
             [
               "Bagaimana cara memesan jasa tukang?",

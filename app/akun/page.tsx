@@ -22,7 +22,7 @@ export default async function Account({
   const { terkirim } = await searchParams;
   const labels: Record<string, string> = {
     PENDING: "Menunggu tinjauan",
-    PUBLISHED: "Diterbitkan",
+    PUBLISHED: "Tayang",
     REJECTED: "Perlu perbaikan",
     ARCHIVED: "Diarsipkan",
   };
@@ -39,7 +39,7 @@ export default async function Account({
       {terkirim && (
         <p className="form-message success">
           <ShieldCheck size={20} />
-          Properti berhasil dikirim dan menunggu tinjauan admin.
+          Properti berhasil dikirim dan langsung tayang di katalog.
         </p>
       )}
       <div className="account-toolbar">

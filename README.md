@@ -9,7 +9,7 @@ Website katalog properti dan layanan tukang berbahasa Indonesia. Bagian properti
 - Login/daftar email dan password, akun pengguna, kirim properti, serta pantau status tinjauan.
 - Dashboard `/admin`: statistik, tinjau/terbitkan/arsipkan properti, edit informasi properti, CRUD definisi field, tambah/edit/nonaktifkan layanan, serta pengaturan hero/kontak/area.
 - Field dinamis: teks, angka, harga, select, multi select; wajib/opsional; form/kartu/detail dikontrol terpisah; label kartu kosong memakai nama field. Galeri, judul, dan deskripsi merupakan field inti. WhatsApp diperlukan untuk listing.
-- Semua mutasi admin memeriksa role di server. Pendaftaran tidak dapat memilih role. Kiriman pengguna selalu `PENDING`. Field khusus form disaring sebelum data publik dikirim.
+- Semua mutasi admin memeriksa role di server. Pendaftaran tidak dapat memilih role. Selama masa uji coba, kiriman baru dari Titip Properti langsung `PUBLISHED` (Tayang) hingga ada instruksi berikutnya. Validasi field, sesi, dan kepemilikan foto tetap berlaku; admin masih dapat mengarsipkan properti. Status kiriman lama tidak diubah. Field khusus form disaring sebelum data publik dikirim.
 - Unggah gambar JPG/PNG/WebP maksimal 5 MB, maksimal 12 foto per listing. Gambar didekode, dibatasi 25 megapiksel, metadata dibuang, dan disimpan sebagai WebP di S3. Endpoint unggah memerlukan sesi pengguna dan pemeriksaan origin. Batas dasar 36 unggahan/user/jam; pertimbangkan rate limit terdistribusi di gateway untuk beban besar.
 
 ## Konfigurasi
@@ -117,7 +117,7 @@ bun run test:e2e
 
 Unit/integration tests memvalidasi field dinamis, perlindungan unggah, role/status awal, dan constraint skema PostgreSQL. PGlite menjalankan migrasi SQL nyata secara lokal; ini bukan pengujian koneksi Neon. Playwright menguji pratinjau tanpa kredensial di Chromium desktop dan ponsel (server port 3100). Gunakan `PLAYWRIGHT_CHROMIUM_EXECUTABLE` bila lokasi browser berbeda.
 
-Pada implementasi awal, variabel Neon/AWS belum terinjeksi ke mesin sehingga alur login produksi, penerbitan ke Neon, unggah S3 nyata, dan WhatsApp bisnis belum dapat diverifikasi. Setelah konfigurasi aktif, uji: daftar/login → unggah foto → kirim properti → status pending → tinjau/terbitkan admin → katalog/detail publik. Pastikan user biasa ditolak oleh seluruh aksi admin. Isi kontak WhatsApp yang benar dari dashboard; contoh tidak memakai nomor bisnis palsu.
+Pada implementasi awal, variabel Neon/AWS belum terinjeksi ke mesin sehingga alur login produksi, penerbitan ke Neon, unggah S3 nyata, dan WhatsApp bisnis belum dapat diverifikasi. Setelah konfigurasi aktif, uji: daftar/login → unggah foto → kirim properti → langsung Tayang → katalog/detail publik → arsipkan dari admin bila diperlukan. Pastikan user biasa ditolak oleh seluruh aksi admin. Isi kontak WhatsApp yang benar dari dashboard; contoh tidak memakai nomor bisnis palsu.
 
 Template ZIP WordPress dipakai sebagai referensi visual dan perilaku field. ZIP tidak berisi database konten WordPress; listing, media, akun, dan URL lama belum dimigrasikan. Migrasi konten memerlukan ekspor dan pemetaan URL/redirect terpisah.
 

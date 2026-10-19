@@ -11,11 +11,17 @@ export function catalogQueries(
   const conditions = [Prisma.sql`"status" = 'PUBLISHED'::"ListingStatus"`];
   if (params.q) {
     const q = params.q.slice(0, 150);
-    conditions.push(
-      visible.has("lokasi")
-        ? Prisma.sql`POSITION(LOWER(${q}) IN LOWER("title" || ' ' || COALESCE("values"->>'lokasi',''))) > 0`
-        : Prisma.sql`POSITION(LOWER(${q}) IN LOWER("title")) > 0`,
+    const searchable = ["lokasi", "proyek", "nama_proyek"].filter((key) =>
+      visible.has(key),
     );
+    const text = Prisma.join(
+      [
+        Prisma.sql`"title"`,
+        ...searchable.map((key) => Prisma.sql`COALESCE("values"->>${key}, '')`),
+      ],
+      " || ' ' || ",
+    );
+    conditions.push(Prisma.sql`POSITION(LOWER(${q}) IN LOWER(${text})) > 0`);
   }
   if (params.jenis)
     conditions.push(

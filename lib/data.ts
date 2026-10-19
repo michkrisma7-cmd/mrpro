@@ -122,7 +122,9 @@ export async function getCatalog(params: Record<string, string>) {
     let all = demoListings.filter(
       (p) =>
         (!q ||
-          `${p.title} ${p.values.lokasi || ""}`.toLowerCase().includes(q)) &&
+          `${p.title} ${p.values.lokasi || ""} ${p.values.proyek || ""} ${p.values.nama_proyek || ""}`
+            .toLowerCase()
+            .includes(q)) &&
         (!params.jenis || p.values.jenis === params.jenis) &&
         (!params.transaksi || p.values.transaksi === params.transaksi) &&
         (!params.harga || Number(p.values.harga) <= Number(params.harga)),

@@ -4279,6 +4279,9 @@ td .text-button {
   gap: 20px;
   color: var(--ink);
 }
+.hero-search-mobile {
+  display: none;
+}
 .property-hero .search-form label > span {
   font-size: 11px;
 }
@@ -4332,9 +4335,52 @@ td .text-button {
   }
 }
 @media (max-width: 560px) {
+  .hero-search-desktop {
+    display: none;
+  }
+  .hero-search-mobile {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 4px 4px 4px 10px;
+  }
+  .hero-search-mobile input:not([type="hidden"]) {
+    flex: 1;
+    min-width: 0;
+    width: 0;
+    border: 0;
+    background: transparent;
+    padding: 8px 0;
+    margin: 0;
+    font-size: 16px;
+    color: var(--ink);
+  }
+  .hero-search-mobile input::placeholder {
+    font-size: 13px;
+    color: #687264;
+    opacity: 1;
+  }
+  .hero-search-mobile .button {
+    padding: 0;
+    width: 38px;
+    min-height: 40px;
+    flex-shrink: 0;
+    border-radius: 6px;
+  }
+  .home-trust-strip,
+  #properti > .section-heading,
+  #properti > .catalog-tabs {
+    display: none;
+  }
+  #properti {
+    padding-top: 28px;
+  }
   .property-hero-content {
-    padding-block: 44px 30px;
-    min-height: 0;
+    padding-block: 52px 34px;
+    min-height: 500px;
   }
   .property-hero-heading .eyebrow {
     font-size: 9px;
@@ -4371,5 +4417,16 @@ td .text-button {
   .property-hero .property-hero-actions {
     margin-top: 22px;
     gap: 20px;
+  }
+}
+@media (max-width: 360px) {
+  .property-hero-search {
+    padding-inline: 12px;
+  }
+  .hero-search-mobile > svg {
+    display: none;
+  }
+  .hero-search-mobile input::placeholder {
+    font-size: 12px;
   }
 }

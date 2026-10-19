@@ -73,6 +73,27 @@ test("catalog SQL filters, sorts and paginates published properties without expo
       q.count.values,
     );
     assert.equal(Number(count.rows[0].count), 14);
+    await db.query(
+      'UPDATE "Property" SET "values" = "values" || $1::jsonb WHERE id = $2',
+      [
+        JSON.stringify({ nama_proyek: "Taman Melati", proyek: "Citra Asri" }),
+        "p0",
+      ],
+    );
+    for (const [key, name] of [
+      ["nama_proyek", "melati"],
+      ["proyek", "citra"],
+    ]) {
+      assert.equal(
+        (await run({ q: name }, new Set([...visible, key]))).rows[0].id,
+        "p0",
+      );
+      assert.equal(
+        (await run({ q: name })).rows.length,
+        0,
+        "private project values must not be searchable",
+      );
+    }
   } finally {
     await db.close();
   }

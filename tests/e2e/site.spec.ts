@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 test("landing separates properties and services, with responsive navigation", async ({
   page,
+  isMobile,
 }) => {
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
@@ -29,6 +30,24 @@ test("landing separates properties and services, with responsive navigation", as
   expect(saleBox!.y + saleBox!.height).toBeLessThan(
     heroBox!.y + heroBox!.height,
   );
+  if (isMobile) {
+    await expect(
+      page.getByPlaceholder("Masukan lokasi atau nama proyek"),
+    ).toBeVisible();
+    await expect(page.locator(".hero-search-desktop")).toBeHidden();
+    await expect(page.locator(".home-trust-strip")).toBeHidden();
+    await expect(page.locator("#properti > .section-heading")).toBeHidden();
+    await expect(page.locator("#properti > .catalog-tabs")).toBeHidden();
+    const search = await page.locator(".hero-search-mobile").boundingBox();
+    const actions = await page.locator(".property-hero-actions").boundingBox();
+    expect(search!.y + search!.height).toBeLessThan(actions!.y);
+  } else {
+    await expect(page.getByPlaceholder("Mau tinggal di mana?")).toBeVisible();
+    await expect(page.locator(".hero-search-mobile")).toBeHidden();
+    await expect(page.locator(".home-trust-strip")).toBeVisible();
+    await expect(page.locator("#properti > .section-heading")).toBeVisible();
+    await expect(page.locator(".hero-search-desktop select")).toHaveCount(2);
+  }
   const fits = await page.evaluate(
     () => document.documentElement.scrollWidth <= window.innerWidth,
   );
@@ -38,14 +57,13 @@ test("hero preserves search filters and uses the selected sale or rental transac
   page,
 }) => {
   await page.goto("/");
-  await page.getByPlaceholder("Mau tinggal di mana?").fill("Bintaro");
+  const query = page.locator('.property-hero input[name="q"]:visible');
+  await query.fill("Bintaro");
   await page.getByRole("button", { name: "Sewa", exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Sewa", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByPlaceholder("Mau tinggal di mana?")).toHaveValue(
-    "Bintaro",
-  );
+  await expect(query).toHaveValue("Bintaro");
   await page
     .getByRole("button", { name: "Cari Properti", exact: true })
     .click();
@@ -55,7 +73,7 @@ test("hero preserves search filters and uses the selected sale or rental transac
   await page.goto("/");
   await page.getByRole("button", { name: "Sewa", exact: true }).click();
   await page.getByRole("button", { name: "Dijual", exact: true }).click();
-  await page.getByPlaceholder("Mau tinggal di mana?").fill("Bintaro");
+  await query.fill("Bintaro");
   await page
     .getByRole("button", { name: "Cari Properti", exact: true })
     .click();
@@ -135,7 +153,7 @@ test("login and submission do not pretend to work without configured credentials
     page.getByText("Masuk untuk menitipkan properti."),
   ).toBeVisible();
   await expect(
-    page.getByRole("button", { name: "Kirim untuk Ditinjau" }),
+    page.getByRole("button", { name: "Tayangkan Properti" }),
   ).toBeDisabled();
 });
 test("unavailable and unauthorized APIs fail safely", async ({ request }) => {
