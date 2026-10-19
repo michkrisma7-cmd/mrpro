@@ -36,8 +36,29 @@ test("landing separates properties and services, with responsive navigation", as
     ).toBeVisible();
     await expect(page.locator(".hero-search-desktop")).toBeHidden();
     await expect(page.locator(".home-trust-strip")).toBeHidden();
-    await expect(page.locator("#properti > .section-heading")).toBeHidden();
-    await expect(page.locator("#properti > .catalog-tabs")).toBeHidden();
+    await expect(page.locator("#properti > .section-heading h2")).toHaveText(
+      "Temukan ruang yang tepat.",
+    );
+    await expect(page.locator("#properti > .section-heading h2")).toBeVisible();
+    await expect(
+      page.locator("#properti > .section-heading .eyebrow"),
+    ).toBeHidden();
+    const categories = page.locator("#properti > .catalog-tabs");
+    await expect(categories).toBeVisible();
+    await expect(categories).toHaveCSS("flex-wrap", "nowrap");
+    await expect(categories.locator("a")).toHaveText([
+      "Semua Properti",
+      "Rumah",
+      "Apartemen",
+      "Tanah",
+      "Ruko",
+    ]);
+    const positions = await categories
+      .locator("a")
+      .evaluateAll((links) =>
+        links.map((link) => link.getBoundingClientRect().y),
+      );
+    expect(Math.max(...positions) - Math.min(...positions)).toBeLessThan(1);
     const search = await page.locator(".hero-search-mobile").boundingBox();
     const actions = await page.locator(".property-hero-actions").boundingBox();
     expect(search!.y + search!.height).toBeLessThan(actions!.y);
@@ -52,6 +73,14 @@ test("landing separates properties and services, with responsive navigation", as
     () => document.documentElement.scrollWidth <= window.innerWidth,
   );
   expect(fits).toBe(true);
+  if (isMobile) {
+    const ruko = page
+      .locator("#properti > .catalog-tabs")
+      .getByRole("link", { name: "Ruko", exact: true });
+    await ruko.scrollIntoViewIfNeeded();
+    await ruko.click();
+    await expect(page).toHaveURL(/jenis=Ruko/);
+  }
 });
 test("hero preserves search filters and uses the selected sale or rental transaction", async ({
   page,
