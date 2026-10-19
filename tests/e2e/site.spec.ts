@@ -11,10 +11,56 @@ test("landing separates properties and services, with responsive navigation", as
   await expect(page.locator("#properti .service-card")).toHaveCount(0);
   await expect(page.locator(".services-section .property-card")).toHaveCount(0);
   await expect(page.locator(".hero-photo img")).toBeVisible();
+  await expect(page.locator(".property-hero .eyebrow")).toHaveText(
+    "PARTNER UNTUK SETIAP RENCANA",
+  );
+  await expect(page.locator(".property-hero")).not.toContainText(
+    "Temukan tempat untuk pulang",
+  );
+  const sale = page.getByRole("button", { name: "Dijual", exact: true });
+  const rent = page.getByRole("button", { name: "Sewa", exact: true });
+  await expect(sale).toHaveAttribute("aria-pressed", "true");
+  const saleBox = await sale.boundingBox();
+  const rentBox = await rent.boundingBox();
+  expect(Math.abs(saleBox!.y - rentBox!.y)).toBeLessThan(1);
+  const heroBox = await page.locator(".property-hero").boundingBox();
+  const headingBox = await page.locator("#hero-title").boundingBox();
+  expect(headingBox!.y).toBeGreaterThan(heroBox!.y);
+  expect(saleBox!.y + saleBox!.height).toBeLessThan(
+    heroBox!.y + heroBox!.height,
+  );
   const fits = await page.evaluate(
     () => document.documentElement.scrollWidth <= window.innerWidth,
   );
   expect(fits).toBe(true);
+});
+test("hero preserves search filters and uses the selected sale or rental transaction", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByPlaceholder("Mau tinggal di mana?").fill("Bintaro");
+  await page.getByRole("button", { name: "Sewa", exact: true }).click();
+  await expect(
+    page.getByRole("button", { name: "Sewa", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByPlaceholder("Mau tinggal di mana?")).toHaveValue(
+    "Bintaro",
+  );
+  await page
+    .getByRole("button", { name: "Cari Properti", exact: true })
+    .click();
+  await expect(page).toHaveURL(/transaksi=Disewa/);
+  expect(new URL(page.url()).searchParams.get("q")).toBe("Bintaro");
+  await expect(page.locator(".property-card")).toHaveCount(0);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Sewa", exact: true }).click();
+  await page.getByRole("button", { name: "Dijual", exact: true }).click();
+  await page.getByPlaceholder("Mau tinggal di mana?").fill("Bintaro");
+  await page
+    .getByRole("button", { name: "Cari Properti", exact: true })
+    .click();
+  await expect(page).toHaveURL(/transaksi=Dijual/);
+  await expect(page.locator(".property-card")).toHaveCount(1);
 });
 test("search filters listings and displays useful empty state", async ({
   page,

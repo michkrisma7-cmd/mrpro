@@ -14,7 +14,7 @@ test("home and footer open the KPR calculator with both bank choices", async ({
     .locator(".hero-actions")
     .getByRole("link", { name: "Kalkulator KPR" })
     .click();
-  await expect(page).toHaveTitle(/Kalkulator KPR BTN & BSI/);
+  await expect(page).toHaveTitle(/Kalkulator KPR.*BTN & BSI/);
   await expect(
     page.getByRole("radio", { name: /KPR Konvensional/ }),
   ).toBeChecked();

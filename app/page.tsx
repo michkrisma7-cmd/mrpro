@@ -8,7 +8,6 @@ import {
   BadgeCheck,
   HeartHandshake,
   CircleCheck,
-  Sparkles,
   House,
   MoveUpRight,
   KeyRound,
@@ -18,7 +17,7 @@ import { getFields, getListings, getServices, getSettings } from "@/lib/data";
 import { databaseConfigured } from "@/lib/db";
 import { PropertyCard } from "@/components/property-card";
 import { ServiceCard } from "@/components/service-card";
-import { SearchForm } from "@/components/search-form";
+import { HeroSearch } from "@/components/hero-search";
 import { whatsappLink } from "@/lib/format";
 import { getBlogPosts } from "@/lib/blog";
 import { BlogList } from "@/components/blog-list";
@@ -71,117 +70,37 @@ export default async function Home() {
           }),
         }}
       />
-      <section className="hero-section">
-        <div className="container hero-grid">
-          <div className="hero-copy">
-            <div className="eyebrow">
-              <span className="status-dot" />
-              PARTNER UNTUK SETIAP RENCANA
-            </div>
-            <h1>
-              {settings.heroTitle === "Ruang baru, cerita baru." ? (
-                <>
-                  Ruang baru,
-                  <br />
-                  <span>cerita baru.</span>
-                  <svg
-                    className="title-flourish"
-                    viewBox="0 0 300 14"
-                    aria-hidden="true"
-                  >
-                    <path
-                      d="M3 10Q130-4 295 5"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </>
-              ) : (
-                settings.heroTitle
-              )}
-            </h1>
-            <p>{settings.heroDescription}</p>
-            <div className="hero-actions">
-              <Link href="/kalkulator-kpr" className="button">
-                Kalkulator KPR <ArrowUpRight size={19} />
-              </Link>
-              <Link href={wa || "/#tentang"} className="text-button">
-                Kenali kami <ArrowRight size={17} />
-              </Link>
-            </div>
-            <div className="hero-trust">
-              <div className="avatar-stack">
-                {["AN", "RD", "SA", "BW"].map((n, i) => (
-                  <span
-                    key={n}
-                    style={{
-                      background: ["#d8c9b8", "#c4d3bf", "#e4d5c5", "#b9c8bc"][
-                        i
-                      ],
-                    }}
-                  >
-                    {n}
-                  </span>
-                ))}
-              </div>
-              <div>
-                <span className="trust-stars">BERSAMA MR PROPERTI</span>
-                <p>Langkah nyaman, bersama partner tepat.</p>
-              </div>
-            </div>
-          </div>
-          <div className="hero-visual">
-            <div className="hero-photo">
-              <Image
-                src="/images/hero.webp"
-                alt="Rumah tropis modern dengan taman asri dan pencahayaan alami"
-                fill
-                priority
-                sizes="(max-width: 800px) 90vw, 50vw"
-                className="cover"
-              />
-              <div className="photo-shade" />
-              <div className="hero-photo-label">
-                <span className="photo-tag">
-                  <span />
-                  RUANG YANG MENGINSPIRASI
-                </span>
-                <p>Tempat cerita Anda dimulai.</p>
-              </div>
-            </div>
-            <div className="hero-floating">
-              <span className="floating-icon">
-                <House size={24} />
-              </span>
-              <div>
-                <strong>Bukan sekadar tempat tinggal.</strong>
-                <span>Ini tentang menemukan rumah.</span>
-              </div>
-              <span className="floating-check">
-                <Check size={14} />
-              </span>
-            </div>
-            <span className="hero-spark">
-              <Sparkles size={31} strokeWidth={1.4} />
-            </span>
-          </div>
+      <section className="property-hero" aria-labelledby="hero-title">
+        <div className="hero-photo property-hero-photo">
+          <Image
+            src="/images/hero.webp"
+            alt="Rumah tropis modern dengan taman asri dan pencahayaan alami"
+            fill
+            priority
+            sizes="100vw"
+            className="cover"
+          />
         </div>
-        <div className="container search-container">
-          <div className="search-tabs">
-            <Link className="selected" href="/properti?transaksi=Dijual">
-              Beli Properti
-            </Link>
-            <Link href="/properti?transaksi=Disewa">Sewa Properti</Link>
+        <div className="container property-hero-content">
+          <div className="property-hero-heading">
+            <p className="eyebrow">PARTNER UNTUK SETIAP RENCANA</p>
+            <h1 id="hero-title">{settings.heroTitle}</h1>
           </div>
-          <SearchForm
+          <HeroSearch
             types={
               fields.find(
                 (f) => f.key === "jenis" && (f.showOnCard || f.showOnDetail),
               )?.options || []
             }
           />
+          <div className="hero-actions property-hero-actions">
+            <Link href="/kalkulator-kpr" className="button">
+              Kalkulator KPR <ArrowUpRight size={17} />
+            </Link>
+            <Link href={wa || "/#tentang"} className="text-button">
+              Kenali kami <ArrowRight size={16} />
+            </Link>
+          </div>
         </div>
       </section>
       <div className="trust-strip">
