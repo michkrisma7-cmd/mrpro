@@ -8,7 +8,9 @@ test("landing separates properties and services, with responsive navigation", as
     "Ruang baru",
   );
   await expect(page.locator("#properti .property-card")).toHaveCount(3);
-  await expect(page.locator(".services-section .service-card")).toHaveCount(4);
+  await expect(
+    page.locator(".services-section .home-service-card"),
+  ).toHaveCount(10);
   await expect(page.locator("#properti .service-card")).toHaveCount(0);
   await expect(page.locator(".services-section .property-card")).toHaveCount(0);
   await expect(page.locator(".hero-photo img")).toBeVisible();

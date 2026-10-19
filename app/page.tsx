@@ -13,10 +13,10 @@ import {
   KeyRound,
   Check,
 } from "lucide-react";
-import { getFields, getListings, getServices, getSettings } from "@/lib/data";
+import { getFields, getListings, getSettings } from "@/lib/data";
 import { databaseConfigured } from "@/lib/db";
 import { PropertyCard } from "@/components/property-card";
-import { ServiceCard } from "@/components/service-card";
+import { HomeServiceGrid } from "@/components/home-service-grid";
 import { HeroSearch } from "@/components/hero-search";
 import { whatsappLink } from "@/lib/format";
 import { getBlogPosts } from "@/lib/blog";
@@ -32,10 +32,9 @@ export const revalidate = 60;
 export default async function Home() {
   // Database-backed content must wait for a request, including when DATABASE_URL is set during builds.
   await connection();
-  const [fields, properties, services, settings, posts] = await Promise.all([
+  const [fields, properties, settings, posts] = await Promise.all([
     getFields(),
     getListings(),
-    getServices(),
     getSettings(),
     getBlogPosts(3),
   ]);
@@ -189,11 +188,7 @@ export default async function Home() {
               Jelajahi Layanan <ArrowUpRight size={17} />
             </Link>
           </div>
-          <div className="service-grid">
-            {services.slice(0, 4).map((s, i) => (
-              <ServiceCard key={s.id} service={s} index={i} />
-            ))}
-          </div>
+          <HomeServiceGrid />
           <div className="service-note">
             <ShieldCheck size={17} />
             <span>

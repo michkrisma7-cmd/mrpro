@@ -5,12 +5,22 @@ import { notFound } from "next/navigation";
 import { Check, Hammer, MessageCircle, ArrowUpRight } from "lucide-react";
 import { getServices, getSettings } from "@/lib/data";
 import { money, whatsappLink, siteUrl } from "@/lib/format";
+import { getHomeService } from "@/lib/home-services";
+import { HomeServiceDetail } from "@/components/home-service-detail";
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const slug = (await params).slug;
+  const category = getHomeService(slug);
+  if (category) {
+    return pageMetadata({
+      title: `${category.name} — Layanan Perbaikan & Pemeliharaan Rumah`,
+      description: `Layanan ${category.name} di Cikarang dan Bekasi: ${category.jobs.map((job) => job.title).join(", ")}. Lihat rincian pekerjaan, estimasi waktu, dan biaya.`,
+      path: `/layanan/${category.slug}`,
+    });
+  }
   const service = (await getServices()).find((x) => x.slug === slug);
   return service
     ? pageMetadata({
@@ -27,6 +37,8 @@ export default async function ServiceDetail({
   params: Promise<{ slug: string }>;
 }) {
   const slug = (await params).slug;
+  const category = getHomeService(slug);
+  if (category) return <HomeServiceDetail service={category} />;
   const s = (await getServices()).find((x) => x.slug === slug);
   if (!s) notFound();
   const settings = await getSettings();

@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { siteUrl } from "@/lib/format";
 import { db } from "@/lib/db";
 import { indexingEnabled } from "@/lib/seo";
+import { homeServices } from "@/lib/home-services";
 export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!indexingEnabled()) return [];
@@ -37,9 +38,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: p.updatedAt,
       priority: 0.8,
     })),
-    ...services.map((s) => ({
-      url: `${siteUrl()}/layanan/${s.slug}`,
+    ...homeServices.map((service) => ({
+      url: `${siteUrl()}/layanan/${service.slug}`,
       priority: 0.7,
     })),
+    ...services
+      .filter(
+        (service) =>
+          !homeServices.some((category) => category.slug === service.slug),
+      )
+      .map((s) => ({
+        url: `${siteUrl()}/layanan/${s.slug}`,
+        priority: 0.7,
+      })),
   ];
 }

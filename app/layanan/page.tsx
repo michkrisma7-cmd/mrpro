@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ShieldCheck, MessageCircle, Wrench } from "lucide-react";
 import { getServices } from "@/lib/data";
 import { ServiceCard } from "@/components/service-card";
+import { HomeServiceGrid } from "@/components/home-service-grid";
 export async function generateMetadata({
   searchParams,
 }: {
@@ -56,12 +57,16 @@ export default async function Services({
           3. Sepakati lingkup & jadwal
         </span>
       </div>
+      <HomeServiceGrid />
+      {services.length > 0 && (
+        <h2 className="service-provider-heading">Tenaga & layanan lainnya</h2>
+      )}
       <div className="service-grid">
         {services.map((s, i) => (
           <ServiceCard key={s.id} service={s} index={i} />
         ))}
       </div>
-      {!services.length && (
+      {jenis && !services.length && (
         <div className="empty-state">
           <h3>Layanan belum tersedia.</h3>
           <Link href="/layanan">Lihat semua layanan</Link>

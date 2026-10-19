@@ -4464,3 +4464,207 @@ td .text-button {
     font-size: 12px;
   }
 }
+
+/* Fixed service categories: two columns and five rows at every screen size. */
+.home-service-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.home-service-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 156px;
+  padding: 24px 16px;
+  border: 1px solid #dfe6d8;
+  border-radius: 14px;
+  background: #fff;
+  text-align: center;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.home-service-card:hover {
+  border-color: #7a936c;
+  box-shadow: 0 8px 24px #2343300d;
+}
+.home-service-card:focus-visible {
+  outline: 3px solid #526c46;
+  outline-offset: 4px;
+}
+.home-service-icon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: #edf2e8;
+  color: #526c46;
+}
+.home-service-card h3 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.5;
+  color: #2f4736;
+  overflow-wrap: anywhere;
+}
+.service-provider-heading {
+  margin: 40px 0 24px;
+}
+.home-service-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  align-items: start;
+  gap: 36px;
+}
+.home-service-work > h2,
+.home-service-prices > h2 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+.home-service-job {
+  margin-bottom: 12px;
+  border: 1px solid #e0e6dc;
+  border-radius: 12px;
+  background: #fff;
+  overflow: hidden;
+}
+.home-service-job summary {
+  padding: 20px;
+  font-weight: 600;
+  color: #2f4736;
+  cursor: pointer;
+}
+.home-service-job[open] summary {
+  border-bottom: 1px solid #e0e6dc;
+  background: #f5f7f1;
+}
+.home-service-job-body {
+  padding: 20px;
+  font-size: 14px;
+  line-height: 1.85;
+}
+.home-service-job-body dl {
+  margin-top: 20px;
+}
+.home-service-job-body dl > div + div {
+  margin-top: 16px;
+}
+.home-service-job-body dt {
+  font-weight: 600;
+  color: #2f4736;
+}
+.home-service-job-body dd {
+  margin: 4px 0 0;
+}
+.home-service-prices {
+  margin-top: 40px;
+}
+.home-service-price-note {
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+.home-service-table {
+  margin: 24px 0;
+  overflow-x: auto;
+}
+.home-service-table table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 1.7;
+  white-space: normal;
+}
+.home-service-table caption {
+  text-align: left;
+  font-size: 17px;
+  font-weight: 600;
+  color: #2f4736;
+  padding-bottom: 14px;
+}
+.home-service-table th,
+.home-service-table td {
+  padding: 14px;
+  border-bottom: 1px solid #e0e6dc;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  font-size: inherit;
+  color: inherit;
+}
+.home-service-table thead {
+  background: #edf2e8;
+  color: #2f4736;
+}
+.home-service-table tbody th {
+  font-weight: 400;
+  width: 55%;
+  background: transparent;
+}
+.home-service-table tbody tr:nth-child(even) {
+  background: #f8f9f5;
+}
+.home-service-guide {
+  padding: 24px;
+  border: 1px solid #e0e6dc;
+  border-radius: 14px;
+  background: #f5f7f1;
+}
+.home-service-guide h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+}
+.home-service-guide ul {
+  padding-left: 18px;
+  margin: 20px 0 24px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.home-service-guide li + li {
+  margin-top: 14px;
+}
+.home-service-guide > .text-button {
+  margin-top: 20px;
+}
+@media (max-width: 900px) {
+  .home-service-detail-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+}
+@media (max-width: 600px) {
+  .home-service-grid {
+    gap: 12px;
+  }
+  .home-service-card {
+    min-height: 150px;
+    padding: 20px 12px;
+    gap: 12px;
+  }
+  .home-service-card h3 {
+    font-size: 14px;
+  }
+  .home-service-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 15px;
+  }
+  .home-service-job summary,
+  .home-service-job-body {
+    padding: 16px;
+  }
+  .home-service-table th,
+  .home-service-table td {
+    padding: 12px 8px;
+  }
+  .home-service-table table {
+    font-size: 12px;
+  }
+}

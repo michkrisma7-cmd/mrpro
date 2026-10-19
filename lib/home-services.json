@@ -1,0 +1,1559 @@
+{
+  "timeGuide": [
+    "±30–60 menit setelah teknisi tiba = pekerjaan cepat, dihitung sejak teknisi mulai bekerja di lokasi.",
+    "±1 jam setelah tukang dan kenek tiba = pekerjaan yang membutuhkan tenaga bantu.",
+    "1–3 hari kerja = pekerjaan panjang; 1 hari kerja = 8 jam efektif.",
+    "Belum termasuk waktu tunggu material, survei, perizinan, dan masa curing/pengecatan kering.",
+    "Jika kerusakan lebih kompleks, teknisi akan memberikan estimasi ulang setelah survei."
+  ],
+  "categories": [
+    {
+      "name": "AC",
+      "slug": "ac",
+      "jobs": [
+        {
+          "title": "Pemasangan AC",
+          "description": "Proses teknis memasang unit AC split mulai dari penentuan posisi indoor pada ketinggian 2,1–2,5 meter dari lantai, jarak aman 15 cm dari plafon dan 15–20 cm dari dinding samping, pengeboran dinding 7–10 cm dengan kemiringan 5–10 derajat, pemasangan unit outdoor dengan ruang sirkulasi memadai, penyambungan pipa refrigeran dan kabel, vakum 15–20 menit, uji kebocoran, hingga uji fungsi dengan selisih suhu ideal sekitar 8°C.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "jasa pasang unit indoor & outdoor, bracket indoor, penyambungan pipa dan kabel standar, vakum, uji kebocoran, uji fungsi, dan perapian duct tape."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "unit AC, pipa refrigeran, kabel, selang drain, bracket outdoor, bobok tembok, dan material tambahan lain (dihitung terpisah sesuai kebutuhan)."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "titik listrik yang memadai, area indoor dan outdoor yang sudah dibebaskan, izin dari pengelola gedung (jika di apartemen/ruko)."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "2–4 jam setelah teknisi tiba untuk 1 unit wall split; 4–6 jam untuk cassette/standing floor."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk kebocoran sambungan dan pemasangan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah unit, panjang pipa di luar standar, akses lantai tinggi, jenis unit (split/cassette/standing), kondisi dinding (beton/keramik)."
+            }
+          ]
+        },
+        {
+          "title": "Cuci AC",
+          "description": "Perawatan berkala membersihkan filter, evaporator, blower, dan saluran pembuangan indoor/outdoor agar aliran udara lancar, tidak bau apek, dan performa pendinginan tetap optimal.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "bongkar cover indoor, cuci filter, cuci evaporator dan blower, pembersihan drain, vakum ringan, dan pemasangan kembali."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "isi freon, penggantian komponen, perbaikan kebocoran."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "akses listrik, area di bawah unit dilapisi (jika diperlukan) untuk cegah tetesan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "45–60 menit per unit setelah teknisi tiba."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "7 hari untuk kelancaran drain dan kebersihan unit."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah unit (diskon untuk 3 unit atau lebih), kondisi unit (berjamur berat), akses unit."
+            }
+          ]
+        },
+        {
+          "title": "Service AC",
+          "description": "Penanganan gangguan seperti tidak dingin, bocor freon, berisik, atau mati total, mencakup diagnosis, cek tekanan refrigeran, pemeriksaan kelistrikan dan mekanikal, perbaikan/penggantian komponen, hingga isi freon bila perlu.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "diagnosis, cek tekanan freon, cek kelistrikan dan kompresor, perbaikan ringan (pembersihan, penyetelan), dan uji fungsi."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "penggantian komponen besar (kompresor, PCB, kapasitor, kipas), freon isi ulang (dihitung terpisah), dan bongkar pasang unit."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "akses listrik, area di sekitar unit indoor/outdoor yang mudah dijangkau."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–2 jam setelah teknisi tiba untuk diagnosis dan perbaikan ringan; 2–4 jam jika perlu bongkar komponen atau isi freon."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk perbaikan yang dilakukan, tergantung jenis kerusakan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jenis kerusakan, kebutuhan freon, penggantian komponen, jenis refrigeran (R32/R410a/R22)."
+            }
+          ]
+        },
+        {
+          "title": "Bongkar Pasang AC",
+          "description": "Pelepasan unit dari lokasi lama dengan recovery freon, pelepasan pipa dan kabel, lalu pemasangan kembali di lokasi baru termasuk penyambungan pipa, vakum, uji kebocoran, dan uji fungsi.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "recovery freon, bongkar unit indoor dan outdoor, lepas pipa dan kabel, pemasangan kembali di lokasi baru, vakum, uji kebocoran, dan uji fungsi."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "pipa baru bila panjang tidak cukup, bracket outdoor baru, bobok tembok, kabel tambahan, dan freon tambahan bila diperlukan."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "akses listrik di lokasi baru, izin bongkar dari pengelola gedung (apartemen/ruko), area indoor dan outdoor baru yang sudah dibebaskan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "3–5 jam setelah teknisi tiba untuk 1 unit."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk kebocoran sambungan dan pemasangan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jarak pindah, akses lantai, jenis unit, panjang pipa baru."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Pemasangan & Bongkar",
+          "items": [
+            {
+              "label": "Jasa Pasang AC Wall Split (0,5 PK – 1 PK)",
+              "price": "Rp300.000 – Rp450.000 per unit"
+            },
+            {
+              "label": "Jasa Pasang AC Wall Split (1,5 PK – 2 PK)",
+              "price": "Rp375.000 – Rp550.000 per unit"
+            },
+            {
+              "label": "Jasa Pasang AC Cassette / Standing Floor",
+              "price": "Rp750.000 – Rp1.450.000 per unit"
+            },
+            {
+              "label": "Jasa Bongkar AC Lama",
+              "price": "Rp125.000 – Rp175.000 per unit"
+            },
+            {
+              "label": "Jasa Bongkar Pasang AC",
+              "price": "Rp450.000 – Rp500.000 per unit"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Pipa Refrigeran + Isolasi (1/4\" + 3/8\")",
+              "price": "Rp65.000 – Rp145.000 per meter"
+            },
+            {
+              "label": "Kabel Listrik / Kontrol (NYM)",
+              "price": "Rp12.000 – Rp50.000 per meter"
+            },
+            {
+              "label": "Selang Pembuangan Air (Flexible Drain)",
+              "price": "Rp10.000 per meter"
+            },
+            {
+              "label": "Bracket Outdoor AC + Dynabolt",
+              "price": "Rp80.000 – Rp150.000 per set"
+            },
+            {
+              "label": "Bobok Tembok (tanpa perapian)",
+              "price": "Rp30.000 – Rp50.000 per meter/m²"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Plafon",
+      "slug": "plafon",
+      "jobs": [
+        {
+          "title": "Pemasangan Plafon Gypsum",
+          "description": "Pemasangan rangka hollow dan penutup gypsum board untuk plafon rata, mencakup pengukuran ketinggian, pemasangan rangka dengan waterpass, pemasangan gypsum, penyambungan nat, dan finishing kompon.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pengukuran, pemasangan rangka hollow, pemasangan gypsum board, kompon nat, dan perapian sambungan."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material gypsum dan hollow (dapat disediakan atau dibeli konsumen), pengecatan plafon, dan pemasangan list profil."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "ruangan sudah dikosongkan atau barang ditutup, akses listrik untuk bor dan alat kerja."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–2 hari kerja setelah tukang dan kenek tiba untuk luas 12–15 m²; area lebih luas dihitung proporsional."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk kerataan dan sambungan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas area, tinggi plafon, bentuk desain (rata/drop/up-ceiling), jumlah titik lampu."
+            }
+          ]
+        },
+        {
+          "title": "Pemasangan Plafon PVC",
+          "description": "Pemasangan plafon PVC dengan rangka hollow, cocok untuk area lembap karena tahan air dan mudah dibersihkan, mencakup rangka, lembaran PVC, dan list profil penutup.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pemasangan rangka hollow, pemasangan lembaran PVC, dan pemasangan list profil penutup."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material PVC dan hollow, lampu, dan pekerjaan listrik."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "ruangan dikosongkan, akses listrik."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–2 hari kerja setelah tukang dan kenek tiba untuk 12–15 m²."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk kerataan dan sambungan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas area, jenis PVC (polos/print), tinggi plafon."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Plafon",
+          "description": "Penanganan plafon menguning, rembes, berjamur, atau runtuh, mencakup pelacakan kebocoran, penggantian gypsum rusak, perbaikan rangka, dan pengecatan ulang.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pelacakan sumber kebocoran, penggantian bagian gypsum rusak, perbaikan rangka, dan kompon nat."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "pengecatan ulang seluruh plafon, perbaikan atap di atasnya, dan penggantian rangka menyeluruh."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "akses ke area plafon, ruangan dikosongkan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "2–6 jam setelah tukang tiba untuk perbaikan ringan; 1–2 hari kerja jika area rusak luas."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk area yang diperbaiki."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas area rusak, penyebab kebocoran (perlu perbaikan atap atau tidak), jenis gypsum."
+            }
+          ]
+        },
+        {
+          "title": "Pemasangan List Plafon",
+          "description": "Pemasangan profil list gypsum/PVC pada pertemuan plafon dan dinding untuk menutup celah dan mempercantik ruangan.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pemasangan list profil dan perapian sambungan sudut."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material list dan pengecatan."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area dinding bersih dan kering."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "2–4 jam setelah tukang tiba untuk 10–15 meter lari."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "7 hari untuk kerapian sambungan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "panjang lari, jenis list, jumlah sudut."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Pemasangan & Bongkar",
+          "items": [
+            {
+              "label": "Jasa Pasang Plafon Gypsum (borongan material + tenaga)",
+              "price": "Rp275.000 – Rp350.000 per m²"
+            },
+            {
+              "label": "Jasa Pasang Plafon Gypsum (jasa saja)",
+              "price": "Rp120.000 – Rp155.000 per m²"
+            },
+            {
+              "label": "Jasa Bongkar Plafon Lama",
+              "price": "Rp45.000 per m²"
+            },
+            {
+              "label": "Jasa Pasang Plafon PVC",
+              "price": "Rp150.000 – Rp250.000 per m²"
+            },
+            {
+              "label": "Jasa Pasang List Gypsum",
+              "price": "Rp18.000 – Rp59.200 per meter lari"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Gypsum Board 1,2 m × 2,4 m",
+              "price": "Rp60.000 – Rp95.000 per lembar"
+            },
+            {
+              "label": "Rangka Hollow 2×4 / 4×4",
+              "price": "Rp15.000 – Rp30.000 per batang"
+            },
+            {
+              "label": "Kompon Nat + Pita",
+              "price": "Rp45.000 – Rp80.000 per set"
+            },
+            {
+              "label": "List Gypsum 10 cm",
+              "price": "Rp18.000 per meter lari"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kanopi",
+      "slug": "kanopi",
+      "jobs": [
+        {
+          "title": "Pemasangan Kanopi Baru",
+          "description": "Pembuatan rangka baja ringan/besi hollow dan pemasangan atap kanopi Alderon, spandek, polycarbonate, atau solartuff sesuai ukuran dan desain, mencakup pengukuran, rangka, atap, dan finishing.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pengukuran, fabrikasi rangka, pemasangan rangka, pemasangan atap, dan finishing."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "pekerjaan pondasi (jika diperlukan), pekerjaan listrik (lampu kanopi), dan pengecatan dinding."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area pemasangan bersih, akses listrik, izin lingkungan/RT/RW bila perlu."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–3 hari kerja setelah tukang dan kenek tiba, tergantung ukuran dan jenis atap."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk rangka dan sambungan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "ukuran kanopi, jenis atap (spandek/alderon/polycarbonate), ketebalan besi, desain (flat/miring/lengkung)."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Kanopi",
+          "description": "Penanganan rangka berkarat, bengkok, atau sambungan longgar, serta pengecatan ulang agar kanopi kokoh dan rapi.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "las ulang titik lemah, penggantian bagian rangka rusak, dan pengecatan area perbaikan."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "penggantian atap, pengecatan seluruh kanopi, dan perbaikan struktur bangunan."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area di bawah kanopi dikosongkan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "2–4 jam setelah tukang tiba untuk perbaikan ringan; 1 hari kerja jika banyak titik las."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk titik las yang dikerjakan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah titik las, tingkat karat, akses area."
+            }
+          ]
+        },
+        {
+          "title": "Penggantian Atap Kanopi",
+          "description": "Penggantian lembaran atap yang bocor, retak, atau memudar tanpa membongkar seluruh rangka, mencakup pelepasan atap lama, cek rangka, dan pemasangan atap baru.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pelepasan atap lama, pengecekan rangka, dan pemasangan atap baru."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material atap baru, penggantian rangka, dan pekerjaan listrik."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area di bawah kanopi dikosongkan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "3–6 jam setelah tukang dan kenek tiba untuk kanopi ukuran standar."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk sambungan dan kebocoran."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas atap, jenis material, kondisi rangka."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Pemasangan & Bongkar",
+          "items": [
+            {
+              "label": "Jasa Pasang Rangka Kanopi Besi Hollow 0,7 mm",
+              "price": "Rp180.000 – Rp250.000 per m²"
+            },
+            {
+              "label": "Jasa Pasang Rangka Kanopi Besi Hollow 1,0 mm",
+              "price": "Rp250.000 – Rp350.000 per m²"
+            },
+            {
+              "label": "Jasa Pasang Kanopi Baja Ringan + Atap Spandek",
+              "price": "Rp250.000 – Rp350.000 per m²"
+            },
+            {
+              "label": "Jasa Bongkar Kanopi Lama",
+              "price": "Rp50.000 – Rp100.000 per m²"
+            },
+            {
+              "label": "Upah Tukang Kanopi Harian",
+              "price": "Rp150.000 – Rp250.000 per orang per hari"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Atap Spandek Polos",
+              "price": "Rp60.000 – Rp100.000 per m²"
+            },
+            {
+              "label": "Atap Alderon Twinwall",
+              "price": "Rp150.000 – Rp250.000 per m²"
+            },
+            {
+              "label": "Atap Polycarbonate / Solartuff",
+              "price": "Rp150.000 – Rp300.000 per m²"
+            },
+            {
+              "label": "Cat Anti Karat",
+              "price": "Rp50.000 – Rp100.000 per kg"
+            },
+            {
+              "label": "Bracket / Sekrup Stainless",
+              "price": "Rp3.000 – Rp50.000 per buah"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pagar",
+      "slug": "pagar",
+      "jobs": [
+        {
+          "title": "Pemasangan Pagar Baru",
+          "description": "Pembuatan pagar besi, baja ringan, atau kombinasi tembok dan besi, mencakup pengukuran lahan, pengelasan rangka, pemasangan, dan finishing cat.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pengukuran, fabrikasi, pengelasan, pemasangan, dan finishing cat."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "pekerjaan pondasi/pagar tembok, kunci otomatis, dan pekerjaan listrik."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "lahan bersih, akses listrik, izin lingkungan/RT/RW."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–3 hari kerja setelah tukang dan kenek tiba, tergantung panjang dan desain pagar."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk sambungan las dan kerataan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "panjang pagar, desain (polos/ukiran), ketebalan besi, jenis finishing (cat/duco)."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Pagar",
+          "description": "Penanganan pagar miring, berkarat, engsel rusak, atau sambungan lepas, termasuk las ulang, penggantian komponen, dan pengecatan.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "las ulang, penggantian engsel/handle, dan pengecatan area perbaikan."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "pengecatan seluruh pagar dan penggantian bagian besar."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area di sekitar pagar dikosongkan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "2–4 jam setelah tukang tiba untuk perbaikan ringan; 1 hari kerja jika banyak titik las."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk titik las yang dikerjakan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah titik las, tingkat karat, akses area."
+            }
+          ]
+        },
+        {
+          "title": "Pengecatan Pagar",
+          "description": "Persiapan permukaan dengan pembersihan karat dan pengecatan ulang untuk melindungi dari korosi dan memperbarui tampilan.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pembersihan karat, plamir bila perlu, dan pengecatan dua lapis."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "perbaikan struktur pagar, pengelasan, dan penggantian komponen."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area di sekitar pagar dikosongkan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "4–8 jam setelah tukang tiba untuk pagar standar rumah, tergantung luas dan tingkat karat."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "7 hari untuk kerataan dan daya tutup cat."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas pagar, tingkat karat, jenis cat, jumlah warna."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Pemasangan & Perbaikan",
+          "items": [
+            {
+              "label": "Jasa Pasang Pagar Besi (tenaga harian)",
+              "price": "Rp100.000 – Rp150.000 per hari"
+            },
+            {
+              "label": "Jasa Fabrikasi + Pasang Pagar Besi Hollow (jasa saja)",
+              "price": "Rp200.000 – Rp300.000 per meter lari"
+            },
+            {
+              "label": "Jasa Las Perbaikan Pagar",
+              "price": "Rp150.000 – Rp300.000 per titik"
+            },
+            {
+              "label": "Jasa Pengecatan Pagar",
+              "price": "Rp30.000 – Rp50.000 per m²"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Besi Hollow 2×4 / 4×4",
+              "price": "Rp100.000 – Rp200.000 per meter lari"
+            },
+            {
+              "label": "Pagar BRC Terpasang (hot dip galvanis)",
+              "price": "Rp230.000 – Rp390.000 per meter"
+            },
+            {
+              "label": "Cat Besi Anti Karat",
+              "price": "Rp50.000 – Rp100.000 per kg"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kelistrikan",
+      "slug": "kelistrikan",
+      "jobs": [
+        {
+          "title": "Instalasi Listrik Baru",
+          "description": "Pemasangan jalur kabel, MCB, saklar, dan stop kontak sesuai standar keselamatan, termasuk penataan jalur dalam dinding atau conduit.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pemasangan jalur kabel, MCB, saklar, dan stop kontak sesuai standar, serta penataan rapi."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material kabel, MCB, saklar, dan stop kontak, serta pekerjaan plesteran/pengecatan bekas jalur."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "rencana titik listrik, akses listrik sementara, dan area kerja yang aman."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "45–90 menit setelah teknisi tiba per titik; pekerjaan banyak titik dihitung per hari kerja."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk sambungan dan fungsi."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah titik, jalur tersembunyi/terbuka, jenis bangunan, jarak panel."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Korsleting",
+          "description": "Pelacakan dan penanganan hubungan arus pendek, penggantian kabel rusak, dan pengecekan MCB agar instalasi aman.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pelacakan, penggantian kabel rusak ringan, dan pengecekan MCB."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "penggantian MCB, penggantian kabel seluruh jalur, dan perbaikan dinding bekas jalur."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area sekitar panel dan stop kontak yang mudah diakses."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–2 jam setelah teknisi tiba untuk kasus ringan; 2–4 jam jika jalur tersembunyi."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk titik yang diperbaiki."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "tingkat kesulitan pelacakan, jalur tersembunyi, jumlah titik terdampak."
+            }
+          ]
+        },
+        {
+          "title": "Pemasangan Saklar & Stop Kontak",
+          "description": "Pemasangan/penggantian saklar dan stop kontak, termasuk cek jalur dan pemastian beban tidak berlebih.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pemasangan/penggantian, cek jalur, dan pengujian fungsi."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material saklar/stop kontak dan perbaikan dinding bekas bongkaran."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "saklar/stop kontak pengganti (jika sudah dibeli), area dinding dibersihkan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "30–60 menit setelah teknisi tiba per titik."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk fungsi."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah titik, jalur tersembunyi, jenis saklar (single/seri)."
+            }
+          ]
+        },
+        {
+          "title": "Pemasangan Lampu",
+          "description": "Pemasangan lampu indoor/outdoor, baik titik baru maupun penggantian, dengan penataan kabel rapi dan daya sesuai kebutuhan.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pemasangan lampu, penataan kabel, dan pengujian fungsi."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material lampu dan fiting, pekerjaan jalur kabel baru yang jauh, dan perbaikan plafon bekas bongkaran."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "lampu dan fiting (jika sudah dibeli), akses tangga untuk plafon tinggi."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "30–45 menit setelah teknisi tiba per titik."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "7 hari untuk fungsi."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah titik, tinggi plafon, jalur kabel baru."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Instalasi & Perbaikan",
+          "items": [
+            {
+              "label": "Jasa Instalasi Titik Lampu",
+              "price": "Rp80.000 – Rp150.000 per titik"
+            },
+            {
+              "label": "Jasa Instalasi Titik Stop Kontak",
+              "price": "Rp80.000 – Rp150.000 per titik"
+            },
+            {
+              "label": "Jasa Instalasi Titik AC / TV / Water Heater",
+              "price": "Rp100.000 – Rp200.000 per titik"
+            },
+            {
+              "label": "Jasa Perbaikan Korsleting",
+              "price": "Rp150.000 – Rp350.000 per kasus"
+            },
+            {
+              "label": "Jasa Pemasangan Panel MCB",
+              "price": "Rp250.000 – Rp500.000 per unit"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Kabel NYM 1,5 mm / 2,5 mm",
+              "price": "Rp12.000 – Rp50.000 per meter"
+            },
+            {
+              "label": "MCB 1 Phase",
+              "price": "Rp45.000 – Rp150.000 per unit"
+            },
+            {
+              "label": "Saklar / Stop Kontak",
+              "price": "Rp25.000 – Rp100.000 per unit"
+            },
+            {
+              "label": "Fiting Lampu",
+              "price": "Rp15.000 – Rp50.000 per unit"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Baja Ringan",
+      "slug": "baja-ringan",
+      "jobs": [
+        {
+          "title": "Pemasangan Rangka Atap Baja Ringan",
+          "description": "Pemasangan rangka atap baja ringan C75/C100 dengan perhitungan beban dan kemiringan, termasuk reng dan penutup atap.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pemasangan rangka baja ringan, reng, dan penutup atap."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material baja ringan, reng, dan penutup atap (dapat disediakan atau dibeli konsumen), pekerjaan talang dan listplank."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "desain atap, akses listrik, area kerja aman."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "2–5 hari kerja setelah tukang dan kenek tiba, tergantung luas atap."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk sambungan dan kerataan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas atap, kemiringan, jumlah titik sudut, jenis penutup atap."
+            }
+          ]
+        },
+        {
+          "title": "Pemasangan Rangka Plafon Baja Ringan",
+          "description": "Pemasangan rangka plafon baja ringan sebagai pengganti hollow, cocok untuk bentang lebar, mencakup pengukuran, rangka, dan cek kerataan.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pengukuran, pemasangan rangka baja ringan, dan cek kerataan."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material baja ringan, penutup plafon, dan pekerjaan listrik."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "ruangan dikosongkan, akses listrik."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–2 hari kerja setelah tukang dan kenek tiba untuk 12–15 m²."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk kerataan."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas area, bentang, jumlah titik gantung."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Rangka Baja Ringan",
+          "description": "Penanganan rangka bengkok, sambungan lepas, atau korosi, termasuk penguatan dan penggantian bagian rusak.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "penguatan sambungan, penggantian bagian rusak, dan pengecekan struktur."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "penggantian rangka menyeluruh dan penggantian penutup atap."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area kerja aman, akses atap."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "3–6 jam setelah tukang tiba untuk perbaikan ringan; 1 hari kerja jika area luas."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk titik yang diperbaiki."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah titik rusak, luas area, akses atap."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Pemasangan & Bongkar",
+          "items": [
+            {
+              "label": "Jasa Pasang Rangka Baja Ringan Saja",
+              "price": "Rp45.000 – Rp150.000 per m²"
+            },
+            {
+              "label": "Jasa Bongkar Atap Lama",
+              "price": "Rp35.000 per m²"
+            },
+            {
+              "label": "Jasa Pasang Rangka + Atap (paket)",
+              "price": "Rp140.000 – Rp375.000 per m²"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Profil Baja Ringan C75 / C100",
+              "price": "Rp15.000 – Rp30.000 per meter"
+            },
+            {
+              "label": "Reng Baja Ringan",
+              "price": "Rp10.000 – Rp15.000 per meter"
+            },
+            {
+              "label": "Genteng Metal Berpasir",
+              "price": "Rp50.000 – Rp80.000 per m²"
+            },
+            {
+              "label": "Baut / Sekrup Baja Ringan",
+              "price": "Rp500 – Rp1.500 per buah"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Dak / Peningkatan Rumah",
+      "slug": "dak-peningkatan-rumah",
+      "jobs": [
+        {
+          "title": "Pengecoran Dak Beton",
+          "description": "Pengecoran lantai atas beton bertulang, mencakup bekisting, pembesian, pengecoran, dan curing.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pemasangan bekisting, pembesian, pengecoran, dan curing."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material beton, besi, dan bekisting (dapat disediakan atau dibeli konsumen), pekerjaan waterproofing, dan pekerjaan dinding di atasnya."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "akses material (truk molen), izin lingkungan, area kerja aman."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–3 hari kerja setelah tukang dan kenek tiba, belum termasuk masa curing 7–14 hari."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk struktur cor."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas dak, ketebalan, mutu beton, akses material, lantai bangunan."
+            }
+          ]
+        },
+        {
+          "title": "Peningkatan Rumah (Renovasi Vertikal)",
+          "description": "Penambahan lantai atau ruang baru di atas bangunan existing, mencakup cek struktur, perencanaan, dan pelaksanaan.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "cek struktur, perencanaan teknis, dan pelaksanaan pekerjaan struktur."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "perizinan, pekerjaan arsitektur/finishing, dan pekerjaan MEP (mekanikal, elektrikal, plumbing)."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "gambar rencana, izin bangunan, dan akses material."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "3–8 minggu setelah pekerjaan dimulai, tergantung luas dan tingkat kesulitan."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk struktur, 60 hari untuk waterproofing."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas bangunan, jumlah lantai, kondisi struktur existing, tingkat kesulitan desain."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Dak Bocor",
+          "description": "Penanganan rembes/bocor dak beton, termasuk pelacakan titik bocor, perbaikan retak, dan waterproofing.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pelacakan titik bocor, perbaikan retak, dan pelapisan waterproofing."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "pekerjaan struktur besar, penggantian beton, dan pekerjaan talang."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area dak bersih dan kering."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–2 hari kerja setelah tukang tiba, tergantung luas dan tingkat kebocoran."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "60 hari untuk waterproofing."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas dak, tingkat kebocoran, jenis waterproofing."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Pengecoran & Perbaikan",
+          "items": [
+            {
+              "label": "Jasa Cor Dak Beton (tenaga saja)",
+              "price": "Rp50.000 – Rp113.750 per m²"
+            },
+            {
+              "label": "Jasa Borongan Cor Dak Beton K225 (material + tenaga)",
+              "price": "Rp820.000 – Rp845.000 per m²"
+            },
+            {
+              "label": "Jasa Waterproofing Dak Bocor",
+              "price": "Rp50.000 – Rp75.000 per m²"
+            },
+            {
+              "label": "Jasa Cek Kebocoran",
+              "price": "Rp100.000 – Rp200.000 per kunjungan"
+            },
+            {
+              "label": "Upah Tukang Harian",
+              "price": "Rp200.000 – Rp250.000 per orang per hari"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Beton Readymix K225",
+              "price": "Rp750.000 – Rp800.000 per m³"
+            },
+            {
+              "label": "Besi Beton / Wiremesh",
+              "price": "Rp15.000 – Rp25.000 per batang"
+            },
+            {
+              "label": "Bekisting / Multiplek Cor",
+              "price": "Rp100.000 – Rp200.000 per lembar"
+            },
+            {
+              "label": "Waterproofing Membrane",
+              "price": "Rp50.000 – Rp120.000 per m²"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Kitchen Set",
+      "slug": "kitchen-set",
+      "jobs": [
+        {
+          "title": "Pembuatan Kitchen Set Baru",
+          "description": "Pembuatan kabinet dapur sesuai ukuran ruang, mencakup pemilihan material multiplek/HPL, perakitan, dan pemasangan.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pengukuran, desain sederhana, perakitan, dan pemasangan kabinet."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "pekerjaan top table (granit/kuarsa), pekerjaan plumbing, dan pekerjaan listrik."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "ukuran ruang, referensi desain, akses listrik."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "5–10 hari kerja setelah tukang dan kenek tiba, tergantung panjang dan model."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk sambungan dan fungsi."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "panjang kabinet, material (multiplek/plywood/HPL/duco), model (lurus/L/shape), hardware."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Kitchen Set",
+          "description": "Penanganan kabinet lapuk, pintu lepas, atau permukaan mengelupas, termasuk penggantian bagian dan finishing ulang.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "penggantian bagian rusak, perbaikan engsel, dan finishing ulang area yang diperbaiki."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "penggantian seluruh kabinet dan pekerjaan top table."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area dapur dikosongkan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "2–6 jam setelah tukang tiba untuk perbaikan ringan; 1–2 hari kerja jika banyak bagian diganti."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk area yang diperbaiki."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah bagian rusak, tingkat kerusakan, jenis material."
+            }
+          ]
+        },
+        {
+          "title": "Penggantian Hardware",
+          "description": "Penggantian engsel, rel laci, atau handle yang tidak berfungsi agar kitchen set nyaman dan aman.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pelepasan hardware lama, pemasangan hardware baru, dan penyetelan."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material hardware baru."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "hardware pengganti (jika sudah dibeli)."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–2 jam setelah tukang tiba untuk beberapa titik."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk fungsi."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah titik, jenis hardware (soft close/standar), jenis kabinet."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Pembuatan & Perbaikan",
+          "items": [
+            {
+              "label": "Jasa Pembuatan Kitchen Set Multiplek + HPL",
+              "price": "Rp1.500.000 – Rp2.000.000 per meter lari"
+            },
+            {
+              "label": "Jasa Pembuatan Kitchen Set Plywood + Duco",
+              "price": "Rp4.000.000 – Rp6.000.000 per meter lari"
+            },
+            {
+              "label": "Jasa Perbaikan Kitchen Set",
+              "price": "Rp500.000 – Rp1.500.000 per unit"
+            },
+            {
+              "label": "Jasa Penggantian Hardware",
+              "price": "Rp100.000 – Rp300.000 per titik"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Multiplek / Plywood 18 mm",
+              "price": "Rp250.000 – Rp450.000 per lembar"
+            },
+            {
+              "label": "HPL",
+              "price": "Rp80.000 – Rp150.000 per meter"
+            },
+            {
+              "label": "Engsel Soft Close",
+              "price": "Rp25.000 – Rp60.000 per buah"
+            },
+            {
+              "label": "Rel Laci",
+              "price": "Rp50.000 – Rp150.000 per set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pengecatan",
+      "slug": "pengecatan",
+      "jobs": [
+        {
+          "title": "Pengecatan Interior",
+          "description": "Pengecatan dinding dan plafon dalam ruangan, mencakup plamir, amplas, dan pengecatan dua lapis.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "plamir ringan, amplas, dan pengecatan dua lapis."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "perbaikan dinding retak besar, pengecatan kusen/pintu, dan pengecatan eksterior."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "ruangan dikosongkan atau barang ditutup, akses listrik."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "4–8 jam setelah tukang tiba per ruang standar; area luas dihitung per hari kerja."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "7 hari untuk kerataan warna."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas area, tinggi plafon, kondisi dinding, jenis cat."
+            }
+          ]
+        },
+        {
+          "title": "Pengecatan Eksterior",
+          "description": "Pengecatan dinding luar tahan cuaca, termasuk penanganan rembes dan cat weathershield.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "persiapan permukaan, penanganan rembes ringan, dan pengecatan dua lapis weathershield."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "perbaikan struktur dinding, waterproofing dak, dan pengecatan pagar."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area di sekitar dinding dikosongkan, akses tangga/perancah untuk lantai tinggi."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–2 hari kerja setelah tukang dan kenek tiba, tergantung luas dan tinggi bangunan."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "7 hari untuk kerataan warna."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas area, tinggi bangunan, tingkat rembes, jenis cat."
+            }
+          ]
+        },
+        {
+          "title": "Pengecatan Ulang (Repaint)",
+          "description": "Pengecatan ulang permukaan lama setelah pembersihan dan perbaikan retak untuk menyegarkan tampilan.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pembersihan permukaan, perbaikan retak ringan, dan pengecatan dua lapis."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "perbaikan plesteran besar, pengecatan kusen/pintu, dan pekerjaan plafon."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "ruangan dikosongkan, akses listrik."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "4–8 jam setelah tukang tiba per ruang standar; 1–2 hari kerja untuk seluruh rumah."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "7 hari untuk kerataan warna."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas area, tingkat kerusakan permukaan, jenis cat, jumlah warna."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Pengecatan",
+          "items": [
+            {
+              "label": "Jasa Cat Interior (standar)",
+              "price": "Rp15.000 – Rp35.000 per m²"
+            },
+            {
+              "label": "Jasa Cat Eksterior (weathershield)",
+              "price": "Rp25.000 – Rp50.000 per m²"
+            },
+            {
+              "label": "Jasa Cat Ulang (termasuk plamir ringan)",
+              "price": "Rp30.000 – Rp60.000 per m²"
+            },
+            {
+              "label": "Jasa Cat Tekstur",
+              "price": "Rp50.000 – Rp60.000 per m²"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Cat Tembok Standar (5 kg)",
+              "price": "Rp80.000 – Rp150.000 per kaleng"
+            },
+            {
+              "label": "Cat Tembok Premium (5 kg)",
+              "price": "Rp150.000 – Rp300.000 per kaleng"
+            },
+            {
+              "label": "Plamir / Compound",
+              "price": "Rp45.000 – Rp80.000 per sak"
+            },
+            {
+              "label": "Amplas & Kape",
+              "price": "Rp10.000 – Rp30.000 per set"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Perbaikan Rumah",
+      "slug": "perbaikan-rumah",
+      "jobs": [
+        {
+          "title": "Perbaikan Atap Bocor",
+          "description": "Pelacakan titik bocor dan perbaikan atap, talang, atau sambungan, termasuk penggantian genteng/lembaran rusak.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pelacakan titik bocor, perbaikan sambungan, dan penggantian genteng/lembaran rusak."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "penggantian rangka atap, waterproofing dak, dan pengecatan plafon."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area kerja aman, akses atap, dan ruangan di bawahnya dikosongkan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–3 jam setelah tukang tiba untuk perbaikan ringan; 1–2 hari kerja jika area bocor luas."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk titik yang diperbaiki."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas area bocor, jenis atap (genteng/metal/spandek), tingkat kerusakan, akses."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Pipa & Sanitasi",
+          "description": "Penanganan pipa bocor, tersumbat, atau mampet, termasuk wastafel, kloset, dan saluran air.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "pelacakan, perbaikan/penggantian pipa, dan pengujian aliran."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "penggantian kloset/wastafel baru dan pembongkaran dinding/lantai besar."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area kerja di sekitar sumber masalah dikosongkan."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–2 jam setelah tukang tiba untuk perbaikan ringan; 3–6 jam jika perlu bongkar dinding/lantai."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk titik yang diperbaiki."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jenis kerusakan, jalur pipa tersembunyi, kebutuhan bongkar dinding/lantai."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Dinding & Lantai",
+          "description": "Penanganan retak dinding, plesteran rusak, keramik pecah, atau lantai menggembung, mencakup perbaikan dan finishing.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "perbaikan retak, plesteran ulang, dan penggantian keramik yang pecah."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "material keramik baru, pengecatan ulang seluruh dinding, dan pekerjaan struktur."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area kerja dikosongkan, keramik pengganti (jika sudah dibeli)."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "2–6 jam setelah tukang tiba untuk perbaikan ringan; 1–2 hari kerja jika area luas."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk area yang diperbaiki."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "luas area, tingkat kerusakan, jenis material, jumlah keramik."
+            }
+          ]
+        },
+        {
+          "title": "Perbaikan Kusen & Pintu",
+          "description": "Perbaikan kusen lapuk, pintu tidak rata, atau engsel rusak, termasuk penggantian komponen.",
+          "details": [
+            {
+              "label": "Termasuk",
+              "text": "perbaikan kusen, penyetelan pintu, dan penggantian engsel/handle."
+            },
+            {
+              "label": "Tidak termasuk",
+              "text": "penggantian kusen/pintu baru dan pengecatan seluruh pintu."
+            },
+            {
+              "label": "Yang perlu disiapkan",
+              "text": "area kerja dikosongkan, komponen pengganti (jika sudah dibeli)."
+            },
+            {
+              "label": "Estimasi waktu",
+              "text": "1–3 jam setelah tukang tiba per unit."
+            },
+            {
+              "label": "Garansi pekerjaan",
+              "text": "30 hari untuk fungsi."
+            },
+            {
+              "label": "Faktor yang mempengaruhi harga",
+              "text": "jumlah unit, tingkat kerusakan, jenis material."
+            }
+          ]
+        }
+      ],
+      "priceGroups": [
+        {
+          "title": "Biaya Jasa Perbaikan",
+          "items": [
+            {
+              "label": "Jasa Cek Kebocoran Atap",
+              "price": "Rp100.000 – Rp200.000 per kunjungan"
+            },
+            {
+              "label": "Jasa Waterproofing Atap / Dak",
+              "price": "Rp50.000 – Rp75.000 per m²"
+            },
+            {
+              "label": "Upah Tukang Harian",
+              "price": "Rp200.000 – Rp250.000 per orang per hari"
+            },
+            {
+              "label": "Jasa Perbaikan Retak Dinding Ringan",
+              "price": "Rp50.000 – Rp65.000 per m²"
+            },
+            {
+              "label": "Jasa Perbaikan Pipa Bocor",
+              "price": "Rp150.000 – Rp400.000 per titik"
+            },
+            {
+              "label": "Jasa Pasang Kusen Aluminium (jasa saja)",
+              "price": "Rp150.000 per meter lari"
+            }
+          ]
+        },
+        {
+          "title": "Biaya Material Tambahan (Per Meter / Satuan)",
+          "items": [
+            {
+              "label": "Genteng / Spandek Pengganti",
+              "price": "Rp67.000 – Rp200.000 per lembar"
+            },
+            {
+              "label": "Pipa PVC / PPR + Fitting",
+              "price": "Rp25.000 – Rp80.000 per meter"
+            },
+            {
+              "label": "Semen / Mortar Perbaikan",
+              "price": "Rp60.000 – Rp100.000 per sak"
+            },
+            {
+              "label": "Kusen Aluminium 4 inch",
+              "price": "Rp150.000 per meter lari"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
