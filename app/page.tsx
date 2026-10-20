@@ -1,3 +1,4 @@
+import "./consign-feature.css";
 import Link from "next/link";
 import { connection } from "next/server";
 import Image from "next/image";
@@ -196,42 +197,28 @@ export default async function Home() {
           </div>
         </div>
       </section>
-      <section className="section container">
-        <div className="consign-banner">
-          <div
-            className="consign-art"
-            style={{ overflow: "hidden", borderRadius: 14 }}
-          >
-            <Image
-              src="/images/consign-interior.webp"
-              alt="Interior rumah dengan ruang keluarga nyaman dan tangga modern"
-              fill
-              sizes="(max-width: 600px) calc(100vw - 90px), (max-width: 1100px) 29vw, 330px"
-              style={{ objectFit: "cover", objectPosition: "center 72%" }}
-            />
-          </div>
-          <div>
-            <p className="eyebrow">PROPERTI ANDA, PELUANG BARU</p>
-            <h2>
-              Punya properti?
-              <br />
-              Biar kami bantu <span>temukan pemilik barunya.</span>
-            </h2>
-            <p>
-              Titipkan rumah, tanah, atau ruang usaha Anda. Isi informasinya,
-              <br className="desktop-only" /> tim kami akan membantu langkah
-              selanjutnya.
-            </p>
-            <Link className="button" href="/titip-properti">
-              Titip Properti Saya <ArrowUpRight size={18} />
-            </Link>
-          </div>
-          <ArrowUpRight
-            className="banner-decoration"
-            size={65}
-            strokeWidth={0.8}
-            aria-hidden="true"
-          />
+      <section className="consign-feature" aria-labelledby="consign-title">
+        <Image
+          src="/images/consign-interior.webp"
+          alt=""
+          fill
+          sizes="100vw"
+          className="consign-feature-photo"
+        />
+        <div className="container consign-feature-content">
+          <p className="eyebrow">PROPERTI ANDA, PELUANG BARU</p>
+          <h2 id="consign-title">
+            Punya properti?
+            <br />
+            Biar kami bantu <span>temukan pemilik barunya.</span>
+          </h2>
+          <p className="consign-feature-description">
+            Titipkan rumah, tanah, atau ruang usaha Anda. Isi informasinya, tim
+            kami akan membantu langkah selanjutnya.
+          </p>
+          <Link className="button" href="/titip-properti">
+            Titip Properti Saya <ArrowUpRight size={18} />
+          </Link>
         </div>
       </section>
       <section className="section container about-section" id="tentang">

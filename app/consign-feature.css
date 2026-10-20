@@ -1,0 +1,87 @@
+.consign-feature {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  margin: 0 0 64px;
+  overflow: hidden;
+  background: #233c32;
+  color: white;
+}
+.consign-feature .consign-feature-photo {
+  object-fit: cover;
+  object-position: center 72%;
+  z-index: -2;
+}
+.consign-feature::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    rgb(13 31 25 / 88%),
+    rgb(13 31 25 / 66%) 48%,
+    rgb(13 31 25 / 12%)
+  );
+}
+.consign-feature-content {
+  position: relative;
+  padding-block: 94px;
+}
+.consign-feature .eyebrow {
+  color: #d6e5bc;
+  margin-bottom: 22px;
+}
+.consign-feature h2 {
+  max-width: 720px;
+  font-size: clamp(32px, 3.7vw, 50px);
+  line-height: 1.18;
+  letter-spacing: -1.8px;
+  color: white;
+}
+.consign-feature h2 span {
+  color: #d6e5bc;
+}
+.consign-feature-description {
+  max-width: 470px;
+  margin: 24px 0 30px;
+  color: #ecf0e8;
+  font-size: 14px;
+  line-height: 1.85;
+}
+.consign-feature .button {
+  background: #e3edcf;
+  color: #213d32;
+  border-color: #e3edcf;
+}
+.consign-feature .button:hover {
+  background: white;
+  border-color: white;
+}
+@media (max-width: 600px) {
+  .consign-feature {
+    margin-bottom: 42px;
+  }
+  .consign-feature::before {
+    background: linear-gradient(
+      90deg,
+      rgb(13 31 25 / 84%),
+      rgb(13 31 25 / 56%)
+    );
+  }
+  .consign-feature-content {
+    padding-block: 62px;
+  }
+  .consign-feature h2 {
+    font-size: clamp(30px, 8vw, 38px);
+    letter-spacing: -1px;
+  }
+  .consign-feature .eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.6px;
+  }
+  .consign-feature-description {
+    font-size: 13px;
+    margin-block: 20px 26px;
+  }
+}
