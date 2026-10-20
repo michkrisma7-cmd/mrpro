@@ -10,8 +10,6 @@ import {
   CircleCheck,
   House,
   MoveUpRight,
-  KeyRound,
-  Check,
 } from "lucide-react";
 import { getFields, getListings, getSettings } from "@/lib/data";
 import { databaseConfigured } from "@/lib/db";
@@ -200,15 +198,17 @@ export default async function Home() {
       </section>
       <section className="section container">
         <div className="consign-banner">
-          <div className="consign-art">
-            <span className="art-circle" />
-            <House size={110} strokeWidth={0.8} />
-            <span className="art-key">
-              <KeyRound size={30} />
-            </span>
-            <span className="art-check">
-              <Check size={22} />
-            </span>
+          <div
+            className="consign-art"
+            style={{ overflow: "hidden", borderRadius: 14 }}
+          >
+            <Image
+              src="/images/consign-interior.webp"
+              alt="Interior rumah dengan ruang keluarga nyaman dan tangga modern"
+              fill
+              sizes="(max-width: 600px) calc(100vw - 90px), (max-width: 1100px) 29vw, 330px"
+              style={{ objectFit: "cover", objectPosition: "center 72%" }}
+            />
           </div>
           <div>
             <p className="eyebrow">PROPERTI ANDA, PELUANG BARU</p>
