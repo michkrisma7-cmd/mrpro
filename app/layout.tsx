@@ -7,6 +7,7 @@ import "@fontsource-variable/manrope";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { ChatWidget } from "@/components/chat-widget";
 import { getSettings } from "@/lib/data";
 import { siteUrl } from "@/lib/format";
 import { brand, homeTitle, homeDescription, indexingEnabled } from "@/lib/seo";
@@ -31,7 +32,13 @@ export const metadata: Metadata = {
 };
 async function SiteFooter() {
   await connection();
-  return <Footer settings={await getSettings()} />;
+  const settings = await getSettings();
+  return (
+    <>
+      <Footer settings={settings} />
+      <ChatWidget whatsapp={settings.whatsapp} />
+    </>
+  );
 }
 
 export default function RootLayout({

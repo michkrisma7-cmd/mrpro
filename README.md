@@ -218,3 +218,7 @@ Build image web dan migrasi memakai cache GitHub Actions terpisah. Perubahan kod
 ## Otomasi blog n8n
 
 Workflow WordPress yang dimigrasikan ke API Next.js tersedia di [workflows/n8n/mr-properti-blog-nextjs.json](workflows/n8n/mr-properti-blog-nextjs.json). Ikuti [panduan setup](workflows/n8n/README.md) untuk credential Header Auth, uji manual tanpa publikasi, dan jadwal 4x sehari WIB. Kedua method `GET /api/blog` (riwayat dan pemeriksaan slot) dan `POST /api/blog` (simpan artikel) memakai `BLOG_API_KEY` melalui header `x-api-key`.
+
+## Chat
+
+Tombol **Chat** di kanan bawah membantu informasi properti dan layanan dari knowledge publik MR Properti. Pertanyaan di luar cakupan, data yang belum cukup, permintaan tim dan kegagalan layanan diarahkan ke WhatsApp dari Pengaturan Situs. Integrasi memakai webhook n8n melalui server Next.js; ikuti [setup Chat](workflows/n8n/CHAT.md). Isi `N8N_CHAT_WEBHOOK_URL` dan `N8N_CHAT_WEBHOOK_SECRET` pada environment server. Secret tidak dikirim ke browser.
