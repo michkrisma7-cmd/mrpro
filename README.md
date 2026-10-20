@@ -214,3 +214,7 @@ Migrasi memakai Compose yang sama dengan service web, dengan override image seme
 Pull dan up langsung memakai `docker compose` dari `~/web-me`. Migrasi memakai konfigurasi hasil `docker compose config` dalam file sementara dengan izin terbatas yang dihapus setelah proses selesai; nama file Compose di VPS tidak perlu ditentukan.
 
 Build image web dan migrasi memakai cache GitHub Actions terpisah. Perubahan kode aplikasi tidak membatalkan layer instalasi Prisma CLI; perubahan migrasi hanya mengganti layer folder `prisma`.
+
+## Otomasi blog n8n
+
+Workflow WordPress yang dimigrasikan ke API Next.js tersedia di [workflows/n8n/mr-properti-blog-nextjs.json](workflows/n8n/mr-properti-blog-nextjs.json). Ikuti [panduan setup](workflows/n8n/README.md) untuk credential Header Auth, uji manual tanpa publikasi, dan jadwal 4x sehari WIB. Kedua method `GET /api/blog` (riwayat dan pemeriksaan slot) dan `POST /api/blog` (simpan artikel) memakai `BLOG_API_KEY` melalui header `x-api-key`.

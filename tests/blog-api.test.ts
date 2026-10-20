@@ -19,7 +19,10 @@ test("blog API requires a key, validates input, creates drafts or published post
   const writes: { data: typeof article & { published: boolean } }[] = [];
   const paths: string[] = [];
   let failure: unknown;
-  const exports = {} as { POST: (request: Request) => Promise<Response> };
+  const exports = {} as {
+    POST: (request: Request) => Promise<Response>;
+    GET: (request: Request) => Promise<Response>;
+  };
   const source = ts.transpileModule(
     await readFile("app/api/blog/route.ts", "utf8"),
     {
@@ -29,6 +32,7 @@ test("blog API requires a key, validates input, creates drafts or published post
   runInNewContext(source, {
     exports,
     Response,
+    URL,
     process: { env },
     require: (name: string) => {
       if (name === "zod") return { z };
@@ -41,6 +45,12 @@ test("blog API requires a key, validates input, creates drafts or published post
           databaseConfigured: true,
           db: () => ({
             blogPost: {
+              findMany: async () => {
+                if (failure) throw failure;
+                return [{ id: "post-id", ...article }];
+              },
+              findUnique: async ({ where }: { where: { slug: string } }) =>
+                where.slug === article.slug ? { id: "post-id" } : null,
               create: async (input: (typeof writes)[number]) => {
                 if (failure) throw failure;
                 writes.push(input);
@@ -63,7 +73,27 @@ test("blog API requires a key, validates input, creates drafts or published post
       body: typeof body === "string" ? body : JSON.stringify(body),
     });
   assert.equal((await exports.POST(request())).status, 503);
+  const get = (slug = article.slug, key?: string) =>
+    exports.GET(
+      new Request(
+        `https://example.test/api/blog?slug=${encodeURIComponent(slug)}`,
+        { headers: key ? { "x-api-key": key } : {} },
+      ),
+    );
+  assert.equal((await get()).status, 503);
   env.BLOG_API_KEY = "test-secret";
+  assert.equal((await get()).status, 401);
+  assert.equal((await get(article.slug, "wrong")).status, 401);
+  assert.equal((await get("../admin", "test-secret")).status, 400);
+  const history = await get(article.slug, "test-secret");
+  assert.equal(history.headers.get("cache-control"), "private, no-store");
+  const historyBody = await history.json();
+  assert.equal(historyBody.slotExists, true);
+  assert.equal(historyBody.data[0].title, article.title);
+  assert.equal(
+    (await (await get("another-slot", "test-secret")).json()).slotExists,
+    false,
+  );
   for (const key of [undefined, "wrong-key"])
     assert.equal((await exports.POST(request(article, key))).status, 401);
   assert.equal(writes.length, 0);
@@ -112,6 +142,7 @@ test("blog API requires a key, validates input, creates drafts or published post
     409,
   );
   failure = new Error("private database details");
+  assert.equal((await get(article.slug, "test-secret")).status, 503);
   const failed = await exports.POST(request(article, "test-secret"));
   assert.equal(failed.status, 500);
   assert.equal(

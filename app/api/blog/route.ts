@@ -13,7 +13,7 @@ const inputSchema = z.preprocess(
     .strict(),
 );
 
-export async function POST(request: Request) {
+function authorize(request: Request) {
   const expected = process.env.BLOG_API_KEY;
   if (!expected)
     return Response.json(
@@ -36,6 +36,44 @@ export async function POST(request: Request) {
       { message: "Database belum tersedia." },
       { status: 503 },
     );
+
+  return null;
+}
+
+// Includes drafts so an automation does not regenerate an existing slot.
+export async function GET(request: Request) {
+  const denied = authorize(request);
+  if (denied) return denied;
+  const params = new URL(request.url).searchParams;
+  const slug = params.get("slug");
+  if (slug !== null && !blogFields.shape.slug.safeParse(slug).success)
+    return Response.json({ message: "Slug tidak valid." }, { status: 400 });
+  try {
+    const [posts, existing] = await Promise.all([
+      db().blogPost.findMany({
+        take: 100,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        select: { id: true, title: true, slug: true },
+      }),
+      slug
+        ? db().blogPost.findUnique({ where: { slug }, select: { id: true } })
+        : null,
+    ]);
+    return Response.json(
+      { data: posts, slotExists: Boolean(existing) },
+      { headers: { "Cache-Control": "private, no-store" } },
+    );
+  } catch {
+    return Response.json(
+      { message: "Riwayat artikel belum tersedia." },
+      { status: 503 },
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  const denied = authorize(request);
+  if (denied) return denied;
 
   if (
     request.headers.get("content-type")?.split(";")[0].trim().toLowerCase() !==
