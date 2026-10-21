@@ -13,7 +13,11 @@ export async function GET(
   const published = await db().property.count({
     where: { status: "PUBLISHED", gallery: { has: `/api/media/${id}` } },
   });
-  if (!published) {
+  const publicTeamPhoto = await db().teamMember.count({
+    where: { photoId: id, active: true },
+  });
+  const isPublic = Boolean(published || publicTeamPhoto);
+  if (!isPublic) {
     const user = await currentUser();
     if (!user || (user.id !== media.ownerId && user.role !== "ADMIN"))
       return new Response(null, { status: 404 });
@@ -26,7 +30,7 @@ export async function GET(
     return new Response(object.Body.transformToWebStream(), {
       headers: {
         "Content-Type": "image/webp",
-        "Cache-Control": published
+        "Cache-Control": isPublic
           ? "public, max-age=300, stale-while-revalidate=3600"
           : "private, no-store",
         "X-Content-Type-Options": "nosniff",

@@ -57,7 +57,7 @@ export default async function Services({
           3. Sepakati lingkup & jadwal
         </span>
       </div>
-      <HomeServiceGrid />
+      <HomeServiceGrid detailed />
       {services.length > 0 && (
         <h2 className="service-provider-heading">Tenaga & layanan lainnya</h2>
       )}

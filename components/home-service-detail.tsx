@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { HomeServiceIcon } from "./home-service-icon";
 import { ArrowLeft, ArrowUpRight, Clock3, MessageCircle } from "lucide-react";
 import { type HomeService, serviceTimeGuide } from "@/lib/home-services";
 import { getSettings } from "@/lib/data";
@@ -22,11 +23,20 @@ export async function HomeServiceDetail({ service }: { service: HomeService }) {
       </nav>
       <header className="page-heading">
         <p className="eyebrow">PERBAIKAN & PEMELIHARAAN RUMAH</p>
-        <h1>{service.name}</h1>
-        <p>
-          Pilih pekerjaan yang Anda butuhkan dan lihat rincian layanan serta
-          estimasi biayanya.
-        </p>
+        <div className="home-service-introduction">
+          <div className="home-service-identity">
+            <HomeServiceIcon slug={service.slug} />
+            <h1>{service.name}</h1>
+          </div>
+          <div className="home-service-copy">
+            <p className="home-service-summary">{service.summary}</p>
+            <div className="home-service-description">
+              {service.description.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+          </div>
+        </div>
       </header>
       <div className="home-service-detail-layout">
         <div>

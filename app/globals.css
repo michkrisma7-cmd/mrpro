@@ -4668,3 +4668,133 @@ td .text-button {
     font-size: 12px;
   }
 }
+
+/* Service introductions: full copy on desktop, concise copy on phones. */
+.home-service-card-summary {
+  margin: 0;
+  max-width: 34ch;
+  color: #5e6b61;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.home-service-directory {
+  grid-template-columns: minmax(0, 1fr);
+}
+.home-service-directory .home-service-card,
+.home-service-introduction {
+  display: grid;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  align-items: start;
+  gap: 32px;
+  text-align: left;
+}
+.home-service-directory .home-service-card {
+  padding: 28px;
+}
+.home-service-identity {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+.home-service-identity .home-service-icon {
+  flex-shrink: 0;
+}
+.home-service-identity h1 {
+  margin: 0;
+  font-size: clamp(24px, 2.5vw, 32px);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.home-service-copy {
+  min-width: 0;
+  color: #5e6b61;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.home-service-copy p {
+  margin: 0;
+  max-width: none;
+}
+.home-service-description p + p {
+  margin-top: 14px;
+}
+.home-service-summary {
+  display: none;
+}
+@media (max-width: 600px) {
+  .home-service-card-summary,
+  .home-service-description {
+    display: none;
+  }
+  .home-service-directory .home-service-card,
+  .home-service-introduction {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .home-service-directory .home-service-card {
+    padding: 20px;
+    min-height: 0;
+  }
+  .home-service-directory h3 {
+    font-size: 18px;
+  }
+  .home-service-summary {
+    display: block;
+  }
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+.team-card {
+  overflow: hidden;
+  border: 1px solid #dfe6d8;
+  border-radius: 16px;
+  background: #fff;
+}
+.team-photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 6 / 7;
+  object-fit: cover;
+  background: #edf2e8;
+}
+.team-card-body {
+  padding: 24px;
+  overflow-wrap: anywhere;
+}
+.team-card-body h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+}
+.team-expertise {
+  color: #526c46;
+  font-weight: 600;
+}
+.team-card-body h3 {
+  margin: 24px 0 8px;
+  font-size: 15px;
+}
+.team-experience {
+  white-space: pre-line;
+  line-height: 1.8;
+  color: #5e6b61;
+}
+.team-photo-preview {
+  object-fit: cover;
+  border-radius: 12px;
+}
+@media (max-width: 900px) {
+  .team-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .team-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+}

@@ -13,15 +13,26 @@ const services = [
   ["Perbaikan Rumah", "perbaikan-rumah", "Perbaikan Atap Bocor"],
 ];
 
-test("home service cards form two columns and five rows with only icons and names", async ({
+test("home service cards preserve links and show summaries only on desktop", async ({
   page,
+  isMobile,
 }) => {
   await page.goto("/");
   const cards = page.locator(".services-section .home-service-card");
   await expect(cards).toHaveCount(10);
   await expect(cards.locator("h3")).toHaveText(services.map(([name]) => name));
   await expect(cards.locator("svg[aria-hidden=true]")).toHaveCount(10);
-  await expect(cards.locator("p, .worker, .service-price")).toHaveCount(0);
+  await expect(cards.locator(".home-service-card-summary")).toHaveCount(10);
+  for (let i = 0; i < services.length; i++) {
+    await expect(cards.nth(i)).toHaveAttribute(
+      "href",
+      `/layanan/${services[i][1]}`,
+    );
+    const summary = cards.nth(i).locator(".home-service-card-summary");
+    expect((await summary.innerText()).trim().split(/\s+/)).toHaveLength(9);
+    if (isMobile) await expect(summary).toBeHidden();
+    else await expect(summary).toBeVisible();
+  }
   const boxes = await cards.evaluateAll((elements) =>
     elements.map((element) => {
       const box = element.getBoundingClientRect();
@@ -93,4 +104,45 @@ test("each service card opens its own work details, prices and time guide", asyn
       ),
     ).toBe(true);
   }
+});
+
+test("service directory puts identity beside desktop descriptions and above mobile summaries", async ({
+  page,
+  isMobile,
+}) => {
+  await page.goto("/layanan");
+  const cards = page.locator(".home-service-directory .home-service-card");
+  await expect(cards).toHaveCount(10);
+  for (let i = 0; i < services.length; i++) {
+    const card = cards.nth(i);
+    await expect(card).toHaveAttribute("href", `/layanan/${services[i][1]}`);
+    await expect(card.locator("h3")).toHaveText(services[i][0]);
+    const summary = card.locator(".home-service-summary");
+    expect((await summary.textContent())!.trim().split(/\s+/)).toHaveLength(9);
+    if (isMobile) {
+      await expect(summary).toBeVisible();
+      await expect(card.locator(".home-service-description")).toBeHidden();
+    } else {
+      await expect(summary).toBeHidden();
+      await expect(card.locator(".home-service-description p")).toHaveCount(2);
+      await expect(card.locator(".home-service-description")).toBeVisible();
+    }
+    const identity = (await card
+      .locator(".home-service-identity")
+      .boundingBox())!;
+    const icon = (await card.locator("svg").boundingBox())!;
+    const heading = (await card.locator("h3").boundingBox())!;
+    const copy = (await card.locator(".home-service-copy").boundingBox())!;
+    expect(icon.x + icon.width).toBeLessThan(heading.x);
+    expect(icon.y).toBeLessThan(heading.y + heading.height);
+    expect(heading.y).toBeLessThan(icon.y + icon.height);
+    if (isMobile)
+      expect(copy.y).toBeGreaterThanOrEqual(identity.y + identity.height);
+    else expect(copy.x).toBeGreaterThanOrEqual(identity.x + identity.width);
+  }
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
 });
