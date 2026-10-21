@@ -1,13 +1,6 @@
 import Link from "next/link";
-import { ArrowUpRight, MapPin, Mail } from "lucide-react";
 import { BrandMark } from "./icons";
-import type { Settings } from "@/lib/types";
-import { whatsappLink } from "@/lib/format";
-export function Footer({ settings }: { settings: Settings }) {
-  const wa = whatsappLink(
-    settings.whatsapp,
-    "Halo MR Properti, saya ingin berkonsultasi.",
-  );
+export function Footer() {
   return (
     <footer className="site-footer">
       <div className="container">
@@ -20,7 +13,6 @@ export function Footer({ settings }: { settings: Settings }) {
                 <small>RUANG UNTUK CERITA ANDA</small>
               </span>
             </Link>
-            <p>Partner properti dan layanan rumah untuk setiap rencana Anda.</p>
           </div>
           <nav className="footer-menu" aria-labelledby="footer-services-title">
             <h3 id="footer-services-title">Layanan</h3>
@@ -37,30 +29,6 @@ export function Footer({ settings }: { settings: Settings }) {
             <Link href="/kalkulator-kpr">Kalkulator KPR</Link>
             <Link href="/login">Masuk ke akun</Link>
           </nav>
-          <div className="footer-contact">
-            <h3>Hubungi Kami</h3>
-            <span className="footer-location">
-              <MapPin size={15} aria-hidden="true" />
-              <span>{settings.area}</span>
-            </span>
-            {wa ? (
-              <a href={wa} target="_blank" rel="noopener noreferrer">
-                Konsultasi WhatsApp{" "}
-                <ArrowUpRight size={14} aria-hidden="true" />
-              </a>
-            ) : (
-              <Link href="/titip-properti">
-                Kirim kebutuhan Anda{" "}
-                <ArrowUpRight size={14} aria-hidden="true" />
-              </Link>
-            )}
-            {settings.email && (
-              <a href={`mailto:${settings.email}`}>
-                <Mail size={15} aria-hidden="true" />
-                <span>{settings.email}</span>
-              </a>
-            )}
-          </div>
         </div>
         <div className="footer-bottom">
           <nav className="footer-legal" aria-label="Informasi legal">

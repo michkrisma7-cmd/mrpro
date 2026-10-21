@@ -35,7 +35,7 @@ async function SiteFooter() {
   const settings = await getSettings();
   return (
     <>
-      <Footer settings={settings} />
+      <Footer />
       <ChatWidget whatsapp={settings.whatsapp} />
     </>
   );
