@@ -27,6 +27,9 @@ test("Facebook caption includes only public fields, contact and property link", 
     "https://mrproperti.com",
   );
   assert.equal(payload.link, "https://mrproperti.com/properti/rumah-cikarang");
+  assert.deepEqual(payload.image_urls, [
+    "https://mrproperti.com/api/media/ownedphoto",
+  ]);
   assert.match(payload.message, /500.000.000/);
   assert.match(payload.message, /https:\/\/wa.me\/6281234567890/);
   assert.doesNotMatch(payload.message, /jangan dibagikan/);
@@ -201,27 +204,63 @@ test("webhook sends one authenticated request without retry and remains optional
   }
 });
 
-test("workflow has exactly Webhook → Facebook Graph API, without a schedule", async () => {
+test("workflow uploads all photos before aggregating into one feed", async () => {
   const workflow = JSON.parse(
     await readFile("workflows/n8n/mr-properti-facebook-pages.json", "utf8"),
   );
-  assert.equal(workflow.active, false);
-  assert.deepEqual(
-    workflow.nodes.map((n: { type: string }) => n.type),
-    ["n8n-nodes-base.webhook", "n8n-nodes-base.facebookGraphApi"],
-  );
-  const [webhook, facebook] = workflow.nodes;
+  const [webhook, getMe, prepare, upload, aggregate, feed] = workflow.nodes;
   assert.equal(webhook.parameters.authentication, "headerAuth");
-  assert.equal(webhook.parameters.httpMethod, "POST");
-  assert.equal(
-    workflow.connections[webhook.name].main[0][0].node,
-    facebook.name,
+  assert.equal(getMe.parameters.httpRequestMethod, "GET");
+  assert.equal(upload.parameters.edge, "photos");
+  assert.equal(feed.parameters.edge, "feed");
+  for (let i = 0; i < workflow.nodes.length - 1; i++) {
+    assert.equal(
+      workflow.connections[workflow.nodes[i].name].main[0][0].node,
+      workflow.nodes[i + 1].name,
+    );
+  }
+  const body = {
+    message: 'Rumah "nyaman"',
+    link: "https://mrproperti.com/properti/rumah",
+    image_urls: [
+      "https://mrproperti.com/api/media/one",
+      "https://mrproperti.com/api/media/two",
+    ],
+  };
+  const prepared = runInNewContext(
+    "(function(){" + prepare.parameters.jsCode + "})()",
+    {
+      $: () => ({ first: () => ({ json: { body } }) }),
+      $input: { first: () => ({ json: { id: "page-1" } }) },
+    },
   );
-  assert.equal(facebook.parameters.httpRequestMethod, "POST");
-  assert.equal(facebook.parameters.edge, "feed");
-  assert.equal(facebook.retryOnFail, false);
-  assert.deepEqual(facebook.parameters.options.queryParameters.parameter, [
-    { name: "message", value: "={{ $json.body.message }}" },
-    { name: "link", value: "={{ $json.body.link }}" },
+  assert.equal(prepared.length, 2);
+  assert.equal(prepared[1].json.url, body.image_urls[1]);
+  const evaluate = (items: unknown[]) =>
+    runInNewContext("(function(){" + aggregate.parameters.jsCode + "})()", {
+      $input: { all: () => items },
+      $: (name: string) =>
+        name === "Siapkan Semua Foto"
+          ? { all: () => prepared }
+          : { first: () => ({ json: { body } }) },
+    });
+  const posts = evaluate([
+    { json: { id: "photo-1" } },
+    { json: { id: "photo-2" } },
   ]);
+  assert.equal(posts.length, 1);
+  assert.deepEqual(JSON.parse(JSON.stringify(posts[0].json.attached_media)), [
+    { media_fbid: "photo-1" },
+    { media_fbid: "photo-2" },
+  ]);
+  assert.equal(posts[0].json.message, body.message + "\n\n" + body.link);
+  assert.throws(() => evaluate([{ json: { id: "photo-1" } }]), /belum lengkap/);
+  assert.throws(
+    () =>
+      evaluate([
+        { json: { id: "photo-1" } },
+        { json: { error: "upload failed" } },
+      ]),
+    /belum lengkap/,
+  );
 });

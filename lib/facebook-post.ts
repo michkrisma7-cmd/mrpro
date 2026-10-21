@@ -8,6 +8,7 @@ export function facebookPayload(
     description: string;
     whatsapp: string;
     values: unknown;
+    gallery: string[];
   },
   fields: Field[],
   origin: string,
@@ -30,6 +31,7 @@ export function facebookPayload(
     `Halo, saya tertarik dengan ${property.title}`,
   );
   return {
+    image_urls: property.gallery.map((path) => new URL(path, base.origin).href),
     message: [
       "🏡 Properti baru di MR Properti",
       property.title,

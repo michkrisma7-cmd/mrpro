@@ -1,8 +1,8 @@
 # Terbitkan properti → Webhook → Facebook Graph API
 
-Impor [mr-properti-facebook-pages.json](./mr-properti-facebook-pages.json) ke n8n. Workflow hanya **dua node**:
+Impor [mr-properti-facebook-pages.json](./mr-properti-facebook-pages.json) ke n8n. Alur workflow:
 
-**Webhook (Properti Diterbitkan) → Facebook Graph API**
+**Properti Diterbitkan → Get Me → Siapkan Semua Foto → Upload Photos → Gabungkan ID Foto → Upload feed**
 
 Tidak ada schedule, polling, antrean, API pembaca properti, atau migration database.
 
@@ -18,7 +18,7 @@ Aksi admin **Terbitkan** mengirim webhook setelah status tersimpan, hanya jika s
 ## Setup
 
 1. Pada node **Properti Diterbitkan**, pilih credential **Header Auth**: Name `x-api-key`, Value secret acak milik Anda.
-2. Pada node **Facebook Graph API**, isi **Node** dengan Page ID tujuan, pertahankan **Edge** `feed` dan **HTTP Request Method** `POST`. Pilih versi Graph API yang didukung akun/instance n8n Anda; file memakai `v25.0`.
+2. Pada **Get Me**, **Upload Photos**, dan **Upload feed**, pilih credential Page yang sama. Get Me membaca Page ID melalui `me`. File memakai Graph API `v25.0`.
 3. Pilih credential **Facebook Graph API** berisi **Page Access Token** dengan izin posting ke Page tujuan. Token hanya disimpan pada credential n8n.
 4. Aktifkan/publish workflow lalu salin **Production URL** dari node webhook.
 5. Pada environment aplikasi, isi:
@@ -40,11 +40,15 @@ Aplikasi langsung mengirim caption siap pakai dan URL detail; n8n tidak perlu me
   "event": "property.published",
   "propertyId": "id-properti",
   "message": "🏡 Properti baru di MR Properti\n\nRumah di Cikarang\n\nHarga: Rp 500.000.000",
-  "link": "https://mrproperti.com/properti/rumah-di-cikarang"
+  "link": "https://mrproperti.com/properti/rumah-di-cikarang",
+  "image_urls": [
+    "https://mrproperti.com/api/media/foto1",
+    "https://mrproperti.com/api/media/foto2"
+  ]
 }
 ```
 
-Node Facebook memakai `{{$json.body.message}}` dan `{{$json.body.link}}` sebagai query parameter `message` dan `link`. Ini posting tautan; gambar pratinjau mengikuti metadata halaman dan hasil scraping Facebook.
+Website mengirim seluruh gallery sebagai `image_urls` HTTPS publik. Upload Photos memproses satu item per foto dengan `published=false`. Gabungkan ID Foto menunggu hasil seluruh upload, lalu menghasilkan satu item berisi semua `media_fbid`. Upload feed membuat satu post dengan `attached_media`; tautan properti disertakan dalam caption. Jika satu upload gagal atau tidak mengembalikan ID, feed tidak diterbitkan. Foto yang sudah terunggah dapat tertinggal sebagai unpublished; tidak ada retry otomatis.
 
 ## Pengujian dan kegagalan
 
@@ -52,6 +56,6 @@ Uji dengan Page khusus pengujian. Klik **Listen for test event** pada webhook, a
 
 Webhook merespons segera saat menerima request; hasil posting Facebook dilihat pada **Executions** n8n. Jika aplikasi gagal menghubungi webhook, status properti tetap terbit dan admin melihat pesan pengiriman gagal. Tidak ada retry otomatis atau penyimpanan antrean. Jika ada timeout atau eksekusi gagal, periksa Page sebelum mengulang agar tidak membuat duplikat. Menekan Terbitkan lagi ketika status masih PUBLISHED tidak mengirim ulang.
 
-Workflow belum diimpor atau dijalankan pada n8n/Meta pengguna. Pengujian lokal memeriksa pemicu perubahan status, payload, dan struktur dua node.
+Workflow belum diimpor atau dijalankan pada n8n/Meta pengguna. Pengujian lokal memeriksa pemicu perubahan status, payload, dan penggabungan beberapa foto menjadi satu item feed, serta penolakan hasil upload yang tidak lengkap.
 
 Referensi: [Facebook Graph API node](https://docs.n8n.io/integrations/builtin/app-nodes/n8n-nodes-base.facebookgraphapi/).

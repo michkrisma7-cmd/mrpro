@@ -6,53 +6,160 @@
         "httpMethod": "POST",
         "path": "mr-properti-published",
         "authentication": "headerAuth",
-        "responseMode": "onReceived",
         "options": {}
       },
-      "id": "b5615b24-1482-48ac-aaf2-a9aa82bb6767",
+      "id": "17e60c30-80d6-4d62-a43e-d08a7c51827d",
       "name": "Properti Diterbitkan",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [0, 0],
-      "webhookId": "mr-properti-published"
+      "position": [-672, 272],
+      "webhookId": "mr-properti-published",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "XIYYMRZMRdou0lLX",
+          "name": "Facebook"
+        }
+      }
     },
     {
       "parameters": {
-        "hostUrl": "graph.facebook.com",
-        "httpRequestMethod": "POST",
         "graphApiVersion": "v25.0",
-        "node": "ISI_PAGE_ID",
-        "edge": "feed",
-        "sendBinaryData": false,
-        "options": {
-          "queryParameters": {
-            "parameter": [
-              {
-                "name": "message",
-                "value": "={{ $json.body.message }}"
-              },
-              {
-                "name": "link",
-                "value": "={{ $json.body.link }}"
-              }
-            ]
-          }
-        }
+        "node": "me",
+        "options": {},
+        "httpRequestMethod": "GET"
       },
-      "id": "bb012ff0-bdd6-48f5-a78b-42545159de53",
-      "name": "Facebook Graph API",
       "type": "n8n-nodes-base.facebookGraphApi",
       "typeVersion": 1,
-      "position": [280, 0],
+      "position": [-384, 272],
+      "id": "5731c598-1f19-4589-bbb6-25e44fab5585",
+      "name": "Get Me",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "NopZUWzDie9h7H2x",
+          "name": "Facebook Graph account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const body = $('Properti Diterbitkan').first().json.body;\nconst urls = body.image_urls;\nif (!Array.isArray(urls) || urls.length === 0) throw new Error('Payload image_urls wajib berisi foto properti.');\nconst pageId = $input.first().json.id;\nif (!pageId) throw new Error('Page ID tidak ditemukan.');\nreturn urls.map((url) => {\n  if (typeof url !== 'string' || !url.startsWith('https://')) throw new Error('URL foto harus HTTPS publik.');\n  return { json: { pageId, url } };\n});"
+      },
+      "id": "prepare-property-photos",
+      "name": "Siapkan Semua Foto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-160, 272]
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v25.0",
+        "node": "={{ $json.pageId }}",
+        "edge": "photos",
+        "options": {
+          "queryParametersJson": "={{ JSON.stringify({ published: false, url: $json.url }) }}"
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [64, 272],
+      "id": "4c6e7d31-4820-4508-9e4c-c664c4acb815",
+      "name": "Upload Photos",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "NopZUWzDie9h7H2x",
+          "name": "Facebook Graph account"
+        }
+      },
+      "retryOnFail": false
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const uploaded = $input.all();\nconst expected = $('Siapkan Semua Foto').all();\nif (uploaded.length !== expected.length || uploaded.some(item => !item.json.id || item.json.error)) throw new Error('Upload foto belum lengkap; feed tidak diterbitkan.');\nconst body = $('Properti Diterbitkan').first().json.body;\nreturn [{ json: { pageId: expected[0].json.pageId, message: [body.message, body.link].filter(Boolean).join('\\n\\n'), attached_media: uploaded.map(item => ({ media_fbid: String(item.json.id) })) } }];"
+      },
+      "id": "aggregate-property-photos",
+      "name": "Gabungkan ID Foto",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [288, 272]
+    },
+    {
+      "parameters": {
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v25.0",
+        "node": "={{ $json.pageId }}",
+        "edge": "feed",
+        "options": {
+          "queryParametersJson": "={{ JSON.stringify({ message: $json.message, attached_media: JSON.stringify($json.attached_media) }) }}"
+        }
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [512, 272],
+      "id": "83c1ffd2-8a74-487b-96e6-06fa8f319202",
+      "name": "Upload feed",
+      "credentials": {
+        "facebookGraphApi": {
+          "id": "NopZUWzDie9h7H2x",
+          "name": "Facebook Graph account"
+        }
+      },
       "retryOnFail": false
     }
   ],
+  "pinData": {},
   "connections": {
     "Properti Diterbitkan": {
       "main": [
         [
           {
-            "node": "Facebook Graph API",
+            "node": "Get Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Me": {
+      "main": [
+        [
+          {
+            "node": "Siapkan Semua Foto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Siapkan Semua Foto": {
+      "main": [
+        [
+          {
+            "node": "Upload Photos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Photos": {
+      "main": [
+        [
+          {
+            "node": "Gabungkan ID Foto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gabungkan ID Foto": {
+      "main": [
+        [
+          {
+            "node": "Upload feed",
             "type": "main",
             "index": 0
           }
@@ -63,7 +170,15 @@
   "active": false,
   "settings": {
     "executionOrder": "v1",
-    "timezone": "Asia/Jakarta"
+    "binaryMode": "separate",
+    "availableInMCP": false
   },
-  "pinData": {}
+  "versionId": "a86eba71-eafe-4585-afef-511ec6612ce8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aea49857e08a91684e04b85ac3c0e1c5f4ce32bd688a06a6d27daccf12666146"
+  },
+  "nodeGroups": [],
+  "id": "kifJ7Sx89IfrvFkS",
+  "tags": []
 }
