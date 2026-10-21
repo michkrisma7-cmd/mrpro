@@ -366,8 +366,16 @@
   .mr-chat-header {
     padding: 20px 17px;
   }
-  .mr-chat-launcher {
-    padding: 13px 16px;
+  .mr-chat-launcher,
+  .mr-chat-launcher.is-open {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    padding: 0;
+    gap: 0;
+  }
+  .mr-chat-launcher > span {
+    display: none;
   }
   .mr-chat-form textarea {
     font-size: 16px;

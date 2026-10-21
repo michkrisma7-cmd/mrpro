@@ -23,6 +23,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl()}/layanan`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteUrl()}/tim-kami`, changeFrequency: "monthly", priority: 0.6 },
     {
+      url: `${siteUrl()}/kebijakan-privasi`,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
       url: `${siteUrl()}/syarat-dan-ketentuan`,
       changeFrequency: "yearly",
       priority: 0.3,
