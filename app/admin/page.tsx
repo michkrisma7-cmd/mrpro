@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   LayoutDashboard,
+  UsersRound,
   BookOpen,
   House,
   Wrench,
@@ -28,6 +29,8 @@ import {
   SettingsForm,
 } from "@/components/admin-forms";
 import { redirect } from "next/navigation";
+import { TeamEditor, TeamDeleteForm } from "@/components/team-editor";
+import { storageConfigured } from "@/lib/storage";
 import { BlogEditor } from "@/components/blog-editor";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -40,12 +43,18 @@ const tabs = [
   ["field", "Field Dinamis", SlidersHorizontal],
   ["layanan", "Layanan Tukang", Wrench],
   ["blog", "Blog", BookOpen],
+  ["tim", "Tim Kami", UsersRound],
   ["pengaturan", "Pengaturan Website", Settings],
 ] as const;
 export default async function Admin({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string; edit?: string; tersimpan?: string }>;
+  searchParams: Promise<{
+    tab?: string;
+    edit?: string;
+    tersimpan?: string;
+    terhapus?: string;
+  }>;
 }) {
   const user = await currentUser();
   const preview = !authConfigured || !databaseConfigured;
@@ -61,7 +70,7 @@ export default async function Admin({
         </Link>
       </div>
     );
-  const { tab = "ringkasan", edit, tersimpan } = await searchParams;
+  const { tab = "ringkasan", edit, tersimpan, terhapus } = await searchParams;
   const [fields, settings] = await Promise.all([getFields(), getSettings()]);
   const properties: Listing[] = preview
     ? demoListings
@@ -77,6 +86,12 @@ export default async function Admin({
       ? await db().blogPost.findMany({
           orderBy: { createdAt: "desc" },
           take: 200,
+        })
+      : [];
+  const members =
+    tab === "tim" && !preview
+      ? await db().teamMember.findMany({
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
         })
       : [];
   const selected = properties.find((p) => p.id === edit);
@@ -362,6 +377,78 @@ export default async function Admin({
                 />
               </div>
             )}
+          </div>
+        )}
+        {tab === "tim" && (
+          <div className="admin-panel">
+            <div className="panel-heading">
+              <div>
+                <h2>Anggota tim</h2>
+                <p>
+                  Kelola nama, keahlian, pengalaman kerja, dan foto. Hanya
+                  profil aktif yang ditampilkan kepada pengunjung.
+                </p>
+              </div>
+              <Link className="outline-button" href="/admin?tab=tim&edit=baru">
+                <Plus size={16} />
+                Tambah Anggota Tim
+              </Link>
+            </div>
+            <Link className="text-button" href="/tim-kami">
+              Lihat laman Tim Kami <ArrowUpRight size={16} />
+            </Link>
+            {tersimpan === "1" && (
+              <p role="status">Profil anggota tim berhasil disimpan.</p>
+            )}
+            {terhapus === "1" && (
+              <p role="status">Profil anggota tim berhasil dihapus.</p>
+            )}
+            {members.map((member) => (
+              <div className="service-admin-row" key={member.id}>
+                <div>
+                  <strong>{member.name}</strong>
+                  <small>{member.expertise}</small>
+                </div>
+                <span
+                  className={`status-label ${member.active ? "published" : "archived"}`}
+                >
+                  {member.active ? "Aktif" : "Disembunyikan"}
+                </span>
+                <Link
+                  className="text-button"
+                  href={`/admin?tab=tim&edit=${member.id}`}
+                >
+                  Edit
+                </Link>
+              </div>
+            ))}
+            {!members.length && (
+              <p>Belum ada anggota tim. Tambahkan profil pertama Anda.</p>
+            )}
+            {edit &&
+              (edit === "baru" ||
+                members.some((member) => member.id === edit)) && (
+                <div className="edit-panel">
+                  <h3>
+                    {edit === "baru"
+                      ? "Tambah anggota tim"
+                      : "Edit anggota tim"}
+                  </h3>
+                  <TeamEditor
+                    key={edit}
+                    member={members.find((member) => member.id === edit)}
+                    disabled={preview}
+                    uploadEnabled={!preview && storageConfigured}
+                  />
+                  {edit !== "baru" && (
+                    <TeamDeleteForm
+                      id={edit}
+                      name={members.find((member) => member.id === edit)!.name}
+                      disabled={preview}
+                    />
+                  )}
+                </div>
+              )}
           </div>
         )}
         {tab === "pengaturan" && (

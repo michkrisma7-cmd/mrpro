@@ -222,3 +222,22 @@ Workflow WordPress yang dimigrasikan ke API Next.js tersedia di [workflows/n8n/m
 ## Chat
 
 Tombol **Chat** di kanan bawah membantu informasi properti dan layanan dari knowledge publik MR Properti. Pertanyaan di luar cakupan, data yang belum cukup, permintaan tim dan kegagalan layanan diarahkan ke WhatsApp dari Pengaturan Situs. Integrasi memakai webhook n8n melalui server Next.js; ikuti [setup Chat](workflows/n8n/CHAT.md). Isi `N8N_CHAT_WEBHOOK_URL` dan `N8N_CHAT_WEBHOOK_SECRET` pada environment server. Secret tidak dikirim ke browser.
+
+## Tim Kami
+
+Laman `/tim-kami` menampilkan anggota tim aktif beserta nama, bidang keahlian,
+pengalaman kerja, dan foto. Admin mengelolanya dari **Dashboard → Tim Kami**:
+tambah profil, unggah foto JPG/PNG/WebP maksimal 5 MB, edit, sembunyikan dengan
+menghapus centang **Tampilkan di laman Tim Kami**, atau hapus profil setelah konfirmasi.
+Foto wajib diunggah melalui formulir dan memakai penyimpanan S3 yang sama dengan foto properti.
+Profil yang disembunyikan tidak ditampilkan publik; foto yang tidak digunakan profil aktif
+atau properti terbit hanya dapat diakses pemilik foto dan admin melalui aplikasi.
+Menghapus profil tidak menghapus berkas foto agar media yang masih dipakai tidak hilang.
+
+Sebelum memakai fitur pada database tujuan yang sudah diverifikasi, jalankan
+`bun run db:generate` dan `bun run db:deploy` untuk migrasi `202610210001_team`.
+Tidak ada profil atau identitas contoh yang dibuat otomatis. Tanpa konfigurasi database/auth,
+dashboard tetap hanya baca dan laman publik menampilkan keadaan kosong.
+Uji alur admin, unggah, publikasi, penyembunyian, dan penghapusan dengan database serta
+penyimpanan terisolasi: setelah build, jalankan
+`bun x tsx --test tests/integration/team-flow.test.ts`.

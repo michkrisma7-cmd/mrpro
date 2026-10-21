@@ -80,6 +80,7 @@ model Service {
   createdAt DateTime @default(now())
 }
 model Media {
+  teamMembers TeamMember[]
   id String @id @default(cuid())
   key String @unique
   ownerId String
@@ -112,4 +113,18 @@ model AuthAttempt {
   count Int
   expiresAt DateTime
   @@index([expiresAt])
+}
+
+model TeamMember {
+  id String @id @default(cuid())
+  name String
+  expertise String
+  experience String
+  photoId String
+  photo Media @relation(fields: [photoId], references: [id], onDelete: Restrict)
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([active, createdAt])
+  @@index([photoId])
 }
