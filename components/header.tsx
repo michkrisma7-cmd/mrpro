@@ -27,6 +27,7 @@ export function Header() {
             ["/layanan", "Layanan Tukang"],
             ["/blog", "Blog"],
             ["/tim-kami", "Tim Kami"],
+            ["/syarat-dan-ketentuan", "Syarat dan Ketentuan"],
             ["/#tentang", "Tentang Kami"],
           ].map(([href, label]) => (
             <Link
