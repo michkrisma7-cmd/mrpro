@@ -1,0 +1,69 @@
+{
+  "name": "MR Properti — Terbitkan ke Facebook Pages",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "mr-properti-published",
+        "authentication": "headerAuth",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "id": "b5615b24-1482-48ac-aaf2-a9aa82bb6767",
+      "name": "Properti Diterbitkan",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "webhookId": "mr-properti-published"
+    },
+    {
+      "parameters": {
+        "hostUrl": "graph.facebook.com",
+        "httpRequestMethod": "POST",
+        "graphApiVersion": "v25.0",
+        "node": "ISI_PAGE_ID",
+        "edge": "feed",
+        "sendBinaryData": false,
+        "options": {
+          "queryParameters": {
+            "parameter": [
+              {
+                "name": "message",
+                "value": "={{ $json.body.message }}"
+              },
+              {
+                "name": "link",
+                "value": "={{ $json.body.link }}"
+              }
+            ]
+          }
+        }
+      },
+      "id": "bb012ff0-bdd6-48f5-a78b-42545159de53",
+      "name": "Facebook Graph API",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [280, 0],
+      "retryOnFail": false
+    }
+  ],
+  "connections": {
+    "Properti Diterbitkan": {
+      "main": [
+        [
+          {
+            "node": "Facebook Graph API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Asia/Jakarta"
+  },
+  "pinData": {}
+}

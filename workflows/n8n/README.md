@@ -1,5 +1,7 @@
 # Blog MR Properti di n8n → Next.js
 
+Untuk otomasi properti baru ke Facebook Pages, gunakan [workflow Facebook](./mr-properti-facebook-pages.json) dan [panduan setup Facebook](./FACEBOOK.md).
+
 Impor [mr-properti-blog-nextjs.json](./mr-properti-blog-nextjs.json) melalui menu import workflow n8n. File diimpor **nonaktif**. Tidak perlu plugin WordPress atau perubahan skema database.
 
 ## Setup

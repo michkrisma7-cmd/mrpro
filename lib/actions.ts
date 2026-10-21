@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireUser, requireAdmin } from "./auth";
 import { db } from "./db";
 import { getFields } from "./data";
+import { sendFacebookWebhook } from "./facebook-post";
 import {
   basePropertySchema,
   parseValues,
@@ -125,6 +126,7 @@ export async function moderateProperty(
     const status = z
       .enum(["PENDING", "PUBLISHED", "REJECTED", "ARCHIVED"])
       .parse(form.get("status"));
+    let facebookResult: "disabled" | "accepted" | "failed" = "disabled";
     if (status === "PUBLISHED") {
       const listing = await db().property.findUniqueOrThrow({ where: { id } });
       basePropertySchema.parse(listing);
@@ -137,13 +139,31 @@ export async function moderateProperty(
           validationForm.append(`field_${key}`, String(item));
       }
       parseValues(fields, validationForm);
+      // Only the request that changes a non-published status can send a webhook.
+      const changed = await db().property.updateMany({
+        where: { id, status: { not: "PUBLISHED" } },
+        data: { status, featured: form.has("featured") },
+      });
+      if (changed.count === 1)
+        facebookResult = await sendFacebookWebhook(listing, fields);
+      else
+        await db().property.update({
+          where: { id },
+          data: { featured: form.has("featured") },
+        });
+    } else {
+      await db().property.update({
+        where: { id },
+        data: { status, featured: form.has("featured") },
+      });
     }
-    await db().property.update({
-      where: { id },
-      data: { status, featured: form.has("featured") },
-    });
     refresh();
-    return { success: "Status properti diperbarui." };
+    return {
+      success:
+        facebookResult === "failed"
+          ? "Properti diterbitkan, tetapi pengiriman ke webhook Facebook gagal."
+          : "Status properti diperbarui.",
+    };
   } catch (e) {
     return { error: actionError(e) };
   }

@@ -75,6 +75,12 @@ test(
         require: (name: string) => {
           if (name === "zod") return { z };
           if (name === "./validation") return validation;
+          if (name === "./facebook-post")
+            return {
+              sendFacebookWebhook: async () => {
+                throw new Error("submission must not send webhook");
+              },
+            };
           if (name === "./db") return { db: () => prisma };
           if (name === "./data")
             return {
