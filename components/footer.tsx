@@ -64,6 +64,7 @@ export function Footer({ settings }: { settings: Settings }) {
             <Link href="/login">
               Masuk ke akun <ArrowUpRight size={14} />
             </Link>
+            <Link href="/syarat-dan-ketentuan">Syarat dan Ketentuan</Link>
           </div>
         </div>
         <div className="footer-bottom">
