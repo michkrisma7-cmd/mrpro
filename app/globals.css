@@ -4894,48 +4894,66 @@ td .text-button {
 
 /* Compact only the homepage's latest-property cards; catalog cards keep their size. */
 .home-property-section .property-image {
-  height: 140px;
+  height: 154px;
 }
 .home-property-section .property-body {
-  padding: 14px 16px 0;
+  padding: 12px 16px 0;
+  line-height: 1.4;
 }
 .home-property-section .property-price {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .home-property-section .property-location {
-  margin: 6px 0 8px;
+  margin: 4px 0 6px;
 }
 .home-property-section .property-owner {
-  margin: 6px 0;
+  margin: 4px 0;
 }
 .home-property-section .property-specs {
-  min-height: 20px;
-  row-gap: 4px;
+  min-height: 18px;
+  row-gap: 3px;
 }
 .home-property-section .card-more {
-  margin-top: 8px;
-  padding: 9px 0;
+  margin-top: 6px;
+  padding: 8px 0;
 }
 @media (min-width: 1500px) {
   .home-property-section .property-image {
-    height: 150px;
+    height: 165px;
   }
 }
 @media (max-width: 1100px) {
   .home-property-section .property-image {
-    height: 118px;
+    height: 129.8px;
   }
 }
 @media (max-width: 900px) {
   .home-property-section .property-image {
-    height: 105px;
+    height: 115.5px;
   }
 }
 @media (max-width: 700px) {
   .home-property-section .property-image {
-    height: 170px;
+    height: 187px;
   }
   .home-property-section .property-body {
     padding: 14px 16px 0;
   }
+}
+
+.home-property-section .price-label {
+  margin-bottom: 2px;
+}
+.home-property-section .property-body h3 {
+  line-height: 1.35;
+}
+.home-property-section .property-location,
+.home-property-section .property-owner,
+.home-property-section .property-specs {
+  line-height: 1.4;
+}
+.home-property-next {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }

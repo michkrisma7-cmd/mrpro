@@ -149,7 +149,7 @@ export default async function Home() {
           </span>
         </div>
         <div className="property-grid">
-          {properties.slice(0, 6).map((p) => (
+          {properties.slice(0, 9).map((p) => (
             <PropertyCard key={p.id} property={p} fields={fields} />
           ))}
         </div>
@@ -168,6 +168,11 @@ export default async function Home() {
           Butuh bantuan memilih?{" "}
           <Link href={wa || "/titip-properti"}>
             Ceritakan kebutuhan Anda <ArrowUpRight size={13} />
+          </Link>
+        </div>
+        <div className="home-property-next">
+          <Link className="outline-button" href="/properti">
+            Listing selanjutnya <ArrowRight size={18} aria-hidden="true" />
           </Link>
         </div>
       </section>

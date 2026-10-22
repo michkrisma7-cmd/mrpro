@@ -59,7 +59,7 @@ export const getListings = cache(
           include: { owner: { select: { name: true } } },
           where: { status: "PUBLISHED" },
           orderBy: { createdAt: "desc" },
-          take: 6,
+          take: 9,
         }),
       ]);
       return rows.map((p) => publicListing(p, fields));
