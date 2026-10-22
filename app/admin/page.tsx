@@ -4,6 +4,7 @@ import Image from "next/image";
 import {
   LayoutDashboard,
   UsersRound,
+  Quote,
   BookOpen,
   House,
   Wrench,
@@ -31,6 +32,11 @@ import {
 import { redirect } from "next/navigation";
 import { TeamEditor, TeamDeleteForm } from "@/components/team-editor";
 import { storageConfigured } from "@/lib/storage";
+import {
+  TestimonialEditor,
+  TestimonialDeleteForm,
+} from "@/components/testimonial-editor";
+import { initialTestimonials } from "@/lib/testimonials";
 import { BlogEditor } from "@/components/blog-editor";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
@@ -44,6 +50,7 @@ const tabs = [
   ["layanan", "Layanan Tukang", Wrench],
   ["blog", "Blog", BookOpen],
   ["tim", "Tim Kami", UsersRound],
+  ["testimoni", "Testimoni", Quote],
   ["pengaturan", "Pengaturan Website", Settings],
 ] as const;
 export default async function Admin({
@@ -93,6 +100,14 @@ export default async function Admin({
       ? await db().teamMember.findMany({
           orderBy: [{ createdAt: "asc" }, { id: "asc" }],
         })
+      : [];
+  const testimonials =
+    tab === "testimoni"
+      ? preview
+        ? initialTestimonials
+        : await db().testimonial.findMany({
+            orderBy: [{ position: "asc" }, { createdAt: "asc" }, { id: "asc" }],
+          })
       : [];
   const selected = properties.find((p) => p.id === edit);
   return (
@@ -444,6 +459,77 @@ export default async function Admin({
                     <TeamDeleteForm
                       id={edit}
                       name={members.find((member) => member.id === edit)!.name}
+                      disabled={preview}
+                    />
+                  )}
+                </div>
+              )}
+          </div>
+        )}
+        {tab === "testimoni" && (
+          <div className="admin-panel">
+            <div className="panel-heading">
+              <div>
+                <h2>Testimoni konsumen</h2>
+                <p>
+                  Kelola isi, bintang, urutan, dan foto profil konsumen di
+                  beranda.
+                </p>
+              </div>
+              <Link
+                className="outline-button"
+                href="/admin?tab=testimoni&edit=baru"
+              >
+                <Plus size={16} />
+                Tambah Testimoni
+              </Link>
+            </div>
+            {tersimpan === "1" && (
+              <p role="status">Testimoni berhasil disimpan.</p>
+            )}
+            {terhapus === "1" && (
+              <p role="status">Testimoni berhasil dihapus.</p>
+            )}
+            {testimonials.map((item) => (
+              <div className="service-admin-row" key={item.id}>
+                <div>
+                  <strong>{item.name}</strong>
+                  <small>
+                    {item.category} · {item.rating} bintang · Urutan{" "}
+                    {item.position}
+                  </small>
+                </div>
+                <span
+                  className={`status-label ${item.active ? "published" : "archived"}`}
+                >
+                  {item.active ? "Aktif" : "Disembunyikan"}
+                </span>
+                <Link
+                  className="text-button"
+                  href={`/admin?tab=testimoni&edit=${item.id}`}
+                >
+                  Edit
+                </Link>
+              </div>
+            ))}
+            {!testimonials.length && <p>Belum ada testimoni.</p>}
+            {edit &&
+              (edit === "baru" ||
+                testimonials.some((item) => item.id === edit)) && (
+                <div className="edit-panel">
+                  <h3>
+                    {edit === "baru" ? "Tambah testimoni" : "Edit testimoni"}
+                  </h3>
+                  <TestimonialEditor
+                    key={edit}
+                    member={testimonials.find((item) => item.id === edit)}
+                    disabled={preview}
+                    uploadEnabled={!preview && storageConfigured}
+                  />
+                  {edit !== "baru" && (
+                    <TestimonialDeleteForm
+                      id={edit}
+                      name={testimonials.find((item) => item.id === edit)!.name}
                       disabled={preview}
                     />
                   )}

@@ -241,3 +241,21 @@ dashboard tetap hanya baca dan laman publik menampilkan keadaan kosong.
 Uji alur admin, unggah, publikasi, penyembunyian, dan penghapusan dengan database serta
 penyimpanan terisolasi: setelah build, jalankan
 `bun x tsx --test tests/integration/team-flow.test.ts`.
+
+## Testimoni konsumen
+
+Beranda menampilkan testimoni aktif tepat di bawah bagian blog. Kelola dari
+**Dashboard → Testimoni** untuk menambah, mengedit, mengurutkan, menyembunyikan,
+dan menghapus testimoni. Form menyediakan kategori, nama, status, isi, rating
+1–5 bintang, urutan tampil (angka kecil dahulu), serta foto profil opsional.
+Foto JPG/PNG/WebP maksimal 5 MB memakai unggahan S3 yang sudah ada; tanpa foto,
+kartu menampilkan inisial konsumen di sisi kanan. Foto dari testimoni tersembunyi
+hanya tersedia kepada pemilik/admin, kecuali masih dipakai konten publik lain.
+
+Jalankan `bun run db:generate` dan terapkan migrasi `202610220001_testimonials`
+pada database tujuan melalui `bun run db:deploy`. Migrasi menambahkan tabel
+beserta tiga testimoni awal yang disediakan pemilik. Penerapan migrasi berikutnya
+tidak mengembalikan testimoni yang sudah diedit atau dihapus. Tanpa database,
+pratinjau memakai ketiga testimoni tersebut dan dashboard hanya baca.
+Setelah build, uji alur admin dan foto terisolasi dengan
+`bun x tsx --test tests/integration/testimonial-flow.test.ts`.

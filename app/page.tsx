@@ -19,6 +19,8 @@ import { HomeServiceGrid } from "@/components/home-service-grid";
 import { HeroSearch } from "@/components/hero-search";
 import { whatsappLink } from "@/lib/format";
 import { getBlogPosts } from "@/lib/blog";
+import { getTestimonials } from "@/lib/testimonials";
+import { TestimonialSection } from "@/components/testimonial-section";
 import { BlogList } from "@/components/blog-list";
 import { pageMetadata, homeTitle, homeDescription, jsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/format";
@@ -31,12 +33,15 @@ export const revalidate = 60;
 export default async function Home() {
   // Database-backed content must wait for a request, including when DATABASE_URL is set during builds.
   await connection();
-  const [fields, properties, settings, posts] = await Promise.all([
-    getFields(),
-    getListings(),
-    getSettings(),
-    getBlogPosts(3),
-  ]);
+  const [fields, properties, settings, posts, testimonials] = await Promise.all(
+    [
+      getFields(),
+      getListings(),
+      getSettings(),
+      getBlogPosts(3),
+      getTestimonials(),
+    ],
+  );
   const wa = whatsappLink(
     settings.whatsapp,
     "Halo MR Properti, saya ingin konsultasi properti.",
@@ -284,6 +289,7 @@ export default async function Home() {
         </div>
         <BlogList posts={posts} />
       </section>
+      <TestimonialSection testimonials={testimonials} />
       <section className="container faq-section">
         <div>
           <p className="eyebrow">BIAR MAKIN YAKIN</p>

@@ -16,7 +16,12 @@ export async function GET(
   const publicTeamPhoto = await db().teamMember.count({
     where: { photoId: id, active: true },
   });
-  const isPublic = Boolean(published || publicTeamPhoto);
+  const publicTestimonialPhoto = await db().testimonial.count({
+    where: { photoId: id, active: true },
+  });
+  const isPublic = Boolean(
+    published || publicTeamPhoto || publicTestimonialPhoto,
+  );
   if (!isPublic) {
     const user = await currentUser();
     if (!user || (user.id !== media.ownerId && user.role !== "ADMIN"))
