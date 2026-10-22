@@ -118,7 +118,7 @@ export default async function Home() {
         </div>
       </div>
       <section
-        className="section container"
+        className="section container home-property-section"
         id="properti"
         aria-label="Properti terbaru"
       >
@@ -149,7 +149,7 @@ export default async function Home() {
           </span>
         </div>
         <div className="property-grid">
-          {properties.slice(0, 3).map((p) => (
+          {properties.slice(0, 6).map((p) => (
             <PropertyCard key={p.id} property={p} fields={fields} />
           ))}
         </div>

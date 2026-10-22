@@ -4891,3 +4891,51 @@ td .text-button {
     font-size: 10px;
   }
 }
+
+/* Compact only the homepage's latest-property cards; catalog cards keep their size. */
+.home-property-section .property-image {
+  height: 140px;
+}
+.home-property-section .property-body {
+  padding: 14px 16px 0;
+}
+.home-property-section .property-price {
+  margin-bottom: 6px;
+}
+.home-property-section .property-location {
+  margin: 6px 0 8px;
+}
+.home-property-section .property-owner {
+  margin: 6px 0;
+}
+.home-property-section .property-specs {
+  min-height: 20px;
+  row-gap: 4px;
+}
+.home-property-section .card-more {
+  margin-top: 8px;
+  padding: 9px 0;
+}
+@media (min-width: 1500px) {
+  .home-property-section .property-image {
+    height: 150px;
+  }
+}
+@media (max-width: 1100px) {
+  .home-property-section .property-image {
+    height: 118px;
+  }
+}
+@media (max-width: 900px) {
+  .home-property-section .property-image {
+    height: 105px;
+  }
+}
+@media (max-width: 700px) {
+  .home-property-section .property-image {
+    height: 170px;
+  }
+  .home-property-section .property-body {
+    padding: 14px 16px 0;
+  }
+}
