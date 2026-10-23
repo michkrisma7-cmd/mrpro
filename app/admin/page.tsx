@@ -49,7 +49,7 @@ const tabs = [
   ["field", "Field Dinamis", SlidersHorizontal],
   ["layanan", "Layanan Tukang", Wrench],
   ["blog", "Blog", BookOpen],
-  ["tim", "Tim Kami", UsersRound],
+  ["tim", "Manajemen Tim", UsersRound],
   ["testimoni", "Testimoni", Quote],
   ["pengaturan", "Pengaturan Website", Settings],
 ] as const;
@@ -98,7 +98,7 @@ export default async function Admin({
   const members =
     tab === "tim" && !preview
       ? await db().teamMember.findMany({
-          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+          orderBy: [{ position: "asc" }, { createdAt: "asc" }, { id: "asc" }],
         })
       : [];
   const testimonials =
@@ -422,7 +422,9 @@ export default async function Admin({
               <div className="service-admin-row" key={member.id}>
                 <div>
                   <strong>{member.name}</strong>
-                  <small>{member.expertise}</small>
+                  <small>
+                    {member.expertise} · Urutan {member.position}
+                  </small>
                 </div>
                 <span
                   className={`status-label ${member.active ? "published" : "archived"}`}

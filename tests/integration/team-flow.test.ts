@@ -146,13 +146,26 @@ test(
       await expect(
         page.getByRole("heading", { name: "Tambah anggota tim", exact: true }),
       ).toBeVisible();
-      await page.getByLabel("Nama", { exact: true }).fill("Budi Santoso");
+      await page
+        .getByLabel("Nama lengkap", { exact: true })
+        .fill("Budi Santoso");
       await page.getByLabel("Bidang keahlian").fill("Kelistrikan dan AC");
       await page
         .getByLabel("Pengalaman kerja")
         .fill(
           "Berpengalaman 10 tahun menangani instalasi rumah.\nPemasangan dan perawatan AC.",
         );
+      const summary =
+        "Teknisi berpengalaman yang mengutamakan ketelitian dan komunikasi. "
+          .repeat(12)
+          .trim();
+      const fullProfile =
+        "Pengalaman menangani instalasi rumah, perawatan AC, dan pemeriksaan kelistrikan.\n"
+          .repeat(65)
+          .trim();
+      await page.locator('textarea[name="description"]').fill(summary);
+      await page.getByLabel("Deskripsi profil lengkap").fill(fullProfile);
+      await page.getByLabel("Urutan tampilan").fill("2");
       const photo = await sharp({
         create: { width: 80, height: 100, channels: 3, background: "#526c46" },
       })
@@ -180,7 +193,20 @@ test(
         (await sharp([...objects.values()][0]).metadata()).format,
         "webp",
       );
-      const mediaUrl = `${origin}/api/media/${member.photoId}`;
+      let mediaUrl = `${origin}/api/media/${member.photoId}`;
+      const stored = (
+        await database.query<{
+          description: string;
+          fullProfile: string;
+          position: number;
+        }>(
+          'SELECT description,"fullProfile",position FROM "TeamMember" WHERE id=$1',
+          [member.id],
+        )
+      ).rows[0];
+      assert.equal(stored.description, summary);
+      assert.equal(stored.fullProfile.replace(/\r\n/g, "\n"), fullProfile);
+      assert.equal(stored.position, 2);
       const publicPhoto = await fetch(mediaUrl);
       assert.equal(publicPhoto.status, 200);
       assert.equal(publicPhoto.headers.get("content-type"), "image/webp");
@@ -190,13 +216,22 @@ test(
         await expect(
           page.getByRole("heading", { name: "Budi Santoso" }),
         ).toBeVisible();
-        await expect(page.locator(".team-card")).toContainText(
+        await expect(page.locator(".team-profile-card")).toContainText(
           "Kelistrikan dan AC",
         );
-        await expect(page.locator(".team-card")).toContainText(
+        await expect(page.locator(".team-profile-card")).toContainText(
           "Berpengalaman 10 tahun",
         );
         await expect(page.getByAltText("Foto Budi Santoso")).toBeVisible();
+        await expect
+          .poll(async () =>
+            page
+              .getByAltText("Foto Budi Santoso")
+              .evaluate(
+                (img: HTMLImageElement) => img.complete && img.naturalWidth > 0,
+              ),
+          )
+          .toBe(true);
         assert.equal(
           await page
             .getByAltText("Foto Budi Santoso")
@@ -211,10 +246,124 @@ test(
           ),
           true,
         );
+        const photoBox = (await page
+          .locator(".team-profile-photo")
+          .boundingBox())!;
+        const infoBox = (await page
+          .locator(".team-profile-info")
+          .boundingBox())!;
+        assert.equal(photoBox.width, width === 390 ? 100 : 120);
+        assert.equal(photoBox.height, width === 390 ? 120 : 140);
+        assert.ok(photoBox.x + photoBox.width < infoBox.x);
+        const summaryBox = page.locator(".team-profile-summary");
+        assert.equal(await summaryBox.textContent(), summary);
+        assert.equal(
+          await summaryBox.evaluate(
+            (el) => getComputedStyle(el).webkitLineClamp,
+          ),
+          "2",
+        );
+        assert.equal(
+          await summaryBox.evaluate((el) => el.scrollHeight > el.clientHeight),
+          true,
+        );
+        await page
+          .locator(".team-profile-card")
+          .screenshot({ path: `/tmp/mrpro-team-card-${width}.png` });
+        const trigger = page.getByRole("button", {
+          name: "Lihat profil Budi Santoso",
+          exact: true,
+        });
+        await trigger.click();
+        const modal = page.getByRole("dialog");
+        await expect(modal).toBeVisible();
+        await expect(modal).toContainText(summary);
+        await expect(modal).toContainText(fullProfile.split("\n")[0]);
+        assert.equal(
+          (await modal.locator("section p").last().textContent())!.replace(
+            /\r\n/g,
+            "\n",
+          ),
+          fullProfile,
+        );
+        assert.equal(
+          await modal.evaluate((el) => el.scrollHeight > el.clientHeight),
+          true,
+        );
+        await page.screenshot({ path: `/tmp/mrpro-team-modal-${width}.png` });
+        await page.keyboard.press("Tab");
+        assert.equal(
+          await modal.evaluate((el) => el.contains(document.activeElement)),
+          true,
+        );
+        await page
+          .getByRole("button", { name: "Tutup profil", exact: true })
+          .click();
+        await expect(modal).toHaveCount(0);
+        await expect(trigger).toBeFocused();
+        await trigger.click();
+        await expect(modal).toBeVisible();
+        await page.keyboard.press("Escape");
+        await expect(modal).toHaveCount(0);
+        await trigger.click();
+        await expect(modal).toBeVisible();
+        await page.mouse.click(2, 2);
+        await expect(modal).toHaveCount(0);
       }
       await page.setViewportSize({ width: 1440, height: 1000 });
+      // A second member sorts before the original until admin changes its position.
+      await database.query(
+        `INSERT INTO "TeamMember" (id,name,expertise,experience,"photoId",position,"updatedAt") VALUES ('other','Andi','Renovasi','5 tahun',$1,0,NOW())`,
+        [member.photoId],
+      );
+      await page.goto(`${origin}/tim-kami`);
+      await expect(page.locator(".team-profile-info h2")).toHaveText([
+        "Andi",
+        "Budi Santoso",
+      ]);
       await page.goto(`${origin}/admin?tab=tim&edit=${member.id}`);
-      await page.getByLabel("Nama", { exact: true }).fill("Budi Pratama");
+      await page.getByLabel("Urutan tampilan").fill("0");
+      const replacement = await sharp({
+        create: { width: 100, height: 120, channels: 3, background: "#203f32" },
+      })
+        .png()
+        .toBuffer();
+      await page.getByLabel("Foto anggota tim").setInputFiles({
+        name: "replacement.png",
+        mimeType: "image/png",
+        buffer: replacement,
+      });
+      await expect(page.locator('input[name="photoId"]')).not.toHaveValue(
+        member.photoId,
+      );
+      await page.getByRole("button", { name: "Simpan Anggota Tim" }).click();
+      await expect(page.getByRole("status")).toHaveText(
+        "Profil anggota tim berhasil disimpan.",
+      );
+      const replaced = (
+        await database.query<{ photoId: string }>(
+          'SELECT "photoId" FROM "TeamMember" WHERE id=$1',
+          [member.id],
+        )
+      ).rows[0].photoId;
+      assert.notEqual(replaced, member.photoId);
+      mediaUrl = `${origin}/api/media/${replaced}`;
+      assert.equal((await fetch(mediaUrl)).status, 200);
+      await page.goto(`${origin}/tim-kami`);
+      await expect(page.locator(".team-profile-info h2")).toHaveText([
+        "Budi Santoso",
+        "Andi",
+      ]);
+      await database.exec(`DELETE FROM "TeamMember" WHERE id='other'`);
+      assert.equal(
+        (await fetch(`${origin}/api/media/${member.photoId}`)).status,
+        404,
+      );
+
+      await page.goto(`${origin}/admin?tab=tim&edit=${member.id}`);
+      await page
+        .getByLabel("Nama lengkap", { exact: true })
+        .fill("Budi Pratama");
       await page.getByLabel("Tampilkan di laman Tim Kami").uncheck();
       await page.getByRole("button", { name: "Simpan Anggota Tim" }).click();
       await expect(page.getByRole("status")).toHaveText(
@@ -235,6 +384,12 @@ test(
         "UPDATE \"AppUser\" SET role='ADMIN' WHERE id='team-admin'",
       );
       await page.goto(`${origin}/admin?tab=tim&edit=${member.id}`);
+      page.once("dialog", (dialog) => dialog.dismiss());
+      await page.getByRole("button", { name: "Hapus Anggota Tim" }).click();
+      assert.equal(
+        (await database.query('SELECT id FROM "TeamMember"')).rows.length,
+        1,
+      );
       page.once("dialog", (dialog) => dialog.accept());
       await page.getByRole("button", { name: "Hapus Anggota Tim" }).click();
       await expect(page.getByRole("status")).toHaveText(
@@ -247,7 +402,7 @@ test(
       assert.equal((await fetch(mediaUrl)).status, 404);
       assert.equal(
         objects.size,
-        1,
+        2,
         "deleting a profile preserves shared media",
       );
       await context.close();

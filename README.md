@@ -226,7 +226,7 @@ Tombol **Chat** di kanan bawah membantu informasi properti dan layanan dari know
 ## Tim Kami
 
 Laman `/tim-kami` menampilkan anggota tim aktif beserta nama, bidang keahlian,
-pengalaman kerja, dan foto. Admin mengelolanya dari **Dashboard → Tim Kami**:
+pengalaman kerja, dan foto. Admin mengelolanya dari **Dashboard → Manajemen Tim**:
 tambah profil, unggah foto JPG/PNG/WebP maksimal 5 MB, edit, sembunyikan dengan
 menghapus centang **Tampilkan di laman Tim Kami**, atau hapus profil setelah konfirmasi.
 Foto wajib diunggah melalui formulir dan memakai penyimpanan S3 yang sama dengan foto properti.
@@ -259,3 +259,18 @@ tidak mengembalikan testimoni yang sudah diedit atau dihapus. Tanpa database,
 pratinjau memakai ketiga testimoni tersebut dan dashboard hanya baca.
 Setelah build, uji alur admin dan foto terisolasi dengan
 `bun x tsx --test tests/integration/testimonial-flow.test.ts`.
+
+### Kartu dan popup profil tim
+
+Migrasi tambahan `202610230001_team_profiles` menambahkan deskripsi singkat,
+profil lengkap, dan urutan pada tabel `TeamMember` yang sudah ada, tanpa
+menghapus atau menulis ulang data anggota lama. Terapkan dengan `bun run db:deploy`
+pada database tujuan sebelum menjalankan versi ini. Nilai awal deskripsi kosong
+dan urutan 0 mempertahankan urutan lama berdasarkan waktu pembuatan.
+Admin mengisi delapan field dari Manajemen Tim. Pengalaman kerja dapat diisi
+ringkas, misalnya “10 tahun pengalaman”; deskripsi singkat hanya dibatasi CSS
+dua baris pada kartu. Popup menampilkan isi utuh, mendukung scroll, Escape,
+klik backdrop, tombol X, dan mengembalikan fokus ke kartu setelah ditutup.
+Foto publik memakai Next Image dengan lazy loading, ukuran kartu 100×120 px
+di HP dan 120×140 px di desktop. Foto pratinjau admin tetap memakai jalur
+media terautentikasi yang sudah ada.

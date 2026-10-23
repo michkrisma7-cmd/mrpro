@@ -14,10 +14,17 @@ const profile = {
 
 test("team validates required fields, lengths and uploaded media references", () => {
   assert.equal(teamSchema.safeParse(profile).success, true);
+  assert.equal(
+    teamSchema.safeParse({ ...profile, experience: "" }).success,
+    true,
+  );
   for (const change of [
     { name: " " },
     { expertise: "" },
-    { experience: " " },
+    { description: "x".repeat(2001) },
+    { fullProfile: "x".repeat(15001) },
+    { position: -1 },
+    { position: 1.5 },
     { photoId: "https://example.com/photo.jpg" },
     { photoId: "../private" },
     { experience: "x".repeat(5001) },

@@ -121,6 +121,9 @@ model TeamMember {
   name String
   expertise String
   experience String
+  description String @default("")
+  fullProfile String @default("")
+  position Int @default(0)
   photoId String
   photo Media @relation(fields: [photoId], references: [id], onDelete: Restrict)
   active Boolean @default(true)
@@ -128,6 +131,7 @@ model TeamMember {
   updatedAt DateTime @updatedAt
   @@index([active, createdAt])
   @@index([photoId])
+  @@index([active, position])
 }
 
 model Testimonial {
