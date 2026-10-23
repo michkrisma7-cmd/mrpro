@@ -5048,3 +5048,82 @@ td .text-button {
     height: 48px;
   }
 }
+
+/* Keep compact service tiles scoped to the homepage. */
+.services-section .home-service-grid {
+  grid-auto-rows: 1fr;
+}
+.services-section .home-service-card {
+  min-height: 180px;
+  padding: 18px 16px;
+  gap: 10px;
+  box-shadow: 0 3px 12px #23433006;
+}
+.services-section .home-service-card:hover {
+  box-shadow: 0 8px 24px #2343300d;
+}
+.services-section .home-service-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+.services-section .home-service-icon svg {
+  width: 28px;
+  height: 28px;
+}
+.service-team-action {
+  display: flex;
+  justify-content: center;
+  margin-top: 22px;
+}
+.service-team-button {
+  width: 50%;
+  min-height: 48px;
+  padding: 12px 8px;
+  gap: 8px;
+  border-radius: 14px;
+  color: #fff;
+  font-size: 13px;
+}
+.service-team-button span {
+  flex: 1;
+  text-align: center;
+}
+.service-team-button svg {
+  flex-shrink: 0;
+}
+@media (max-width: 700px) {
+  .services-section .home-service-grid {
+    gap: 10px;
+  }
+  .services-section .home-service-card {
+    height: 96px;
+    min-height: 96px;
+    padding: 8px;
+    gap: 4px;
+  }
+  .services-section .home-service-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+  .services-section .home-service-icon svg {
+    width: 22px;
+    height: 22px;
+  }
+  .services-section .home-service-card h3 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 32.4px;
+    font-size: 12px;
+    line-height: 1.35;
+  }
+  .services-section .home-service-card-summary {
+    display: none;
+  }
+  .service-team-action {
+    margin-top: 18px;
+  }
+}

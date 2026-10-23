@@ -11,6 +11,7 @@ import {
   CircleCheck,
   House,
   MoveUpRight,
+  UsersRound,
 } from "lucide-react";
 import { getFields, getListings, getSettings } from "@/lib/data";
 import { databaseConfigured } from "@/lib/db";
@@ -204,6 +205,13 @@ export default async function Home() {
               Konsultasikan pekerjaan Anda. Kami bantu hubungkan dengan tukang
               yang sesuai.
             </span>
+          </div>
+          <div className="service-team-action">
+            <Link href="/tim-kami" className="button service-team-button">
+              <UsersRound size={18} aria-hidden="true" />
+              <span>Tim Kami</span>
+              <ArrowRight size={18} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </section>
