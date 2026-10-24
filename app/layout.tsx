@@ -11,6 +11,7 @@ import { ChatWidget } from "@/components/chat-widget";
 import { getSettings } from "@/lib/data";
 import { siteUrl } from "@/lib/format";
 import { brand, homeTitle, homeDescription, indexingEnabled } from "@/lib/seo";
+import { brandIcons, brandIconUrl } from "@/lib/brand";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
@@ -20,12 +21,15 @@ export const metadata: Metadata = {
   robots: { index: indexingEnabled(), follow: true },
   verification: { google: process.env.GOOGLE_SITE_VERIFICATION || undefined },
   description: homeDescription,
-  manifest: "/manifest.webmanifest",
+  manifest: brandIconUrl("/manifest.webmanifest"),
   icons: {
-    icon: [
-      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
-      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
+    icon: brandIcons.map(({ src, ...icon }) => ({ url: src, ...icon })),
+    apple: [
+      {
+        url: brandIconUrl("/apple-touch-icon.png"),
+        sizes: "180x180",
+        type: "image/png",
+      },
     ],
   },
   openGraph: {

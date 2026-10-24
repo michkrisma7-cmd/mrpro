@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BrandMark } from "./icons";
+import { BrandLogo } from "./brand-logo";
 export function Footer() {
   return (
     <footer className="site-footer">
@@ -7,11 +7,7 @@ export function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <Link className="brand" href="/" aria-label="MR Properti beranda">
-              <BrandMark />
-              <span>
-                mr<span className="brand-light">properti</span>
-                <small>RUANG UNTUK CERITA ANDA</small>
-              </span>
+              <BrandLogo />
             </Link>
           </div>
           <nav className="footer-menu" aria-labelledby="footer-services-title">

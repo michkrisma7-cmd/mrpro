@@ -628,23 +628,13 @@ svg {
   font-family: "Manrope Variable", sans-serif;
   flex-shrink: 0;
 }
-.brand > span {
-  font-size: 24px;
-  letter-spacing: -1.1px;
-  font-weight: 850;
-  line-height: 1.15;
-}
-.brand-light {
-  font-weight: 450;
-}
-.brand small {
-  font-family: "DM Sans Variable", sans-serif;
+.brand-logo {
   display: block;
-  font-size: 6px;
-  letter-spacing: 1.8px;
-  font-weight: 600;
-  margin-top: 6px;
-  color: #879180;
+  width: 118px;
+  height: auto;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 4px;
 }
 .main-nav {
   display: flex;
@@ -1510,16 +1500,6 @@ svg {
   grid-template-columns: 1.4fr 1fr 1fr;
   gap: 24px;
   padding-bottom: 20px;
-}
-.footer-grid .brand > span {
-  font-size: 22px;
-}
-.footer-grid .brand svg {
-  width: 35px;
-  height: 35px;
-}
-.site-footer .brand small {
-  color: #536448;
 }
 .footer-grid h3 {
   margin: 4px 0 12px;
@@ -2960,17 +2940,6 @@ td .text-button {
   .main-nav a {
     font-size: 10px;
   }
-  .brand > span {
-    font-size: 21px;
-  }
-  .brand > svg {
-    width: 36px;
-    height: 36px;
-  }
-  .brand small {
-    font-size: 5px;
-    letter-spacing: 1.5px;
-  }
   .saved-nav {
     display: none;
   }
@@ -3239,12 +3208,8 @@ td .text-button {
   .brand {
     gap: 7px;
   }
-  .brand > span {
-    font-size: 21px;
-  }
-  .brand > svg {
-    width: 34px;
-    height: 34px;
+  .brand-logo {
+    width: 96px;
   }
   .hero-section {
     padding-top: 24px;

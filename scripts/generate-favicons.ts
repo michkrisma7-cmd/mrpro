@@ -1,28 +1,23 @@
 // Run with: bunx tsx scripts/generate-favicons.ts
-// Reuse the website's existing logo and theme; do not maintain a second design.
-import { readFile, writeFile } from "node:fs/promises";
-import { createElement } from "react";
-import { renderToStaticMarkup } from "react-dom/server";
+// Resize the isolated favicon from the supplied design, preserving its colors.
+import { writeFile } from "node:fs/promises";
 import sharp from "sharp";
-import { BrandMark } from "../components/icons";
 
 async function main() {
-  const css = await readFile("app/globals.css", "utf8");
-  const color = css.match(/--ink:\s*(#[\da-f]{6})\s*;/i)?.[1];
-  if (!color) throw new Error("Cannot find the existing brand color");
-  const svg = renderToStaticMarkup(createElement(BrandMark))
-    .replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" ')
-    .replaceAll("currentColor", color);
   const rasterize = (size: number) =>
-    sharp(Buffer.from(svg)).resize(size, size).png().toBuffer();
+    sharp("public/brand/mrproperti-icon.png")
+      .resize(size, size)
+      .png({ compressionLevel: 9, palette: true })
+      .toBuffer();
 
-  for (const size of [48, 192, 512]) {
-    const name = size === 48 ? "favicon" : "icon";
+  for (const size of [16, 32, 48, 192, 512]) {
+    const name = size <= 48 ? "favicon" : "icon";
     await writeFile(
       `public/${name}-${size}x${size}.png`,
       await rasterize(size),
     );
   }
+  await writeFile("public/apple-touch-icon.png", await rasterize(180));
 
   // ICO directory entries point to PNG frames for small browser tab sizes.
   const sizes = [16, 32, 48];
