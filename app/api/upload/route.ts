@@ -2,7 +2,7 @@ import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { bucket, s3, storageConfigured } from "@/lib/storage";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import sharp from "sharp";
+import { optimizeUpload } from "@/lib/image-upload";
 import { boundedFormData } from "@/lib/upload-body";
 export const runtime = "nodejs";
 export async function POST(request: Request) {
@@ -59,25 +59,7 @@ export async function POST(request: Request) {
         { error: "Gunakan JPG, PNG, atau WebP, maksimal 5 MB." },
         { status: 400 },
       );
-    const image = sharp(Buffer.from(await file.arrayBuffer()), {
-      limitInputPixels: 25000000,
-    });
-    const metadata = await image.metadata();
-    if (!["jpeg", "png", "webp"].includes(metadata.format))
-      return Response.json(
-        { error: "Format gambar harus JPG, PNG, atau WebP." },
-        { status: 400 },
-      );
-    buffer = await image
-      .rotate()
-      .resize({
-        width: 2000,
-        height: 2000,
-        fit: "inside",
-        withoutEnlargement: true,
-      })
-      .webp({ quality: 85 })
-      .toBuffer();
+    buffer = await optimizeUpload(Buffer.from(await file.arrayBuffer()));
   } catch {
     return Response.json(
       { error: "Gambar tidak valid atau terlalu besar." },

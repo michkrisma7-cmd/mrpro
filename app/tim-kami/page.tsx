@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { UsersRound } from "lucide-react";
-import { db, databaseConfigured } from "@/lib/db";
+import { getTeamMembers } from "@/lib/team";
 import { pageMetadata } from "@/lib/seo";
 export const dynamic = "force-dynamic";
 export const metadata = pageMetadata({
@@ -11,19 +11,7 @@ export const metadata = pageMetadata({
   path: "/tim-kami",
 });
 export default async function TeamPage() {
-  const members = databaseConfigured
-    ? await db().teamMember.findMany({
-        where: { active: true },
-        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
-        select: {
-          id: true,
-          name: true,
-          expertise: true,
-          experience: true,
-          photoId: true,
-        },
-      })
-    : [];
+  const members = await getTeamMembers();
   return (
     <div className="container page-wrap">
       <nav className="breadcrumb" aria-label="Breadcrumb">

@@ -1,6 +1,6 @@
 "use server";
 import { randomUUID } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "./auth";
 import { db } from "./db";
@@ -51,6 +51,7 @@ export async function saveBlogPost(
       return { error: "Slug sudah digunakan artikel lain." };
     return { error: "Artikel belum berhasil disimpan. Coba lagi." };
   }
+  updateTag("blog");
   revalidatePath("/");
   revalidatePath("/blog");
   revalidatePath("/blog/[slug]", "page");

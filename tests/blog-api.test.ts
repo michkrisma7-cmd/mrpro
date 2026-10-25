@@ -39,7 +39,10 @@ test("blog API requires a key, validates input, creates drafts or published post
       if (name === "node:crypto") return crypto;
       if (name === "@/lib/blog-validation") return blogValidation;
       if (name === "next/cache")
-        return { revalidatePath: (path: string) => paths.push(path) };
+        return {
+          revalidatePath: (path: string) => paths.push(path),
+          revalidateTag: (tag: string) => assert.equal(tag, "blog"),
+        };
       if (name === "@/lib/db")
         return {
           databaseConfigured: true,

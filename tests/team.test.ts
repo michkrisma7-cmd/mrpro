@@ -70,7 +70,10 @@ test("team mutations require admin and reject foreign photos before creating or 
             }),
           };
         if (name === "next/cache")
-          return { revalidatePath: (path: string) => paths.push(path) };
+          return {
+            revalidatePath: (path: string) => paths.push(path),
+            updateTag: (tag: string) => assert.equal(tag, "team"),
+          };
         if (name === "next/navigation")
           return {
             redirect: () => {

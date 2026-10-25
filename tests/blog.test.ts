@@ -113,7 +113,10 @@ test("blog mutations reject non-admin callers before database access and allow a
         };
       if (name === "./blog-validation") return { blogSchema };
       if (name === "next/cache")
-        return { revalidatePath: (path: string) => paths.push(path) };
+        return {
+          revalidatePath: (path: string) => paths.push(path),
+          updateTag: (tag: string) => assert.equal(tag, "blog"),
+        };
       if (name === "next/navigation")
         return {
           redirect: () => {

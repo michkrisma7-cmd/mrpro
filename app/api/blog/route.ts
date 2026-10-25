@@ -1,5 +1,5 @@
 import { createHash, timingSafeEqual, randomUUID } from "node:crypto";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { db, databaseConfigured } from "@/lib/db";
 import { z } from "zod";
 import { blogFields, prepareBlogInput } from "@/lib/blog-validation";
@@ -140,6 +140,7 @@ export async function POST(request: Request) {
     );
   }
 
+  revalidateTag("blog", { expire: 0 });
   revalidatePath("/");
   revalidatePath("/blog");
   revalidatePath(`/blog/${post.slug}`);

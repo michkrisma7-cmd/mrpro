@@ -1,5 +1,5 @@
 "use server";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireUser, requireAdmin } from "./auth";
@@ -15,8 +15,10 @@ import {
 } from "./validation";
 import type { ActionState } from "./types";
 function refresh() {
-  revalidateTag("properties", { expire: 0 });
-  revalidateTag("content", { expire: 0 });
+  updateTag("properties");
+  updateTag("content");
+  revalidatePath("/properti/[slug]", "page");
+  revalidatePath("/sitemap.xml");
   ["/", "/properti", "/layanan", "/titip-properti", "/akun", "/admin"].forEach(
     (p) => revalidatePath(p),
   );

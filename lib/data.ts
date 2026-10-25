@@ -111,49 +111,62 @@ export async function getPublishedByIds(ids: string[]): Promise<Listing[]> {
     })
   ).map((p) => publicListing(p, fields));
 }
-export async function getCatalog(params: Record<string, string>) {
-  const page = Math.max(
-    1,
-    Math.min(100000, Number.parseInt(params.page || "1", 10) || 1),
+// Canonical arguments prevent duplicate entries for equivalent filter orders.
+export function getCatalog(params: Record<string, string>) {
+  const normalized = Object.fromEntries(
+    ["q", "jenis", "transaksi", "harga", "urut", "page"]
+      .filter((key) => Boolean(params[key]))
+      .map((key) => [key, params[key]]),
   );
-  const size = 12;
-  if (!databaseConfigured) {
-    const q = (params.q || "").toLowerCase();
-    let all = demoListings.filter(
-      (p) =>
-        (!q ||
-          `${p.title} ${p.values.lokasi || ""} ${p.values.proyek || ""} ${p.values.nama_proyek || ""}`
-            .toLowerCase()
-            .includes(q)) &&
-        (!params.jenis || p.values.jenis === params.jenis) &&
-        (!params.transaksi || p.values.transaksi === params.transaksi) &&
-        (!params.harga || Number(p.values.harga) <= Number(params.harga)),
-    );
-    if (params.urut === "termurah")
-      all = all.sort(
-        (a, b) => Number(a.values.harga || 0) - Number(b.values.harga || 0),
-      );
-    return {
-      listings: all.slice((page - 1) * size, page * size),
-      total: all.length,
-      page,
-      pages: Math.ceil(all.length / size),
-    };
-  }
-  const fields = await getFields();
-  const visible = new Set(
-    fields.filter((f) => f.showOnCard || f.showOnDetail).map((f) => f.key),
-  );
-  const queries = catalogQueries(params, visible);
-  const [rows, count] = await Promise.all([
-    db().$queryRaw<Listing[]>(queries.list),
-    db().$queryRaw<{ count: bigint }[]>(queries.count),
-  ]);
-  const total = Number(count[0].count);
-  return {
-    listings: rows.map((p) => publicListing(p, fields)),
-    total,
-    page,
-    pages: Math.ceil(total / size),
-  };
+  return getCachedCatalog(normalized);
 }
+const getCachedCatalog = unstable_cache(
+  async (params: Record<string, string>) => {
+    const page = Math.max(
+      1,
+      Math.min(100000, Number.parseInt(params.page || "1", 10) || 1),
+    );
+    const size = 12;
+    if (!databaseConfigured) {
+      const q = (params.q || "").toLowerCase();
+      let all = demoListings.filter(
+        (p) =>
+          (!q ||
+            `${p.title} ${p.values.lokasi || ""} ${p.values.proyek || ""} ${p.values.nama_proyek || ""}`
+              .toLowerCase()
+              .includes(q)) &&
+          (!params.jenis || p.values.jenis === params.jenis) &&
+          (!params.transaksi || p.values.transaksi === params.transaksi) &&
+          (!params.harga || Number(p.values.harga) <= Number(params.harga)),
+      );
+      if (params.urut === "termurah")
+        all = all.sort(
+          (a, b) => Number(a.values.harga || 0) - Number(b.values.harga || 0),
+        );
+      return {
+        listings: all.slice((page - 1) * size, page * size),
+        total: all.length,
+        page,
+        pages: Math.ceil(all.length / size),
+      };
+    }
+    const fields = await getFields();
+    const visible = new Set(
+      fields.filter((f) => f.showOnCard || f.showOnDetail).map((f) => f.key),
+    );
+    const queries = catalogQueries(params, visible);
+    const [rows, count] = await Promise.all([
+      db().$queryRaw<Listing[]>(queries.list),
+      db().$queryRaw<{ count: bigint }[]>(queries.count),
+    ]);
+    const total = Number(count[0].count);
+    return {
+      listings: rows.map((p) => publicListing(p, fields)),
+      total,
+      page,
+      pages: Math.ceil(total / size),
+    };
+  },
+  ["property-catalog"],
+  { revalidate: 60, tags: ["properties", "content"] },
+);

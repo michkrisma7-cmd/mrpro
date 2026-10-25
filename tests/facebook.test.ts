@@ -66,7 +66,7 @@ test("only a transition to PUBLISHED sends a webhook; edits and repeated publica
           },
         };
       if (name === "next/cache")
-        return { revalidatePath: () => {}, revalidateTag: () => {} };
+        return { revalidatePath: () => {}, updateTag: () => {} };
       if (name === "next/navigation") return { redirect: () => {} };
       if (name === "./facebook-post")
         return {

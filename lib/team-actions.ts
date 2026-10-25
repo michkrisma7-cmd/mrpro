@@ -1,5 +1,5 @@
 "use server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "./auth";
 import { db } from "./db";
@@ -38,6 +38,7 @@ export async function saveTeamMember(
   } catch {
     return { error: "Profil belum berhasil disimpan. Coba lagi." };
   }
+  updateTag("team");
   revalidatePath("/tim-kami");
   revalidatePath("/admin");
   redirect("/admin?tab=tim&tersimpan=1");
@@ -56,6 +57,7 @@ export async function deleteTeamMember(
     return { error: "Profil belum berhasil dihapus. Coba lagi." };
   }
   // Keep uploaded media: another listing or profile may still use it.
+  updateTag("team");
   revalidatePath("/tim-kami");
   revalidatePath("/admin");
   redirect("/admin?tab=tim&terhapus=1");

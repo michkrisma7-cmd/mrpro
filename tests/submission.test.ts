@@ -100,7 +100,7 @@ test(
           if (name === "next/cache")
             return {
               revalidatePath: (path: string) => paths.push(path),
-              revalidateTag: (tag: string) => tags.push(tag),
+              updateTag: (tag: string) => tags.push(tag),
             };
           if (name === "next/navigation")
             return {
