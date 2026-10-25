@@ -14,7 +14,10 @@ export async function saveTeamMember(
   const input = teamSchema.safeParse({
     name: form.get("name"),
     expertise: form.get("expertise"),
-    experience: form.get("experience"),
+    experience: form.get("experience") || "",
+    description: form.get("description") || "",
+    fullProfile: form.get("fullProfile") || "",
+    position: form.get("position") || 0,
     photoId: form.get("photoId"),
     active: form.has("active"),
   });

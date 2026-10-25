@@ -11,6 +11,7 @@ import {
   CircleCheck,
   House,
   MoveUpRight,
+  UsersRound,
 } from "lucide-react";
 import { getFields, getListings, getSettings } from "@/lib/data";
 import { databaseConfigured } from "@/lib/db";
@@ -19,6 +20,8 @@ import { HomeServiceGrid } from "@/components/home-service-grid";
 import { HeroSearch } from "@/components/hero-search";
 import { whatsappLink } from "@/lib/format";
 import { getBlogPosts } from "@/lib/blog";
+import { getTestimonials } from "@/lib/testimonials";
+import { TestimonialSection } from "@/components/testimonial-section";
 import { BlogList } from "@/components/blog-list";
 import { pageMetadata, homeTitle, homeDescription, jsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/format";
@@ -31,12 +34,15 @@ export const revalidate = 60;
 export default async function Home() {
   // Database-backed content must wait for a request, including when DATABASE_URL is set during builds.
   await connection();
-  const [fields, properties, settings, posts] = await Promise.all([
-    getFields(),
-    getListings(),
-    getSettings(),
-    getBlogPosts(3),
-  ]);
+  const [fields, properties, settings, posts, testimonials] = await Promise.all(
+    [
+      getFields(),
+      getListings(),
+      getSettings(),
+      getBlogPosts(3),
+      getTestimonials(),
+    ],
+  );
   const wa = whatsappLink(
     settings.whatsapp,
     "Halo MR Properti, saya ingin konsultasi properti.",
@@ -118,7 +124,7 @@ export default async function Home() {
         </div>
       </div>
       <section
-        className="section container"
+        className="section container home-property-section"
         id="properti"
         aria-label="Properti terbaru"
       >
@@ -149,7 +155,7 @@ export default async function Home() {
           </span>
         </div>
         <div className="property-grid">
-          {properties.slice(0, 3).map((p) => (
+          {properties.slice(0, 9).map((p) => (
             <PropertyCard key={p.id} property={p} fields={fields} />
           ))}
         </div>
@@ -168,6 +174,11 @@ export default async function Home() {
           Butuh bantuan memilih?{" "}
           <Link href={wa || "/titip-properti"}>
             Ceritakan kebutuhan Anda <ArrowUpRight size={13} />
+          </Link>
+        </div>
+        <div className="home-property-next">
+          <Link className="outline-button" href="/properti">
+            Listing selanjutnya <ArrowRight size={18} aria-hidden="true" />
           </Link>
         </div>
       </section>
@@ -194,6 +205,13 @@ export default async function Home() {
               Konsultasikan pekerjaan Anda. Kami bantu hubungkan dengan tukang
               yang sesuai.
             </span>
+          </div>
+          <div className="service-team-action">
+            <Link href="/tim-kami" className="button service-team-button">
+              <UsersRound size={18} aria-hidden="true" />
+              <span>Tim Kami</span>
+              <ArrowRight size={18} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </section>
@@ -279,6 +297,7 @@ export default async function Home() {
         </div>
         <BlogList posts={posts} />
       </section>
+      <TestimonialSection testimonials={testimonials} />
       <section className="container faq-section">
         <div>
           <p className="eyebrow">BIAR MAKIN YAKIN</p>

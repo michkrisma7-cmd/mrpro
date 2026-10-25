@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { TeamProfiles } from "@/components/team-profiles";
 import { UsersRound } from "lucide-react";
 import { getTeamMembers } from "@/lib/team";
 import { pageMetadata } from "@/lib/seo";
@@ -28,26 +28,7 @@ export default async function TeamPage() {
         </p>
       </header>
       {members.length ? (
-        <div className="team-grid">
-          {members.map((member) => (
-            <article className="team-card" key={member.id}>
-              <Image
-                src={`/api/media/${member.photoId}`}
-                alt={`Foto ${member.name}`}
-                width={480}
-                height={560}
-                unoptimized
-                className="team-photo"
-              />
-              <div className="team-card-body">
-                <h2>{member.name}</h2>
-                <p className="team-expertise">{member.expertise}</p>
-                <h3>Pengalaman kerja</h3>
-                <p className="team-experience">{member.experience}</p>
-              </div>
-            </article>
-          ))}
-        </div>
+        <TeamProfiles members={members} />
       ) : (
         <div className="empty-state">
           <UsersRound size={40} aria-hidden="true" />

@@ -1,76 +1,37 @@
 import Link from "next/link";
-import { ArrowUpRight, MapPin, Mail } from "lucide-react";
-import { BrandMark } from "./icons";
-import type { Settings } from "@/lib/types";
-import { whatsappLink } from "@/lib/format";
-export function Footer({ settings }: { settings: Settings }) {
-  const wa = whatsappLink(
-    settings.whatsapp,
-    "Halo MR Properti, saya ingin berkonsultasi.",
-  );
+import { BrandLogo } from "./brand-logo";
+export function Footer() {
   return (
     <footer className="site-footer">
       <div className="container">
         <div className="footer-grid">
-          <div>
-            <Link className="brand" href="/">
-              <BrandMark />
-              <span>
-                mr<span className="brand-light">properti</span>
-                <small>RUANG UNTUK CERITA ANDA</small>
-              </span>
+          <div className="footer-brand">
+            <Link className="brand" href="/" aria-label="MR Properti beranda">
+              <BrandLogo />
             </Link>
-            <p>
-              Lebih dari sekadar properti.
-              <br />
-              Partner untuk setiap rencana Anda.
-            </p>
-            <span className="footer-location">
-              <MapPin size={15} />
-              {settings.area}
-            </span>
           </div>
-          <div>
-            <h3>Temukan Ruang</h3>
+          <nav className="footer-menu" aria-labelledby="footer-services-title">
+            <h3 id="footer-services-title">Layanan</h3>
             <Link href="/properti?transaksi=Dijual">Properti dijual</Link>
             <Link href="/properti?transaksi=Disewa">Properti disewa</Link>
             <Link href="/titip-properti">Titip properti</Link>
-          </div>
-          <div>
-            <h3>Untuk Rumah Anda</h3>
             <Link href="/layanan">Layanan tukang</Link>
             <Link href="/layanan?jenis=Renovasi">Renovasi rumah</Link>
-            <Link href="/#tentang">Tentang MR Properti</Link>
+          </nav>
+          <nav className="footer-menu" aria-labelledby="footer-company-title">
+            <h3 id="footer-company-title">MR Properti</h3>
+            <Link href="/tentang-kami">Tentang MR Properti</Link>
             <Link href="/tim-kami">Tim Kami</Link>
             <Link href="/kalkulator-kpr">Kalkulator KPR</Link>
-          </div>
-          <div>
-            <h3>Mari Terhubung</h3>
-            {wa ? (
-              <a href={wa} target="_blank" rel="noopener noreferrer">
-                Konsultasi WhatsApp <ArrowUpRight size={14} />
-              </a>
-            ) : (
-              <Link href="/titip-properti">
-                Kirim kebutuhan Anda <ArrowUpRight size={14} />
-              </Link>
-            )}
-            {settings.email && (
-              <a href={`mailto:${settings.email}`}>
-                <Mail size={14} />
-                {settings.email}
-              </a>
-            )}
-            <Link href="/login">
-              Masuk ke akun <ArrowUpRight size={14} />
-            </Link>
-          </div>
+            <Link href="/login">Masuk ke akun</Link>
+          </nav>
         </div>
         <div className="footer-bottom">
-          <span>
-            © {new Date().getFullYear()} MR Properti. Setiap ruang punya cerita.
-          </span>
-          <span>Dibuat untuk langkah baru Anda. </span>
+          <nav className="footer-legal" aria-label="Informasi legal">
+            <Link href="/syarat-dan-ketentuan">Syarat &amp; Ketentuan</Link>
+            <Link href="/kebijakan-privasi">Kebijakan Privasi</Link>
+          </nav>
+          <p>© {new Date().getFullYear()} MR Properti. Semua hak dilindungi.</p>
         </div>
       </div>
     </footer>

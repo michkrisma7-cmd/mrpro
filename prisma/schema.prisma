@@ -81,6 +81,7 @@ model Service {
 }
 model Media {
   teamMembers TeamMember[]
+  testimonials Testimonial[]
   id String @id @default(cuid())
   key String @unique
   ownerId String
@@ -120,11 +121,32 @@ model TeamMember {
   name String
   expertise String
   experience String
+  description String @default("")
+  fullProfile String @default("")
+  position Int @default(0)
   photoId String
   photo Media @relation(fields: [photoId], references: [id], onDelete: Restrict)
   active Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([active, createdAt])
+  @@index([photoId])
+  @@index([active, position])
+}
+
+model Testimonial {
+  id String @id @default(cuid())
+  category String
+  name String
+  status String
+  quote String
+  rating Int @default(5)
+  position Int @default(0)
+  photoId String?
+  photo Media? @relation(fields: [photoId], references: [id], onDelete: Restrict)
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([active, position])
   @@index([photoId])
 }

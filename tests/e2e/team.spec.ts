@@ -17,7 +17,7 @@ test("team page is reachable and has an honest empty state without a database", 
   await expect(
     page.getByRole("heading", { name: "Profil tim segera hadir." }),
   ).toBeVisible();
-  await expect(page.locator(".team-card")).toHaveCount(0);
+  await expect(page.locator(".team-profile-card")).toHaveCount(0);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     /\/tim-kami$/,
@@ -33,9 +33,12 @@ test("team admin form is read only without authentication and database configura
   page,
 }) => {
   await page.goto("/admin?tab=tim&edit=baru");
-  await expect(page.getByLabel("Nama", { exact: true })).toBeDisabled();
+  await expect(page.getByLabel("Nama lengkap", { exact: true })).toBeDisabled();
   await expect(page.getByLabel("Bidang keahlian")).toBeDisabled();
   await expect(page.getByLabel("Pengalaman kerja")).toBeDisabled();
+  await expect(page.locator('textarea[name="description"]')).toBeDisabled();
+  await expect(page.getByLabel("Deskripsi profil lengkap")).toBeDisabled();
+  await expect(page.getByLabel("Urutan tampilan")).toBeDisabled();
   await expect(page.getByLabel("Foto anggota tim")).toBeDisabled();
   await expect(
     page.getByRole("button", { name: "Simpan Anggota Tim" }),

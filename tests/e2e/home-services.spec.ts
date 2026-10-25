@@ -56,6 +56,16 @@ test("home service cards preserve links and show summaries only on desktop", asy
     if (row > 0) expect(left.y).toBeGreaterThan(boxes[(row - 1) * 2].bottom);
   }
   for (const box of boxes) expect(box.iconBottom).toBeLessThan(box.titleTop);
+  if (isMobile) {
+    for (const box of boxes) expect(box.bottom - box.y).toBe(96);
+    expect(
+      await cards
+        .locator("h3")
+        .evaluateAll((titles) =>
+          titles.every((title) => title.scrollHeight <= title.clientHeight),
+        ),
+    ).toBe(true);
+  }
 });
 
 test("each service card opens its own work details, prices and time guide", async ({
@@ -145,4 +155,28 @@ test("service directory puts identity beside desktop descriptions and above mobi
       () => document.documentElement.scrollWidth <= innerWidth,
     ),
   ).toBe(true);
+});
+
+test("homepage team button sits below consultation text at half content width and opens the same tab", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const section = page.locator(".services-section");
+  const button = section.getByRole("link", { name: "Tim Kami", exact: true });
+  await expect(button).toHaveAttribute("href", "/tim-kami");
+  expect(await button.getAttribute("target")).not.toBe("_blank");
+  await expect(button.locator("svg")).toHaveCount(2);
+  const note = (await section.locator(".service-note").boundingBox())!;
+  const action = (await section.locator(".service-team-action").boundingBox())!;
+  const box = (await button.boundingBox())!;
+  expect(box.y).toBeGreaterThan(note.y + note.height);
+  expect(Math.abs(box.width - action.width / 2)).toBeLessThan(1);
+  expect(
+    Math.abs(box.x + box.width / 2 - (action.x + action.width / 2)),
+  ).toBeLessThan(1);
+  await button.click();
+  await expect(page).toHaveURL(/\/tim-kami$/);
+  await expect(
+    page.getByRole("heading", { name: "Tim Kami", exact: true }),
+  ).toBeVisible();
 });

@@ -54,7 +54,7 @@ export function TeamEditor({
         <input type="hidden" name="photoId" value={photoId} />
         <div className="form-grid">
           <label>
-            Nama
+            Nama lengkap
             <input
               name="name"
               required
@@ -79,13 +79,46 @@ export function TeamEditor({
           Pengalaman kerja
           <textarea
             name="experience"
-            required
-            minLength={5}
             maxLength={5000}
-            rows={6}
+            rows={2}
             defaultValue={member?.experience}
-            placeholder="Ceritakan lama pengalaman, jenis pekerjaan, dan proyek yang pernah ditangani."
+            placeholder="Contoh: 10 tahun pengalaman"
           />
+        </label>
+        <label>
+          Deskripsi singkat
+          <textarea
+            name="description"
+            rows={3}
+            maxLength={2000}
+            defaultValue={member?.description}
+          />
+          <small>
+            Ditampilkan maksimal dua baris di kartu; teks lengkap tetap
+            tersimpan.
+          </small>
+        </label>
+        <label>
+          Deskripsi profil lengkap
+          <textarea
+            name="fullProfile"
+            rows={8}
+            maxLength={15000}
+            defaultValue={member?.fullProfile}
+          />
+          <small>Ditampilkan pada popup profil anggota tim.</small>
+        </label>
+        <label>
+          Urutan tampilan
+          <input
+            type="number"
+            name="position"
+            min={0}
+            max={9999}
+            required
+            defaultValue={member?.position ?? 0}
+          />
+          <small>Angka lebih kecil tampil lebih dahulu.</small>
         </label>
         <label>
           Foto anggota tim

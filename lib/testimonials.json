@@ -1,0 +1,29 @@
+[
+  {
+    "id": "testimonial-kpr",
+    "category": "Pembeli Rumah Pertama (KPR)",
+    "rating": 5,
+    "quote": "Awalnya bingung dan takut ribet ngurus KPR untuk rumah pertama. Tapi tim mrproperti dampingi dari pilih unit sampai serah terima kunci. Komunikasinya ramah dan transparan banget!",
+    "name": "Ahmad Rizky",
+    "status": "Pembeli Rumah di Pondok Permata 2 Babelan",
+    "position": 0
+  },
+  {
+    "id": "testimonial-investor",
+    "category": "Investor Properti",
+    "rating": 5,
+    "quote": "mrproperti punya insight pasar yang tajam. Saya dibantu memilih ruko Grand Amarta Cikarang dengan return rental yield yang tinggi. Sangat recommended untuk yang mau investasi!",
+    "name": "Indah Permatasari",
+    "status": "Investor Properti",
+    "position": 1
+  },
+  {
+    "id": "testimonial-seller",
+    "category": "Penjual Properti",
+    "rating": 5,
+    "quote": "Rumah saya laku dalam waktu kurang dari sebulan dengan harga yang memuaskan. Strategi pemasaran mrproperti sangat efektif dan profesional.",
+    "name": "Ani Suliasih",
+    "status": "Penjual Properti di Bekasi Timur",
+    "position": 2
+  }
+]

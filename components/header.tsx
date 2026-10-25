@@ -3,7 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { ArrowUpRight, Menu, X, UserRound, Heart } from "lucide-react";
-import { BrandMark } from "./icons";
+import { BrandLogo } from "./brand-logo";
 export function Header() {
   const path = usePathname();
   const [open, setOpen] = useState(false);
@@ -11,11 +11,7 @@ export function Header() {
     <header className="site-header">
       <div className="container nav-row">
         <Link className="brand" href="/" aria-label="MR Properti beranda">
-          <BrandMark />
-          <span>
-            mr<span className="brand-light">properti</span>
-            <small>RUANG UNTUK CERITA ANDA</small>
-          </span>
+          <BrandLogo preload />
         </Link>
         <nav
           className={open ? "main-nav is-open" : "main-nav"}
@@ -27,7 +23,8 @@ export function Header() {
             ["/layanan", "Layanan Tukang"],
             ["/blog", "Blog"],
             ["/tim-kami", "Tim Kami"],
-            ["/#tentang", "Tentang Kami"],
+            ["/syarat-dan-ketentuan", "Syarat dan Ketentuan"],
+            ["/tentang-kami", "Tentang Kami"],
           ].map(([href, label]) => (
             <Link
               onClick={() => setOpen(false)}

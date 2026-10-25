@@ -9,12 +9,14 @@ export const getTeamMembers = cache(
       databaseConfigured
         ? db().teamMember.findMany({
             where: { active: true },
-            orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+            orderBy: [{ position: "asc" }, { createdAt: "asc" }, { id: "asc" }],
             select: {
               id: true,
               name: true,
               expertise: true,
               experience: true,
+              description: true,
+              fullProfile: true,
               photoId: true,
             },
           })

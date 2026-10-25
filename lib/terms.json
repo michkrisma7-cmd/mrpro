@@ -1,0 +1,551 @@
+[
+  {
+    "id": "ketentuan-umum",
+    "title": "Ketentuan umum",
+    "sections": [
+      {
+        "number": 1,
+        "title": "Penggunaan layanan",
+        "paragraphs": [
+          "Pengguna wajib memberikan informasi yang benar, lengkap, dan sesuai keadaan sebenarnya.",
+          "Pengguna yang membuat kesepakatan harus cakap secara hukum atau memiliki kewenangan yang sah untuk mewakili pihak terkait.",
+          "Penggunaan layanan untuk penipuan, pemalsuan dokumen, penyebaran informasi menyesatkan, atau kegiatan yang melanggar hukum dilarang.",
+          "Pengajuan formulir, konsultasi, atau permintaan penawaran belum secara otomatis menjadi perjanjian pemasaran, transaksi properti, maupun perintah pelaksanaan pekerjaan.",
+          "Kewajiban pembayaran timbul setelah jenis layanan, biaya, dan ketentuannya disampaikan serta disetujui oleh pihak terkait."
+        ]
+      },
+      {
+        "number": 2,
+        "title": "Dokumen kesepakatan",
+        "paragraphs": [
+          "Rincian layanan dapat dituangkan dalam surat penugasan, penawaran, Rencana Anggaran Biaya atau RAB, surat perintah kerja, perjanjian, maupun persetujuan elektronik yang dapat dibuktikan.",
+          "Kesepakatan khusus mengatur objek, ruang lingkup, harga, jadwal, pembayaran, dan tanggung jawab masing-masing pihak.",
+          "Apabila terdapat perbedaan dengan ketentuan umum ini, kesepakatan khusus yang disetujui para pihak berlaku sepanjang tidak bertentangan dengan peraturan perundang-undangan.",
+          "Perubahan harga, spesifikasi, atau pekerjaan harus mendapat persetujuan terlebih dahulu. Diamnya pengguna tidak dianggap sebagai persetujuan atas biaya tambahan."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "pemasaran-properti",
+    "title": "B. LAYANAN AGEN PEMASARAN PROPERTI",
+    "sections": [
+      {
+        "number": 3,
+        "title": "Kedudukan dan ruang lingkup layanan",
+        "paragraphs": [
+          "Website kami bertindak sebagai agen pemasaran atau perantara untuk membantu mempertemukan pemilik properti dengan calon pembeli atau penyewa.",
+          "Layanan dapat mencakup penerimaan listing, penyusunan materi promosi, publikasi, penanganan pertanyaan, pengaturan survei, negosiasi, dan koordinasi proses transaksi.",
+          "Website kami tidak otomatis berkedudukan sebagai pemilik, pengembang, penjual, pemberi kredit, notaris, PPAT, atau penyelenggara lelang atas properti yang dipasarkan.",
+          "Kewenangan untuk menerima penawaran, menyetujui harga, menandatangani dokumen, atau menerima dana harus dinyatakan secara khusus.",
+          "Pemasaran tidak merupakan jaminan bahwa properti pasti terjual atau tersewa dalam jangka waktu tertentu."
+        ]
+      },
+      {
+        "number": 4,
+        "title": "Persyaratan penitipan properti",
+        "paragraphs": [
+          "Pihak yang menitipkan properti wajib merupakan pemilik atau pihak yang mendapat kuasa sah.",
+          "Pemberi kuasa wajib menjelaskan batas kewenangan pihak yang mewakilinya.",
+          "Informasi yang diberikan sekurang-kurangnya meliputi:",
+          "Jenis, lokasi, dan kondisi properti.",
+          "Luas tanah dan bangunan.",
+          "Harga serta ketentuan pembayaran.",
+          "Status kepemilikan dan dokumen.",
+          "Kondisi penghunian atau penyewaan.",
+          "Fasilitas dan barang yang termasuk dalam penawaran.",
+          "Beban kredit, tunggakan, sengketa, atau pembatasan yang diketahui.",
+          "Pemilik wajib mengungkapkan cacat atau masalah penting yang diketahui, termasuk kebocoran, kerusakan struktur, banjir, masalah akses, dan perselisihan batas.",
+          "Website kami dapat meminta dokumen pendukung dan menunda penayangan apabila informasi belum memadai atau terdapat indikasi pelanggaran."
+        ]
+      },
+      {
+        "number": 5,
+        "title": "Informasi listing dan materi promosi",
+        "paragraphs": [
+          "Informasi listing disusun berdasarkan data pemilik, dokumen yang tersedia, dan hasil pengamatan apabila dilakukan survei.",
+          "Pemeriksaan awal oleh tim tidak menggantikan pemeriksaan legalitas oleh pihak yang berwenang maupun pemeriksaan teknis oleh tenaga ahli.",
+          "Foto dan video harus menggambarkan properti secara wajar. Gambar ilustrasi, desain, atau visual yang telah diubah secara material harus diberi keterangan.",
+          "Ukuran, jarak, waktu tempuh, dan informasi lingkungan yang bersifat perkiraan harus dipahami sebagai informasi awal yang perlu dikonfirmasi.",
+          "Harga penawaran dapat berubah sebelum tercapai kesepakatan mengikat. Perubahan tidak berlaku sepihak terhadap harga yang sudah disepakati.",
+          "Pemilik wajib segera memberitahukan perubahan harga, ketersediaan, status transaksi, atau kondisi properti.",
+          "Website kami dapat memperbaiki, menunda, atau menurunkan listing yang tidak akurat, sudah tidak tersedia, atau melanggar ketentuan."
+        ]
+      },
+      {
+        "number": 6,
+        "title": "Izin publikasi",
+        "paragraphs": [
+          "Pemilik memberikan izin penggunaan foto, video, dan informasi properti yang diserahkan untuk keperluan pemasaran selama masa penugasan.",
+          "Pemilik wajib memiliki hak atau izin atas materi yang diberikan.",
+          "Publikasi dapat dilakukan melalui website, media sosial, jaringan pemasaran, dan kanal lain yang disepakati.",
+          "Dokumen identitas, sertifikat lengkap, tanda tangan, serta informasi pribadi sensitif tidak boleh ditampilkan secara terbuka tanpa dasar yang sah.",
+          "Penghentian pemasaran akan diikuti penghentian publikasi pada kanal yang berada dalam kendali website kami dalam waktu yang wajar. Salinan yang sudah dibagikan pihak lain mungkin memerlukan penanganan tersendiri."
+        ]
+      },
+      {
+        "number": 7,
+        "title": "Penugasan eksklusif dan non-eksklusif",
+        "paragraphs": [
+          "Penugasan pemasaran dapat bersifat eksklusif atau non-eksklusif sesuai kesepakatan tertulis.",
+          "Penugasan eksklusif harus menjelaskan masa berlaku, kewenangan pemasaran, kewajiban pemilik, serta kondisi timbulnya komisi.",
+          "Dalam penugasan non-eksklusif, pemilik dapat menggunakan agen lain dengan tetap memberikan informasi yang konsisten.",
+          "Komisi untuk transaksi langsung dengan calon pembeli atau penyewa yang sebelumnya diperkenalkan website kami hanya berlaku apabila dasar pengenaan, bukti perkenalan, dan batas waktunya disepakati.",
+          "Ketentuan tersebut tidak boleh digunakan untuk membebankan komisi tanpa hubungan yang dapat dibuktikan dengan jasa pemasaran."
+        ]
+      },
+      {
+        "number": 8,
+        "title": "Survei properti",
+        "paragraphs": [
+          "Survei dilakukan berdasarkan jadwal dan izin pihak yang menguasai properti.",
+          "Calon pembeli atau penyewa wajib menjaga ketertiban, privasi, dan barang di lokasi.",
+          "Pengambilan foto, video, pengukuran, atau pemeriksaan tambahan harus mendapat izin.",
+          "Pemeriksaan yang melibatkan pembongkaran atau perubahan fisik membutuhkan persetujuan khusus.",
+          "Biaya survei atau pemeriksaan tambahan, apabila ada, harus diberitahukan dan disetujui sebelum kegiatan dilakukan.",
+          "Penyerahan kunci untuk kepentingan pemasaran harus dicatat dan tidak memberikan izin menggunakan atau menempati properti."
+        ]
+      },
+      {
+        "number": 9,
+        "title": "Penawaran dan negosiasi",
+        "paragraphs": [
+          "Penawaran calon pembeli atau penyewa akan disampaikan kepada pihak yang berwenang.",
+          "Penawaran belum mengikat sampai diterima sesuai mekanisme kesepakatan para pihak.",
+          "Tim tidak berwenang menjanjikan diskon, bonus, perbaikan, atau ketentuan lain di luar kewenangan yang diberikan.",
+          "Kesepakatan transaksi perlu menjelaskan harga, jadwal pembayaran, kondisi penyerahan, barang yang termasuk, biaya transaksi, dan ketentuan pembatalan.",
+          "Pernyataan lisan yang memengaruhi transaksi perlu dikonfirmasi secara tertulis."
+        ]
+      },
+      {
+        "number": 10,
+        "title": "Komisi dan biaya pemasaran",
+        "paragraphs": [
+          "Besaran komisi ditentukan sebelum penugasan atau sebelum timbulnya kewajiban membayar.",
+          "Kesepakatan komisi harus menjelaskan:",
+          "Pihak yang membayar.",
+          "Nominal atau persentase dan dasar perhitungannya.",
+          "Peristiwa yang menimbulkan hak atas komisi.",
+          "Waktu pembayaran.",
+          "Perlakuan apabila transaksi batal.",
+          "Pajak yang berlaku.",
+          "Biaya iklan berbayar, dokumentasi khusus, atau layanan tambahan harus disetujui terlebih dahulu.",
+          "Biaya tambahan tidak dapat ditagihkan hanya karena tim telah mengeluarkannya tanpa persetujuan pengguna.",
+          "Apabila terdapat imbalan dari lebih dari satu pihak dalam transaksi yang sama, pengaturan tersebut harus diungkapkan kepada pihak terkait untuk menghindari konflik kepentingan."
+        ]
+      },
+      {
+        "number": 11,
+        "title": "Booking, uang muka, dan pembayaran",
+        "paragraphs": [
+          "Sebelum membayar, pengguna harus memperoleh penjelasan tertulis mengenai tujuan pembayaran, penerima, batas waktu, serta ketentuan pengembaliannya.",
+          "Booking atau uang muka tidak otomatis memindahkan kepemilikan maupun memberikan hak menempati properti.",
+          "Pembayaran dilakukan kepada pihak yang berhak melalui rekening yang telah dikonfirmasi.",
+          "Website kami hanya dapat menerima atau menampung dana transaksi apabila terdapat kewenangan dan mekanisme tertulis yang jelas.",
+          "Setiap pembayaran wajib dilengkapi bukti penerimaan.",
+          "Perubahan rekening pembayaran harus diverifikasi melalui saluran komunikasi yang sebelumnya telah digunakan."
+        ]
+      },
+      {
+        "number": 12,
+        "title": "Pemeriksaan dokumen dan transaksi",
+        "paragraphs": [
+          "Sebelum transaksi, pembeli atau penyewa perlu memperoleh kesempatan memeriksa kondisi fisik dan dokumen yang relevan.",
+          "Pemeriksaan dapat mencakup kepemilikan, kewenangan penjual, beban jaminan, sengketa, tunggakan, perizinan, serta kesesuaian objek.",
+          "Pemeriksaan pertanahan dan pembuatan akta dilakukan melalui notaris, PPAT, atau instansi berwenang sesuai kebutuhan.",
+          "Pajak, biaya akta, balik nama, pembiayaan, dan biaya lainnya harus dijelaskan pembagiannya dalam kesepakatan.",
+          "Website kami wajib menyampaikan masalah material yang diketahuinya dan tidak boleh menyembunyikan informasi yang memengaruhi keputusan pengguna."
+        ]
+      },
+      {
+        "number": 13,
+        "title": "KPR dan pembiayaan",
+        "paragraphs": [
+          "Pendampingan pengajuan KPR atau pembiayaan merupakan bantuan administratif sesuai ruang lingkup yang disepakati.",
+          "Persetujuan, plafon, tenor, bunga, margin, dan persyaratan pembiayaan ditentukan oleh lembaga pembiayaan.",
+          "Simulasi cicilan bersifat perkiraan dan harus mencantumkan asumsi yang digunakan.",
+          "Pengguna dilarang menyerahkan dokumen palsu atau memberikan keterangan yang tidak benar.",
+          "Dampak penolakan pembiayaan terhadap booking, uang muka, dan transaksi harus ditentukan sebelum pembayaran dilakukan."
+        ]
+      },
+      {
+        "number": 14,
+        "title": "Over kredit dan properti lelang",
+        "paragraphs": [
+          "Over kredit atas properti yang masih terikat pembiayaan harus memperhatikan perjanjian kredit serta persetujuan atau prosedur lembaga pembiayaan.",
+          "Kesepakatan pribadi tidak otomatis memindahkan kewajiban debitur maupun hak atas agunan dalam administrasi bank.",
+          "Pendampingan properti lelang tidak merupakan jaminan memenangkan lelang, memperoleh pembiayaan, atau langsung menguasai objek.",
+          "Calon peserta harus memahami pengumuman resmi, uang jaminan, batas pelunasan, kondisi penghunian, biaya, dan risiko penguasaan objek.",
+          "Pembayaran uang jaminan lelang dilakukan melalui mekanisme resmi penyelenggara.",
+          "Biaya pendampingan, pengurusan dokumen, dan penanganan penguasaan objek harus dijelaskan secara terpisah apabila ditawarkan."
+        ]
+      },
+      {
+        "number": 15,
+        "title": "Pembatalan dan pengakhiran pemasaran",
+        "paragraphs": [
+          "Pembatalan transaksi mengikuti kesepakatan yang telah disetujui dan ketentuan hukum yang berlaku.",
+          "Booking atau uang muka tidak otomatis hangus hanya berdasarkan ketentuan umum ini.",
+          "Pengembalian dana mempertimbangkan dasar pembayaran, penyebab pembatalan, pekerjaan yang sudah dilaksanakan, dan biaya sah yang telah disetujui.",
+          "Pengakhiran pemasaran tidak menghapus kewajiban yang sudah timbul secara sah.",
+          "Jika pembatalan disebabkan kesalahan website kami, penyelesaiannya harus mencakup tanggung jawab yang sesuai dengan kesalahan dan kerugian yang terbukti."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "layanan-pekerjaan",
+    "title": "C. KETENTUAN UMUM UNTUK 10 LAYANAN PEKERJAAN",
+    "sections": [
+      {
+        "number": 16,
+        "title": "Jenis layanan",
+        "paragraphs": [
+          "Layanan pekerjaan meliputi:",
+          "AC.",
+          "Plafon.",
+          "Kanopi.",
+          "Pagar.",
+          "Kelistrikan.",
+          "Baja ringan.",
+          "Dak dan peningkatan rumah.",
+          "Kitchen set.",
+          "Pengecatan.",
+          "Perbaikan rumah."
+        ]
+      },
+      {
+        "number": 17,
+        "title": "Kedudukan tim dan pelaksana",
+        "paragraphs": [
+          "Sebelum pemesanan, pengguna harus mendapat penjelasan apakah website kami bertindak sebagai penyedia pekerjaan, pengelola pekerjaan, atau penghubung dengan mitra.",
+          "Penawaran harus menjelaskan pihak yang bertanggung jawab atas pelaksanaan, pembayaran, pengawasan, garansi, dan penanganan keluhan.",
+          "Penggunaan tenaga kerja atau mitra tidak menghapus tanggung jawab yang telah diambil website kami dalam kesepakatan.",
+          "Apabila website kami hanya mempertemukan pengguna dengan pelaksana independen, kedudukan tersebut harus dijelaskan sebelum pengguna menyetujui pemesanan."
+        ]
+      },
+      {
+        "number": 18,
+        "title": "Konsultasi dan survei",
+        "paragraphs": [
+          "Estimasi berdasarkan foto atau percakapan merupakan perkiraan awal sampai kondisi lapangan diperiksa.",
+          "Survei dapat mencakup ukuran, akses, kondisi bangunan, instalasi lama, kebutuhan bahan, dan risiko pekerjaan.",
+          "Biaya survei, pemeriksaan, transportasi, atau pembongkaran awal harus disampaikan sebelum pelaksanaan.",
+          "Pengguna wajib menginformasikan kondisi yang diketahui, termasuk kebocoran, retakan, kabel tersembunyi, pipa, dan riwayat perbaikan.",
+          "Kondisi tersembunyi yang baru ditemukan harus dilaporkan sebelum pekerjaan tambahan dilakukan."
+        ]
+      },
+      {
+        "number": 19,
+        "title": "Penawaran dan RAB",
+        "paragraphs": [
+          "Penawaran harus menjelaskan ruang lingkup, volume, satuan, harga, spesifikasi bahan, serta pekerjaan yang tidak termasuk.",
+          "Sistem pekerjaan harus disebutkan, seperti borongan tenaga, borongan tenaga dan material, harga satuan, atau harian.",
+          "Harga berdasarkan volume aktual harus disertai metode pengukuran yang disepakati.",
+          "Biaya angkut, perancah, pembongkaran, pengamanan, pembuangan puing, pajak, dan pengurusan izin harus dinyatakan termasuk atau terpisah.",
+          "Masa berlaku penawaran harus dicantumkan.",
+          "Perubahan harga setelah persetujuan tidak boleh dilakukan sepihak."
+        ]
+      },
+      {
+        "number": 20,
+        "title": "Persetujuan dan pembayaran",
+        "paragraphs": [
+          "Pekerjaan dimulai setelah ruang lingkup, harga, jadwal, serta persyaratan awal disepakati.",
+          "Besaran uang muka dan termin pembayaran ditentukan untuk setiap pekerjaan.",
+          "Pembayaran berdasarkan progres harus memiliki ukuran pencapaian yang dapat diperiksa.",
+          "Pembayaran kepada pekerja di luar mekanisme yang disepakati harus terlebih dahulu dikonfirmasi.",
+          "Pembelian bahan khusus atau pesanan produksi hanya dilakukan setelah persetujuan yang diperlukan.",
+          "Keterlambatan pembayaran ditangani melalui pemberitahuan dan kesempatan penyelesaian sebelum penundaan pekerjaan, kecuali diperlukan tindakan segera untuk keselamatan."
+        ]
+      },
+      {
+        "number": 21,
+        "title": "Material dan barang milik pengguna",
+        "paragraphs": [
+          "Material harus sesuai jenis, mutu, ukuran, dan merek yang disetujui.",
+          "Penggantian material dengan alternatif memerlukan persetujuan pengguna, termasuk dampak harga dan kualitasnya.",
+          "Material dari pengguna perlu diperiksa kesesuaiannya sebelum dipasang.",
+          "Jika material pengguna tidak layak, tim wajib menjelaskan risikonya dan dapat menolak pemasangan yang membahayakan.",
+          "Kepemilikan sisa material dan penanganan barang bongkaran harus disepakati.",
+          "Barang pengguna yang dipindahkan atau dibongkar perlu dicatat agar tidak menimbulkan perselisihan."
+        ]
+      },
+      {
+        "number": 22,
+        "title": "Jadwal, akses, dan keselamatan",
+        "paragraphs": [
+          "Jadwal mempertimbangkan volume, jumlah tenaga, ketersediaan material, kondisi lokasi, dan waktu pengeringan atau pematangan bahan.",
+          "Perubahan jadwal harus diberitahukan beserta alasan dan perkiraan penyelesaiannya.",
+          "Pengguna menyediakan akses yang telah disepakati serta menginformasikan aturan lingkungan atau pengelola bangunan.",
+          "Tanggung jawab penyediaan air, listrik kerja, tempat penyimpanan, dan pengamanan lokasi harus dijelaskan dalam penawaran.",
+          "Pelaksana wajib menerapkan cara kerja aman, menggunakan perlengkapan yang sesuai, serta menjaga area kerja.",
+          "Pengguna dan penghuni wajib menghindari area berbahaya yang telah diberi pembatas.",
+          "Pekerjaan berisiko tidak boleh diteruskan hanya untuk memenuhi jadwal."
+        ]
+      },
+      {
+        "number": 23,
+        "title": "Perubahan dan pekerjaan tambahan",
+        "paragraphs": [
+          "Penambahan volume, perubahan desain, atau temuan lapangan harus didokumentasikan.",
+          "Persetujuan tambahan harus memuat jenis pekerjaan, biaya, dan dampak waktu.",
+          "Pekerjaan tambahan tidak ditagihkan tanpa persetujuan.",
+          "Dalam keadaan darurat, tim dapat melakukan tindakan minimum yang diperlukan untuk mencegah bahaya, segera memberi tahu pengguna, dan mendokumentasikan tindakan serta biayanya.",
+          "Penolakan pengguna terhadap tambahan yang diperlukan untuk keselamatan dapat menyebabkan bagian pekerjaan terkait dihentikan dengan penjelasan tertulis."
+        ]
+      },
+      {
+        "number": 24,
+        "title": "Pemeriksaan dan serah terima",
+        "paragraphs": [
+          "Hasil pekerjaan diperiksa bersama berdasarkan spesifikasi yang disepakati.",
+          "Kekurangan yang ditemukan dicatat beserta rencana perbaikannya.",
+          "Pengujian fungsi dilakukan sesuai jenis pekerjaan.",
+          "Serah terima dapat dilengkapi foto, berita acara, petunjuk perawatan, dan dokumen garansi.",
+          "Penggunaan hasil pekerjaan atau pelunasan tidak otomatis menghapus hak atas cacat tersembunyi maupun tanggung jawab yang diwajibkan hukum."
+        ]
+      },
+      {
+        "number": 25,
+        "title": "Garansi dan perbaikan",
+        "paragraphs": [
+          "Masa, cakupan, awal berlakunya, serta prosedur klaim garansi harus ditetapkan sebelum pemesanan.",
+          "Garansi pelaksanaan dibedakan dari garansi produk atau material pabrikan.",
+          "Ketidaksesuaian akibat kesalahan pelaksanaan diperbaiki sesuai tanggung jawab pelaksana.",
+          "Kerusakan akibat penggunaan tidak sesuai petunjuk, perubahan oleh pihak lain, atau sebab luar dinilai berdasarkan hubungan sebab akibatnya.",
+          "Pengecualian garansi tidak boleh digunakan untuk menolak seluruh klaim tanpa pemeriksaan.",
+          "Berakhirnya garansi komersial tidak menghapus tanggung jawab lain yang diwajibkan oleh hukum."
+        ]
+      },
+      {
+        "number": 26,
+        "title": "Pembatalan dan pengembalian dana pekerjaan",
+        "paragraphs": [
+          "Pembatalan harus disampaikan melalui komunikasi yang dapat dibuktikan.",
+          "Perhitungan penyelesaian mempertimbangkan pekerjaan yang telah diterima, material yang sudah dibeli sesuai persetujuan, dan biaya pembatalan yang sah.",
+          "Material khusus yang tidak dapat dikembalikan harus disertai bukti pemesanan dan diserahkan kepada pengguna apabila telah dibayar.",
+          "Sisa dana setelah perhitungan dikembalikan dengan rincian dan jadwal yang jelas.",
+          "Uang muka tidak otomatis hangus seluruhnya.",
+          "Jika pelaksana membatalkan atau gagal memenuhi kewajibannya, penyelesaian mencakup pengembalian dana untuk bagian yang belum dipenuhi dan tanggung jawab lain sesuai keadaan."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ketentuan-khusus",
+    "title": "D. KETENTUAN KHUSUS MASING-MASING LAYANAN",
+    "sections": [
+      {
+        "number": 27,
+        "title": "Layanan AC",
+        "paragraphs": [
+          "Pesanan harus menjelaskan apakah berupa pemeriksaan, pencucian, perbaikan, pemasangan, pembongkaran, pemindahan, atau penggantian komponen.",
+          "Biaya jasa, suku cadang, refrigeran, pipa, kabel, bracket, dan pekerjaan akses harus dirinci sesuai kebutuhan.",
+          "Penggantian komponen dan pengisian refrigeran dilakukan berdasarkan hasil pemeriksaan serta persetujuan pengguna.",
+          "Apabila ditemukan indikasi kebocoran refrigeran, penyebab dan pilihan penanganannya harus dijelaskan; pengisian ulang saja tidak boleh dipromosikan sebagai penyelesaian permanen.",
+          "Pemasangan harus memperhatikan kapasitas listrik, pembuangan air, posisi unit, ventilasi, dan akses perawatan.",
+          "Pengujian akhir mencakup fungsi pendinginan, aliran air pembuangan, suara, serta sambungan yang dikerjakan.",
+          "Garansi harus menyebutkan apakah mencakup jasa, sambungan pipa, kebocoran tertentu, atau komponen pengganti."
+        ]
+      },
+      {
+        "number": 28,
+        "title": "Layanan plafon",
+        "paragraphs": [
+          "Spesifikasi harus menjelaskan bahan penutup, rangka, ketebalan, bentuk, luas, finishing, dan akses pemeriksaan bila diperlukan.",
+          "Kondisi atap, kebocoran, serta instalasi di atas plafon diperiksa sejauh dapat diakses.",
+          "Kebocoran aktif perlu ditangani sebelum pemasangan bahan yang dapat rusak karena air.",
+          "Perbaikan atap, pemindahan kabel, lampu, dan pengecatan hanya termasuk apabila dicantumkan.",
+          "Lampu, kipas, atau barang berat harus menggunakan penyangga yang sesuai dan tidak dibebankan pada plafon tanpa perencanaan.",
+          "Kerusakan plafon akibat kebocoran baru dinilai berdasarkan penyebabnya, termasuk kemungkinan kesalahan pemasangan."
+        ]
+      },
+      {
+        "number": 29,
+        "title": "Layanan kanopi",
+        "paragraphs": [
+          "Penawaran harus menjelaskan ukuran, bahan rangka, ketebalan, bahan penutup, finishing, talang, dan titik tumpuan.",
+          "Kondisi dinding atau struktur penahan harus diperiksa sebelum pemasangan.",
+          "Desain harus mempertimbangkan kemiringan, aliran air, sambungan, dan beban sesuai kebutuhan teknis.",
+          "Pekerjaan tidak boleh melampaui batas lahan atau mengganggu fasilitas umum tanpa izin.",
+          "Relokasi kabel, lampu, pipa, dan pembongkaran kanopi lama harus dirinci apabila diperlukan.",
+          "Pemeriksaan akhir mencakup sambungan, pengikat, kestabilan, serta aliran air. Kebocoran pada bagian baru yang dikerjakan menjadi objek pemeriksaan garansi sesuai penyebabnya."
+        ]
+      },
+      {
+        "number": 30,
+        "title": "Layanan pagar",
+        "paragraphs": [
+          "Spesifikasi harus memuat ukuran, model, material, ketebalan, finishing, engsel atau rel, kunci, dan aksesori.",
+          "Batas lahan serta arah bukaan harus dikonfirmasi sebelum produksi.",
+          "Pondasi, tiang, roda, rel, dan penahan disesuaikan dengan berat serta cara penggunaan pagar.",
+          "Sistem otomatis, kelistrikan, dan perangkat kontrol hanya termasuk jika disebutkan dalam penawaran.",
+          "Perubahan ukuran atau desain setelah produksi memerlukan penilaian ulang biaya dan jadwal.",
+          "Pengujian meliputi buka-tutup, penguncian, kestabilan, dan keamanan penggunaan."
+        ]
+      },
+      {
+        "number": 31,
+        "title": "Layanan kelistrikan",
+        "paragraphs": [
+          "Ruang lingkup harus menjelaskan titik instalasi, jalur, jenis dan ukuran kabel, pengaman, pembumian, serta kapasitas beban yang direncanakan.",
+          "Pekerjaan dilaksanakan oleh tenaga yang kompeten dan memenuhi ketentuan teknis yang berlaku.",
+          "Pemadaman sementara harus dikoordinasikan untuk mengamankan penghuni dan peralatan.",
+          "Bypass pengaman, manipulasi meter, dan sambungan ilegal tidak dilayani.",
+          "Perubahan daya, meter, atau jaringan milik penyedia listrik mengikuti prosedur pihak yang berwenang.",
+          "Persyaratan pemeriksaan atau sertifikasi yang berlaku harus diperhatikan; biaya dan pihak pengurusnya dijelaskan dalam penawaran.",
+          "Instalasi lama yang tidak dikerjakan perlu dibedakan dari bagian baru, tanpa mengabaikan kewajiban melaporkan bahaya yang ditemukan.",
+          "Hasil pekerjaan diuji sesuai ruang lingkup sebelum digunakan."
+        ]
+      },
+      {
+        "number": 32,
+        "title": "Layanan baja ringan",
+        "paragraphs": [
+          "Penawaran harus menjelaskan fungsi struktur, jenis profil, ketebalan dasar material, pelapis, pengikat, dan bahan penutup yang ditopang.",
+          "Susunan rangka dan sambungan mengikuti perencanaan teknis yang sesuai.",
+          "Kondisi tumpuan bangunan lama harus diperiksa sebelum pemasangan.",
+          "Pemasangan tidak boleh hanya didasarkan pada ukuran luas tanpa mempertimbangkan bentang dan beban.",
+          "Penambahan tangki, panel surya, plafon berat, atau beban lain harus diperhitungkan terlebih dahulu.",
+          "Perubahan dan pemotongan rangka setelah pemasangan memerlukan penilaian teknis.",
+          "Pembongkaran atap lama, perlindungan sementara terhadap hujan, serta pengangkutan puing harus dijelaskan dalam ruang lingkup."
+        ]
+      },
+      {
+        "number": 33,
+        "title": "Layanan dak dan peningkatan rumah",
+        "paragraphs": [
+          "Pembuatan dak, penambahan lantai, atau peningkatan rumah memerlukan penilaian struktur sesuai tingkat risiko pekerjaan.",
+          "Pemeriksaan visual saja tidak dianggap cukup apabila kondisi membutuhkan pengujian atau perhitungan lebih lanjut.",
+          "Pekerjaan tidak boleh dimulai sebelum kebutuhan penguatan pondasi, kolom, balok, dan struktur terkait ditentukan.",
+          "Rencana harus menjelaskan sistem dak, mutu bahan, tulangan atau komponen struktur, bekisting, penyangga, dan tahapan pelaksanaan.",
+          "Perubahan beban, fungsi ruangan, tangga, serta instalasi harus diperhitungkan.",
+          "Waktu perawatan dan pematangan beton wajib dipenuhi sebelum pembebanan atau pembongkaran penyangga sesuai arahan teknis.",
+          "Waterproofing, kemiringan, dan pembuangan air harus disebutkan secara jelas untuk dak yang terpapar cuaca.",
+          "Kebutuhan PBG, persetujuan perubahan bangunan, atau izin lain yang berlaku harus diperiksa sebelum pelaksanaan.",
+          "Pekerjaan harus dihentikan sementara apabila ditemukan kondisi yang membahayakan sampai tersedia solusi teknis yang dapat dipertanggungjawabkan."
+        ]
+      },
+      {
+        "number": 34,
+        "title": "Layanan kitchen set",
+        "paragraphs": [
+          "Desain harus menjelaskan ukuran akhir, tata letak, bahan kabinet, finishing, top table, hardware, dan aksesori.",
+          "Pengukuran akhir serta persetujuan desain dilakukan sebelum produksi.",
+          "Peralatan dapur, sink, keran, cooker hood, instalasi gas, air, dan listrik harus dinyatakan termasuk atau terpisah.",
+          "Posisi peralatan harus mengikuti kebutuhan ventilasi, panas, kelembapan, serta petunjuk pabrikan.",
+          "Perbedaan alami warna atau serat bahan harus dijelaskan melalui contoh atau keterangan sebelum pemesanan.",
+          "Perubahan desain setelah pemotongan atau produksi dapat memengaruhi harga dan jadwal setelah disetujui.",
+          "Serah terima mencakup pemeriksaan pintu, laci, engsel, permukaan, sambungan, serta fungsi instalasi yang termasuk pekerjaan.",
+          "Petunjuk beban dan perawatan disampaikan sesuai material."
+        ]
+      },
+      {
+        "number": 35,
+        "title": "Layanan pengecatan",
+        "paragraphs": [
+          "Penawaran harus menjelaskan area, luas, kondisi permukaan, merek, jenis cat, warna, persiapan, dan sistem pelapisan.",
+          "Penanganan cat lama, retak, jamur, rembesan, dan plester rusak harus disebutkan apabila diperlukan.",
+          "Pengecatan tidak dianggap sebagai pengganti perbaikan sumber kebocoran atau kerusakan struktur.",
+          "Warna dipilih melalui kode atau contoh yang disetujui. Tampilan layar dapat berbeda dari hasil pada permukaan nyata.",
+          "Perubahan warna setelah pembelian atau aplikasi memerlukan persetujuan biaya tambahan.",
+          "Furnitur, lantai, kaca, dan area lain harus dilindungi sesuai risiko pekerjaan.",
+          "Aplikasi memperhatikan kondisi cuaca, kelembapan, dan petunjuk produk.",
+          "Pemeriksaan hasil meliputi cakupan, kerataan, kebersihan, dan kesesuaian warna dalam kondisi pencahayaan yang wajar."
+        ]
+      },
+      {
+        "number": 36,
+        "title": "Layanan perbaikan rumah",
+        "paragraphs": [
+          "Pesanan harus menyebutkan bagian yang diperbaiki, seperti atap, kebocoran, lantai, dinding, pintu, jendela, kamar mandi, atau saluran.",
+          "Pemeriksaan awal membedakan gejala kerusakan dan penyebab yang sudah dapat dipastikan.",
+          "Jika penyebab belum dapat dipastikan tanpa pembongkaran, tahapan pemeriksaan dan biayanya harus disetujui terlebih dahulu.",
+          "Kerusakan tambahan yang ditemukan tidak otomatis masuk dalam harga awal.",
+          "Perbaikan setempat harus menjelaskan batas area serta keterbatasan pencocokan warna, pola, atau bahan lama.",
+          "Penggunaan kembali material lama harus didasarkan pada kelayakannya.",
+          "Perbaikan kebocoran atau saluran memerlukan pengujian yang sesuai sebelum penutupan area jika memungkinkan.",
+          "Garansi harus menjelaskan bagian dan jenis kerusakan yang ditanggung, tanpa meniadakan tanggung jawab atas kesalahan pelaksanaan."
+        ]
+      }
+    ]
+  },
+  {
+    "id": "tanggung-jawab",
+    "title": "E. TANGGUNG JAWAB, DATA, DAN PENYELESAIAN KELUHAN",
+    "sections": [
+      {
+        "number": 37,
+        "title": "Tanggung jawab para pihak",
+        "paragraphs": [
+          "Setiap pihak bertanggung jawab atas kewajiban, tindakan, dan kelalaiannya sesuai kesepakatan serta hukum yang berlaku.",
+          "Kerusakan pada bangunan, barang, atau properti tetangga akibat pekerjaan harus dicatat, diperiksa penyebabnya, dan diselesaikan oleh pihak yang bertanggung jawab.",
+          "Penggunaan mitra atau pekerja tidak dapat dijadikan alasan otomatis untuk menolak tanggung jawab website kami yang telah diperjanjikan.",
+          "Pengguna wajib memberikan akses dan informasi yang dibutuhkan serta tidak menginstruksikan tindakan yang melanggar hukum atau membahayakan.",
+          "Ketentuan ini tidak membebaskan pihak mana pun dari tanggung jawab atas penipuan, kesengajaan, kelalaian, atau kewajiban lain yang tidak dapat dikesampingkan."
+        ]
+      },
+      {
+        "number": 38,
+        "title": "Keadaan di luar kendali",
+        "paragraphs": [
+          "Peristiwa di luar kendali yang secara nyata menghambat kewajiban, seperti bencana, kebakaran besar, atau pembatasan pemerintah, harus segera diberitahukan kepada pihak terdampak.",
+          "Pemberitahuan harus menjelaskan dampak, bukti yang tersedia, serta upaya mengurangi kerugian.",
+          "Para pihak membahas penyesuaian jadwal, pengamanan lokasi, atau penghentian pekerjaan jika diperlukan.",
+          "Kenaikan biaya biasa, kekurangan tenaga yang dapat diantisipasi, atau kesalahan perencanaan tidak otomatis dianggap sebagai keadaan di luar kendali.",
+          "Keadaan tersebut tidak otomatis menghapus kewajiban mempertanggungjawabkan dana atau pekerjaan yang sudah diterima."
+        ]
+      },
+      {
+        "number": 39,
+        "title": "Data pribadi dan kerahasiaan",
+        "paragraphs": [
+          "Data pribadi diproses untuk tujuan yang jelas, seperti menanggapi permintaan, mengatur survei, menyiapkan penawaran, melaksanakan transaksi, dan memenuhi kewajiban hukum.",
+          "Pengumpulan dibatasi pada data yang relevan dengan kebutuhan layanan.",
+          "Data hanya dibagikan kepada pihak yang perlu terlibat, dengan dasar pemrosesan yang sah dan pembatasan penggunaan yang sesuai.",
+          "Persetujuan pemasaran diberikan secara terpisah apabila diperlukan dan dapat ditarik sesuai ketentuan yang berlaku.",
+          "Dokumen identitas dan dokumen properti tidak dipublikasikan secara terbuka tanpa dasar yang sah.",
+          "Foto hasil pekerjaan untuk promosi yang memperlihatkan identitas, penghuni, atau bagian privat memerlukan izin yang sesuai.",
+          "Pengguna dapat mengajukan permintaan terkait akses, koreksi, dan penghapusan data sesuai hak serta batasan hukum yang berlaku.",
+          "Rincian pemrosesan, penyimpanan, keamanan, dan pelaksanaan hak pengguna dijelaskan dalam kebijakan privasi website kami."
+        ]
+      },
+      {
+        "number": 40,
+        "title": "Informasi otomatis dan simulasi",
+        "paragraphs": [
+          "Jawaban chatbot, estimasi otomatis, dan simulasi merupakan informasi awal yang perlu dikonfirmasi apabila menjadi dasar keputusan transaksi atau pekerjaan.",
+          "Harga final, lingkup pekerjaan, komisi, jadwal, dan garansi harus tercantum dalam kesepakatan yang disetujui.",
+          "Kesalahan informasi yang diketahui wajib dikoreksi dan diberitahukan kepada pengguna yang terdampak.",
+          "Penggunaan sistem otomatis tidak menghapus tanggung jawab atas informasi atau janji layanan yang menjadi kewajiban website kami."
+        ]
+      },
+      {
+        "number": 41,
+        "title": "Pengaduan dan penyelesaian perselisihan",
+        "paragraphs": [
+          "Keluhan dapat disampaikan melalui fasilitas komunikasi yang tersedia pada website kami.",
+          "Pengaduan sebaiknya mencantumkan referensi pesanan atau transaksi, uraian masalah, bukti pembayaran, serta foto atau dokumen pendukung.",
+          "Website kami akan memberikan konfirmasi penerimaan dan menyampaikan rencana pemeriksaan atau perkiraan waktu tanggapan.",
+          "Pengguna memberikan kesempatan yang wajar untuk pemeriksaan dan perbaikan, kecuali terdapat keadaan darurat yang memerlukan penanganan segera.",
+          "Penyelesaian dapat berupa perbaikan, pelaksanaan ulang, penggantian, pengurangan biaya, pengembalian dana, atau bentuk lain sesuai hasil pemeriksaan dan hak pengguna.",
+          "Perselisihan terlebih dahulu diupayakan melalui musyawarah.",
+          "Jika tidak tercapai kesepakatan, para pihak dapat menggunakan lembaga penyelesaian sengketa konsumen atau pengadilan yang berwenang sesuai hukum yang berlaku.",
+          "Ketentuan ini tidak membatasi hak pengguna untuk mengajukan pengaduan atau menempuh upaya hukum."
+        ]
+      },
+      {
+        "number": 42,
+        "title": "Perubahan dan keberlakuan ketentuan",
+        "paragraphs": [
+          "Perubahan ketentuan diumumkan pada website kami dengan mencantumkan tanggal berlakunya.",
+          "Perubahan berlaku untuk penggunaan atau pemesanan setelah tanggal tersebut.",
+          "Perubahan yang memengaruhi perjanjian berjalan memerlukan persetujuan para pihak apabila diwajibkan oleh sifat perubahan atau hukum.",
+          "Apabila suatu ketentuan tidak dapat diberlakukan, bagian lainnya tetap berlaku sepanjang dapat dilaksanakan secara mandiri dan sah.",
+          "Ketentuan ini tunduk pada hukum Republik Indonesia dan tidak mengurangi hak konsumen yang dijamin oleh peraturan perundang-undangan"
+        ]
+      }
+    ]
+  }
+]

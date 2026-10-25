@@ -22,6 +22,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${siteUrl()}/properti`, changeFrequency: "daily", priority: 0.9 },
     { url: `${siteUrl()}/layanan`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteUrl()}/tim-kami`, changeFrequency: "monthly", priority: 0.6 },
+    {
+      url: `${siteUrl()}/tentang-kami`,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
+      url: `${siteUrl()}/kebijakan-privasi`,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
+    {
+      url: `${siteUrl()}/syarat-dan-ketentuan`,
+      changeFrequency: "yearly",
+      priority: 0.3,
+    },
     { url: `${siteUrl()}/blog`, changeFrequency: "weekly", priority: 0.7 },
     ...posts.map((p) => ({
       url: `${siteUrl()}/blog/${p.slug}`,
