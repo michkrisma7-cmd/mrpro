@@ -83,6 +83,12 @@ export default async function Account({
                     </span>
                   </td>
                   <td>
+                    <Link
+                      href={`/akun/properti/${p.id}/foto`}
+                      className="text-button"
+                    >
+                      Edit foto
+                    </Link>
                     {p.status === "PUBLISHED" ? (
                       <Link
                         href={`/properti/${p.slug}`}

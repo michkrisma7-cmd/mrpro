@@ -60,6 +60,10 @@ test(
           state: ActionState,
           form: FormData,
         ): Promise<ActionState>;
+        savePropertyPhotos(
+          state: ActionState,
+          form: FormData,
+        ): Promise<ActionState>;
         moderateProperty(
           state: ActionState,
           form: FormData,
@@ -146,6 +150,49 @@ test(
       assert.equal(listing.status, "PUBLISHED");
       assert.equal(listing.ownerId, user.id);
       assert.equal(listing.featured, false);
+      await prisma.media.create({
+        data: { id: "secondphoto", key: "trial/second.webp", ownerId: user.id },
+      });
+      const photos = new FormData();
+      photos.set("id", listing.id);
+      photos.set(
+        "gallery",
+        JSON.stringify(["/api/media/secondphoto", "/api/media/ownedphoto"]),
+      );
+      assert.ok((await exports.savePropertyPhotos({}, photos)).success);
+      const reopened = await prisma.property.findUniqueOrThrow({
+        where: { id: listing.id },
+      });
+      assert.deepEqual(reopened.gallery, [
+        "/api/media/secondphoto",
+        "/api/media/ownedphoto",
+      ]);
+      assert.equal(reopened.title, listing.title);
+      assert.deepEqual(reopened.values, listing.values);
+      photos.set("gallery", JSON.stringify(["/api/media/foreignphoto"]));
+      assert.match(
+        (await exports.savePropertyPhotos({}, photos)).error!,
+        /unggahan Anda sendiri/,
+      );
+      photos.set("gallery", JSON.stringify([]));
+      assert.ok((await exports.savePropertyPhotos({}, photos)).error);
+      photos.set("id", "someone-elses-listing");
+      assert.match(
+        (await exports.savePropertyPhotos({}, photos)).error!,
+        /tidak ditemukan/,
+      );
+      // Legacy media URLs remain usable and can be reordered without a migration.
+      await prisma.property.update({
+        where: { id: listing.id },
+        data: { gallery: ["/images/legacy.webp", "/api/media/ownedphoto"] },
+      });
+      photos.set("id", listing.id);
+      photos.set(
+        "gallery",
+        JSON.stringify(["/api/media/ownedphoto", "/images/legacy.webp"]),
+      );
+      assert.ok((await exports.savePropertyPhotos({}, photos)).success);
+
       const query = catalogQueries({ q: "Cikarang" }, new Set(["lokasi"]));
       const publicRows = await prisma.$queryRaw<{ id: string }[]>(query.list);
       assert.equal(

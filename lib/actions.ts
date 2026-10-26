@@ -29,6 +29,10 @@ export async function submitProperty(
 ): Promise<ActionState> {
   const user = await requireUser();
   try {
+    if (form.get("photosReady") === "0")
+      return {
+        error: "Tunggu semua foto selesai diunggah atau hapus foto yang gagal.",
+      };
     const input = basePropertySchema.parse({
       title: form.get("title"),
       description: form.get("description"),
@@ -61,6 +65,53 @@ export async function submitProperty(
     return { error: actionError(e) };
   }
   redirect("/akun?terkirim=1");
+}
+// The existing gallery order is the database contract for cover and detail opening photo.
+export async function savePropertyPhotos(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const user = await requireUser();
+  try {
+    const id = z.string().min(1).parse(form.get("id"));
+    const existing = await db().property.findFirst({
+      where: { id, ownerId: user.id },
+    });
+    if (!existing) return { error: "Properti tidak ditemukan." };
+    if (form.get("photosReady") === "0")
+      return {
+        error: "Tunggu semua foto selesai diunggah atau hapus foto yang gagal.",
+      };
+    const gallery = z
+      .array(z.string().min(1))
+      .min(1, "Unggah minimal satu foto.")
+      .max(12)
+      .refine(
+        (items) => new Set(items).size === items.length,
+        "Foto tidak boleh duplikat.",
+      )
+      .parse(JSON.parse(String(form.get("gallery") || "[]")));
+    // Preserve legacy URLs already attached to this listing; validate only new uploads.
+    const added = gallery.filter((url) => !existing.gallery.includes(url));
+    for (const url of added)
+      z.string()
+        .regex(/^\/api\/media\/[a-z0-9]+$/)
+        .parse(url);
+    const owned = await db().media.count({
+      where: {
+        ownerId: user.id,
+        id: { in: added.map((url) => url.split("/").pop()!) },
+      },
+    });
+    if (owned !== added.length)
+      return { error: "Foto harus berasal dari unggahan Anda sendiri." };
+    await db().property.update({ where: { id }, data: { gallery } });
+    refresh();
+    revalidatePath(`/akun/properti/${id}/foto`);
+    return { success: "Foto properti disimpan." };
+  } catch (e) {
+    return { error: actionError(e) };
+  }
 }
 export async function saveField(
   _: ActionState,

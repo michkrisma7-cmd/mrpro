@@ -18,7 +18,11 @@ export const basePropertySchema = z.object({
   gallery: z
     .array(z.string().regex(/^\/api\/media\/[a-z0-9]+$/))
     .min(1, "Unggah minimal satu foto.")
-    .max(12),
+    .max(12)
+    .refine(
+      (items) => new Set(items).size === items.length,
+      "Foto tidak boleh duplikat.",
+    ),
 });
 export function parseValues(fields: Field[], form: FormData): Values {
   const values: Values = {};

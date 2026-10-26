@@ -5100,3 +5100,68 @@ td .text-button {
 .page-loading {
   min-height: 100svh;
 }
+
+.property-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+.property-photo {
+  position: relative;
+  border: 3px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  background: white;
+}
+.property-photo.is-primary {
+  border-color: #16724b;
+}
+.property-photo-image {
+  position: relative;
+  height: 170px;
+}
+.property-photo .photo-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: white;
+  color: #222;
+}
+.photo-select,
+.photo-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.photo-select {
+  background: white;
+  color: #145c3e;
+  border: 0;
+  cursor: pointer;
+}
+.photo-primary {
+  background: #e5f5ec;
+  color: #145c3e;
+}
+.property-photo p,
+.property-photo small {
+  display: block;
+  padding: 8px;
+}
+.property-photo button:focus-visible {
+  outline: 3px solid #16724b;
+  outline-offset: -3px;
+}
