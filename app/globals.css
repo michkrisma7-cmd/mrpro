@@ -1010,22 +1010,15 @@ svg {
   gap: 23px;
 }
 .property-card {
-  border: 1px solid var(--line);
-  border-radius: 12px;
+  border: 1px solid #bfc5c2;
+  border-radius: 8px;
   overflow: hidden;
-  background: white;
-  transition:
-    box-shadow 0.2s,
-    transform 0.2s;
+  background: #fff;
   min-width: 0;
-}
-.property-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px #2443320d;
 }
 .property-image {
   position: relative;
-  height: 222px;
+  aspect-ratio: 16 / 9;
   background: var(--soft);
   overflow: hidden;
 }
@@ -1034,33 +1027,31 @@ svg {
   inset: 0;
 }
 .property-image img {
-  transition: transform 0.6s;
-}
-.property-card:hover .property-image img {
-  transform: scale(1.035);
+  object-fit: cover;
 }
 .property-badge,
 .featured-badge {
   position: absolute;
-  left: 15px;
-  top: 15px;
+  left: 10px;
+  top: 10px;
   border-radius: 5px;
-  padding: 4px 11px;
-  font-size: 9px;
-  letter-spacing: 0.2px;
+  padding: 6px 9px;
+  max-width: calc(100% - 66px);
+  font-size: 12px;
+  line-height: 1.3;
   font-weight: 600;
-  background: #ffffffed;
+  background: #fffffff2;
   pointer-events: none;
 }
 .favorite-button {
   position: absolute;
-  right: 14px;
-  top: 14px;
-  border: 0;
+  right: 10px;
+  top: 10px;
+  border: 1px solid #d8deda;
   background: #fffffff2;
   color: #415546;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: grid;
   place-items: center;
@@ -1070,71 +1061,156 @@ svg {
 }
 .featured-badge {
   top: auto;
-  bottom: 13px;
-  background: #203e31d9;
+  bottom: 10px;
+  background: #203e31e6;
   color: #fff;
-  font-size: 8px;
-  left: 15px;
-  padding: 4px 8px;
-  backdrop-filter: blur(8px);
+  font-size: 11px;
 }
 .property-body {
-  padding: 19px 19px 0;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.3;
+  min-width: 0;
 }
 .property-price {
-  font-weight: 750;
-  font-size: 20px;
-  letter-spacing: -0.7px;
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(21px, 2vw, 26px);
+  letter-spacing: -0.5px;
   color: var(--ink);
-  margin-bottom: 8px;
+  overflow-wrap: anywhere;
 }
 .property-price small {
   font-weight: 400;
-  font-size: 10px;
+  font-size: 12px;
   letter-spacing: 0;
 }
 .property-body h3 {
-  font-size: 13px;
-  letter-spacing: -0.2px;
+  margin: 0;
+  font-size: 15px;
   font-weight: 650;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 .property-location {
-  font-size: 10px;
-  margin: 8px 0 17px;
+  margin: 0;
+  font-size: 13px;
   display: flex;
-  align-items: center;
-  gap: 5px;
-  color: #8a9186;
+  align-items: flex-start;
+  gap: 4px;
+  color: #606c64;
+  overflow-wrap: anywhere;
+}
+.property-location svg {
+  flex-shrink: 0;
+  margin-top: 1px;
 }
 .property-specs {
   display: flex;
-  gap: 13px;
-  flex-wrap: wrap;
-  font-size: 9px;
-  min-height: 25px;
-  color: #6d7868;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 12px;
+  color: #606c64;
 }
 .property-specs > span {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
+  min-width: 0;
+}
+.property-specs > span > span {
+  overflow-wrap: anywhere;
 }
 .property-specs svg {
-  stroke-width: 1.4;
+  flex-shrink: 0;
+  stroke-width: 1.6;
   width: 14px;
+}
+.property-extra-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 12px;
+  overflow-wrap: anywhere;
 }
 .card-more {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  border-top: 1px solid var(--line);
-  margin-top: 14px;
-  padding: 12px 0;
-  font-size: 10px;
-  font-weight: 600;
+  gap: 6px;
+  padding: 9px 12px;
+  border: 1px solid #b8c4bd;
+  border-radius: 5px;
+  background: #f1f5f2;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 650;
+}
+.property-contact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid #cbd1cd;
+  border-radius: 5px;
+  min-width: 0;
+}
+.property-contact-owner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: #606c64;
+}
+.property-contact-owner > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.property-contact-owner svg {
+  flex-shrink: 0;
+}
+.property-contact-phone,
+.property-contact-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 4px;
+  min-height: 36px;
+  border-radius: 5px;
+}
+.property-contact-phone {
+  width: 36px;
+  border: 1px solid #aebbb3;
+  color: var(--ink);
+}
+.property-contact-whatsapp {
+  padding: 6px 8px;
+  background: #128c46;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 650;
+}
+.property-card :is(a, button):focus-visible {
+  outline: 2px solid #128c46;
+  outline-offset: -2px;
+}
+.property-card .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 .section-footnote {
   display: flex;
@@ -2820,9 +2896,6 @@ td .text-button {
   .hero-grid {
     gap: 80px;
   }
-  .property-image {
-    height: 235px;
-  }
 }
 @media (max-width: 1100px) {
   .container {
@@ -2856,12 +2929,6 @@ td .text-button {
   }
   .trust-strip-inner {
     gap: 35px;
-  }
-  .property-image {
-    height: 190px;
-  }
-  .property-specs {
-    gap: 8px;
   }
   .service-card {
     padding: 20px 15px;
@@ -2982,18 +3049,6 @@ td .text-button {
   }
   .property-grid {
     gap: 15px;
-  }
-  .property-body {
-    padding: 15px 14px 0;
-  }
-  .property-price {
-    font-size: 18px;
-  }
-  .property-body h3 {
-    font-size: 12px;
-  }
-  .property-image {
-    height: 175px;
   }
   .service-grid {
     grid-template-columns: 1fr 1fr;
@@ -3385,42 +3440,6 @@ td .text-button {
   .property-grid {
     grid-template-columns: 1fr;
     gap: 22px;
-  }
-  .property-image {
-    height: 255px;
-  }
-  .property-body {
-    padding: 20px 20px 0;
-  }
-  .property-price {
-    font-size: 22px;
-  }
-  .property-body h3 {
-    font-size: 15px;
-  }
-  .property-location {
-    font-size: 11px;
-  }
-  .property-specs {
-    font-size: 10px;
-    gap: 17px;
-  }
-  .property-specs svg {
-    width: 15px;
-  }
-  .card-more {
-    padding: 15px 0;
-    font-size: 11px;
-  }
-  .property-badge {
-    font-size: 10px;
-  }
-  .featured-badge {
-    font-size: 9px;
-  }
-  .favorite-button {
-    width: 34px;
-    height: 34px;
   }
   .section-footnote {
     font-size: 9px;
@@ -4079,19 +4098,6 @@ td .text-button {
   .blog-grid {
     grid-template-columns: 1fr;
   }
-}
-
-.property-owner {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: #666;
-  margin: 10px 0;
-  overflow-wrap: anywhere;
-}
-.property-owner svg {
-  flex-shrink: 0;
 }
 
 .property-hero {
@@ -4857,66 +4863,6 @@ td .text-button {
   }
 }
 
-/* Compact only the homepage's latest-property cards; catalog cards keep their size. */
-.home-property-section .property-image {
-  height: 154px;
-}
-.home-property-section .property-body {
-  padding: 12px 16px 0;
-  line-height: 1.4;
-}
-.home-property-section .property-price {
-  margin-bottom: 4px;
-}
-.home-property-section .property-location {
-  margin: 4px 0 6px;
-}
-.home-property-section .property-owner {
-  margin: 4px 0;
-}
-.home-property-section .property-specs {
-  min-height: 18px;
-  row-gap: 3px;
-}
-.home-property-section .card-more {
-  margin-top: 6px;
-  padding: 8px 0;
-}
-@media (min-width: 1500px) {
-  .home-property-section .property-image {
-    height: 165px;
-  }
-}
-@media (max-width: 1100px) {
-  .home-property-section .property-image {
-    height: 129.8px;
-  }
-}
-@media (max-width: 900px) {
-  .home-property-section .property-image {
-    height: 115.5px;
-  }
-}
-@media (max-width: 700px) {
-  .home-property-section .property-image {
-    height: 187px;
-  }
-  .home-property-section .property-body {
-    padding: 14px 16px 0;
-  }
-}
-
-.home-property-section .price-label {
-  margin-bottom: 2px;
-}
-.home-property-section .property-body h3 {
-  line-height: 1.35;
-}
-.home-property-section .property-location,
-.home-property-section .property-owner,
-.home-property-section .property-specs {
-  line-height: 1.4;
-}
 .home-property-next {
   display: flex;
   justify-content: center;
