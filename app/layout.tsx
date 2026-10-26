@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
 import Loading from "./loading";
-import "@fontsource-variable/dm-sans";
-import "@fontsource-variable/manrope";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -12,6 +11,19 @@ import { getSettings } from "@/lib/data";
 import { siteUrl } from "@/lib/format";
 import { brand, homeTitle, homeDescription, indexingEnabled } from "@/lib/seo";
 import { brandIcons, brandIconUrl } from "@/lib/brand";
+const dmSans = localFont({
+  src: "../node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2",
+  variable: "--font-dm-sans",
+  display: "swap",
+  weight: "100 1000",
+});
+const manrope = localFont({
+  src: "../node_modules/@fontsource-variable/manrope/files/manrope-latin-wght-normal.woff2",
+  variable: "--font-manrope",
+  display: "swap",
+  weight: "200 800",
+});
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
@@ -57,7 +69,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="id" data-scroll-behavior="smooth">
+    <html
+      lang="id"
+      data-scroll-behavior="smooth"
+      className={`${dmSans.variable} ${manrope.variable}`}
+    >
       <body>
         <a className="skip-link" href="#konten">
           Langsung ke konten

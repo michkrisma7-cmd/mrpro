@@ -3,7 +3,7 @@
   right: max(24px, env(safe-area-inset-right));
   bottom: max(24px, env(safe-area-inset-bottom));
   z-index: 90;
-  font-family: "DM Sans Variable", sans-serif;
+  font-family: var(--font-dm-sans), sans-serif;
   color: #213e34;
 }
 .mr-chat button,
@@ -97,7 +97,7 @@
   margin-bottom: 5px;
 }
 .mr-chat-header h2 {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   color: #fff;
   font-size: 18px;
   line-height: 1.3;

@@ -7,7 +7,7 @@ fieldset.kpr-bank-picker {
   margin: 32px 0;
 }
 .kpr-bank-picker legend {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-size: 18px;
   font-weight: 650;
   margin-bottom: 16px;
@@ -160,7 +160,7 @@ fieldset.kpr-bank-picker {
   margin-top: 28px;
 }
 .kpr-monthly {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   font-size: clamp(25px, 3vw, 38px);
   font-weight: 600;
   letter-spacing: -1px;
@@ -171,7 +171,7 @@ fieldset.kpr-bank-picker {
   display: block;
   color: #d9e1d5;
   font:
-    12px "DM Sans Variable",
+    12px var(--font-dm-sans),
     sans-serif;
   letter-spacing: 0;
   margin-top: 3px;
@@ -408,7 +408,7 @@ fieldset.kpr-bank-picker {
   --ink: #1d3f35;
   --ink-dark: #17372e;
   --sage: #7f947a;
-  --muted: #7a817b;
+  --muted: #626c64;
   --line: #e7eae3;
   --paper: #fff;
   --cream: #f5f5ef;
@@ -419,7 +419,7 @@ fieldset.kpr-bank-picker {
 @theme inline {
   --color-background: var(--paper);
   --color-foreground: var(--ink);
-  --font-sans: "DM Sans Variable", sans-serif;
+  --font-sans: var(--font-dm-sans), sans-serif;
 }
 * {
   box-sizing: border-box;
@@ -432,7 +432,7 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font-family: "DM Sans Variable", sans-serif;
+  font-family: var(--font-dm-sans), sans-serif;
   font-size: 14px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -475,7 +475,7 @@ p {
 h1,
 h2,
 h3 {
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-manrope), sans-serif;
 }
 h1,
 h2 {
@@ -494,7 +494,7 @@ h3 {
   line-height: 1.45;
 }
 h2 span {
-  color: #82917a;
+  color: #5f7058;
 }
 p {
   color: var(--muted);
@@ -524,7 +524,7 @@ svg {
   font-size: 10px;
   font-weight: 750;
   letter-spacing: 2px;
-  color: #849076;
+  color: #5f7058;
   display: flex;
   align-items: center;
   gap: 9px;
@@ -580,7 +580,7 @@ svg {
   padding: 0;
 }
 .text-button:hover {
-  color: #82917a;
+  color: #5f7058;
 }
 .icon-button {
   display: inline-flex;
@@ -625,7 +625,7 @@ svg {
   display: flex;
   gap: 10px;
   align-items: center;
-  font-family: "Manrope Variable", sans-serif;
+  font-family: var(--font-manrope), sans-serif;
   flex-shrink: 0;
 }
 .brand-logo {
@@ -812,7 +812,7 @@ svg {
 .hero-photo-label p {
   color: white;
   font-size: 20px;
-  font-family: "Manrope Variable";
+  font-family: var(--font-manrope);
   margin-top: 9px;
   font-weight: 500;
   letter-spacing: -0.6px;
@@ -988,7 +988,7 @@ svg {
 .catalog-tabs > a {
   padding: 8px 17px;
   border-radius: 6px;
-  color: #7a8277;
+  color: #5f7058;
   font-size: 11px;
 }
 .catalog-tabs > a:hover {
@@ -1142,7 +1142,7 @@ svg {
   justify-content: center;
   gap: 6px;
   margin-top: 25px;
-  color: #858d7e;
+  color: #5f7058;
   font-size: 10px;
 }
 .section-footnote a {
@@ -1266,7 +1266,7 @@ svg {
 .service-note {
   margin-top: 26px;
   font-size: 10px;
-  color: #8a9481;
+  color: #5f7058;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1386,7 +1386,7 @@ svg {
   align-items: center;
   justify-content: center;
   background: #f0f3eb;
-  color: #7b8d6c;
+  color: #5f7058;
   width: 34px;
   height: 34px;
   border-radius: 9px;
@@ -1505,7 +1505,7 @@ svg {
   margin: 4px 0 12px;
   color: #203f32;
   font-size: 14px;
-  font-family: "DM Sans Variable";
+  font-family: var(--font-dm-sans);
 }
 .footer-menu a {
   display: flex;
@@ -1770,7 +1770,7 @@ svg {
 }
 .contact-panel > strong {
   font-size: 28px;
-  font-family: "Manrope Variable";
+  font-family: var(--font-manrope);
   font-weight: 650;
   display: block;
   margin: 9px 0 23px;
@@ -2573,7 +2573,7 @@ td .text-button {
   color: #94a185;
 }
 .stat-card > strong {
-  font-family: "Manrope Variable";
+  font-family: var(--font-manrope);
   font-size: 29px;
   font-weight: 600;
   display: block;
@@ -4028,7 +4028,7 @@ td .text-button {
 }
 .price-label {
   display: block;
-  font-family: "DM Sans Variable", sans-serif;
+  font-family: var(--font-dm-sans), sans-serif;
   font-size: 9px;
   letter-spacing: 0;
   font-weight: 400;
@@ -5091,4 +5091,12 @@ td .text-button {
   .service-team-action {
     margin-top: 18px;
   }
+}
+
+/* Keep the footer below the first viewport while request content streams in. */
+#konten {
+  min-height: 100svh;
+}
+.page-loading {
+  min-height: 100svh;
 }

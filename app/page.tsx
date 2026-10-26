@@ -1,7 +1,10 @@
 import "./consign-feature.css";
 import Link from "next/link";
 import { connection } from "next/server";
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
+import { preload } from "react-dom";
+import { Suspense } from "react";
+import Loading from "./loading";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -31,7 +34,86 @@ export const metadata = pageMetadata({
   path: "/",
 });
 export const revalidate = 60;
-export default async function Home() {
+const heroImage = {
+  src: "/images/hero.webp",
+  alt: "Rumah tropis modern dengan taman asri dan pencahayaan alami",
+  fill: true,
+  sizes: "100vw",
+} as const;
+
+export default function Home() {
+  // Discover the LCP image before waiting for database-backed content.
+  const { props } = getImageProps(heroImage);
+  preload(props.src, {
+    as: "image",
+    imageSrcSet: props.srcSet,
+    imageSizes: props.sizes,
+    fetchPriority: "high",
+  });
+  return (
+    <>
+      <section className="property-hero" aria-labelledby="hero-title">
+        <div className="hero-photo property-hero-photo">
+          <Image
+            {...heroImage}
+            alt={heroImage.alt}
+            loading="eager"
+            fetchPriority="high"
+            className="cover"
+          />
+        </div>
+        <Suspense
+          fallback={
+            <div
+              className="container property-hero-content"
+              role="status"
+              aria-label="Menyiapkan pencarian"
+            />
+          }
+        >
+          <HeroContent />
+        </Suspense>
+      </section>
+      <Suspense fallback={<Loading />}>
+        <HomeContent />
+      </Suspense>
+    </>
+  );
+}
+
+async function HeroContent() {
+  await connection();
+  const [fields, settings] = await Promise.all([getFields(), getSettings()]);
+  const wa = whatsappLink(
+    settings.whatsapp,
+    "Halo MR Properti, saya ingin konsultasi properti.",
+  );
+  return (
+    <div className="container property-hero-content">
+      <div className="property-hero-heading">
+        <p className="eyebrow">PARTNER UNTUK SETIAP RENCANA</p>
+        <h1 id="hero-title">{settings.heroTitle}</h1>
+      </div>
+      <HeroSearch
+        types={
+          fields.find(
+            (f) => f.key === "jenis" && (f.showOnCard || f.showOnDetail),
+          )?.options || []
+        }
+      />
+      <div className="hero-actions property-hero-actions">
+        <Link href="/kalkulator-kpr" className="button">
+          Kalkulator KPR <ArrowUpRight size={17} />
+        </Link>
+        <Link href={wa || "/#tentang"} className="text-button">
+          Kenali kami <ArrowRight size={16} />
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+async function HomeContent() {
   // Database-backed content must wait for a request, including when DATABASE_URL is set during builds.
   await connection();
   const [fields, properties, settings, posts, testimonials] = await Promise.all(
@@ -74,39 +156,6 @@ export default async function Home() {
           }),
         }}
       />
-      <section className="property-hero" aria-labelledby="hero-title">
-        <div className="hero-photo property-hero-photo">
-          <Image
-            src="/images/hero.webp"
-            alt="Rumah tropis modern dengan taman asri dan pencahayaan alami"
-            fill
-            priority
-            sizes="100vw"
-            className="cover"
-          />
-        </div>
-        <div className="container property-hero-content">
-          <div className="property-hero-heading">
-            <p className="eyebrow">PARTNER UNTUK SETIAP RENCANA</p>
-            <h1 id="hero-title">{settings.heroTitle}</h1>
-          </div>
-          <HeroSearch
-            types={
-              fields.find(
-                (f) => f.key === "jenis" && (f.showOnCard || f.showOnDetail),
-              )?.options || []
-            }
-          />
-          <div className="hero-actions property-hero-actions">
-            <Link href="/kalkulator-kpr" className="button">
-              Kalkulator KPR <ArrowUpRight size={17} />
-            </Link>
-            <Link href={wa || "/#tentang"} className="text-button">
-              Kenali kami <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
       <div className="trust-strip home-trust-strip">
         <div className="container trust-strip-inner">
           <span>
