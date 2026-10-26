@@ -15,6 +15,7 @@ export function HomeServiceGrid({ detailed = false }: { detailed?: boolean }) {
         <Link
           key={service.slug}
           href={`/layanan/${service.slug}`}
+          prefetch={false}
           aria-label={service.name}
           className="home-service-card"
         >

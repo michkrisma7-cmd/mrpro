@@ -6,7 +6,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-import { ChatWidget } from "@/components/chat-widget";
+import { DeferredChat } from "@/components/deferred-chat";
 import { getSettings } from "@/lib/data";
 import { siteUrl } from "@/lib/format";
 import { brand, homeTitle, homeDescription, indexingEnabled } from "@/lib/seo";
@@ -60,7 +60,7 @@ async function SiteFooter() {
   return (
     <>
       <Footer />
-      <ChatWidget whatsapp={settings.whatsapp} />
+      <DeferredChat whatsapp={settings.whatsapp} />
     </>
   );
 }

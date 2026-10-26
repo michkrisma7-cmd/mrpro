@@ -40,6 +40,24 @@ const heroImage = {
   fill: true,
   sizes: "100vw",
 } as const;
+const homeFaq = [
+  [
+    "Bagaimana cara menjadwalkan survei properti?",
+    "Buka detail properti dan tekan tombol WhatsApp. Tim kami akan membantu mencocokkan jadwal Anda dengan pemilik properti.",
+  ],
+  [
+    "Apakah saya bisa menitipkan properti di sini?",
+    "Tentu. Buat akun, isi formulir Titip Properti, dan unggah foto. Selama masa uji coba, kiriman baru langsung tayang di katalog setelah berhasil dikirim.",
+  ],
+  [
+    "Bagaimana cara memesan jasa tukang?",
+    "Pilih layanan yang dibutuhkan dan hubungi admin melalui WhatsApp. Kami membantu koordinasi kebutuhan dan jadwal dengan tukang.",
+  ],
+  [
+    "Apakah harga layanan sudah termasuk material?",
+    "Harga yang tampil adalah tarif mulai dari. Rincian jasa, material, dan lingkup pekerjaan disepakati melalui konsultasi sebelum pekerjaan dimulai.",
+  ],
+] as const;
 
 export default function Home() {
   // Discover the LCP image before waiting for database-backed content.
@@ -49,18 +67,30 @@ export default function Home() {
     imageSrcSet: props.srcSet,
     imageSizes: props.sizes,
     fetchPriority: "high",
+    media: "(min-width: 641px)",
+  });
+  preload("/images/hero-mobile.webp", {
+    as: "image",
+    fetchPriority: "high",
+    media: "(max-width: 640px)",
   });
   return (
     <>
       <section className="property-hero" aria-labelledby="hero-title">
         <div className="hero-photo property-hero-photo">
-          <Image
-            {...heroImage}
-            alt={heroImage.alt}
-            loading="eager"
-            fetchPriority="high"
-            className="cover"
-          />
+          <picture>
+            <source
+              media="(max-width: 640px)"
+              srcSet="/images/hero-mobile.webp"
+            />
+            <Image
+              {...heroImage}
+              alt={heroImage.alt}
+              loading="eager"
+              fetchPriority="high"
+              className="cover"
+            />
+          </picture>
         </div>
         <Suspense
           fallback={
@@ -138,10 +168,14 @@ async function HomeContent() {
             "@context": "https://schema.org",
             "@graph": [
               {
-                "@type": "Organization",
+                "@type": "RealEstateAgent",
                 "@id": `${siteUrl()}/#organization`,
                 name: "MR Properti",
                 url: siteUrl(),
+                logo: `${siteUrl()}/brand/mrproperti-logo.png`,
+                image: `${siteUrl()}/images/hero.webp`,
+                areaServed: ["Cikarang", "Bekasi"],
+                ...(settings.whatsapp ? { telephone: settings.whatsapp } : {}),
                 ...(settings.email ? { email: settings.email } : {}),
               },
               {
@@ -151,6 +185,14 @@ async function HomeContent() {
                 url: siteUrl(),
                 inLanguage: "id-ID",
                 publisher: { "@id": `${siteUrl()}/#organization` },
+              },
+              {
+                "@type": "FAQPage",
+                mainEntity: homeFaq.map(([question, answer]) => ({
+                  "@type": "Question",
+                  name: question,
+                  acceptedAnswer: { "@type": "Answer", text: answer },
+                })),
               },
             ],
           }),
@@ -353,24 +395,7 @@ async function HomeContent() {
           <h2>Hal yang sering ditanyakan.</h2>
         </div>
         <div>
-          {[
-            [
-              "Bagaimana cara menjadwalkan survei properti?",
-              "Buka detail properti dan tekan tombol WhatsApp. Tim kami akan membantu mencocokkan jadwal Anda dengan pemilik properti.",
-            ],
-            [
-              "Apakah saya bisa menitipkan properti di sini?",
-              "Tentu. Buat akun, isi formulir Titip Properti, dan unggah foto. Selama masa uji coba, kiriman baru langsung tayang di katalog setelah berhasil dikirim.",
-            ],
-            [
-              "Bagaimana cara memesan jasa tukang?",
-              "Pilih layanan yang dibutuhkan dan hubungi admin melalui WhatsApp. Kami membantu koordinasi kebutuhan dan jadwal dengan tukang.",
-            ],
-            [
-              "Apakah harga layanan sudah termasuk material?",
-              "Harga yang tampil adalah tarif mulai dari. Rincian jasa, material, dan lingkup pekerjaan disepakati melalui konsultasi sebelum pekerjaan dimulai.",
-            ],
-          ].map(([q, a]) => (
+          {homeFaq.map(([q, a]) => (
             <details key={q}>
               <summary>
                 {q}

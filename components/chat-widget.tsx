@@ -28,9 +28,15 @@ const suggestions = [
   "Bagaimana cara titip properti?",
 ];
 
-export function ChatWidget({ whatsapp }: { whatsapp: string }) {
+export function ChatWidget({
+  whatsapp,
+  initiallyOpen = false,
+}: {
+  whatsapp: string;
+  initiallyOpen?: boolean;
+}) {
   const path = usePathname();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   const [messages, setMessages] = useState<Message[]>([]);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);

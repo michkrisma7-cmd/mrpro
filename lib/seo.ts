@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { siteUrl } from "./format";
 export const brand = "MR Properti";
-export const homeTitle =
-  "Jual Beli, Sewa Properti & Jasa Tukang Cikarang dan Bekasi";
+export const homeTitle = "Jual Beli & Sewa Properti Cikarang dan Bekasi";
 export const homeDescription =
   "Cari rumah, tanah, apartemen, dan ruko dijual atau disewa di Cikarang dan Bekasi. Titip properti dan temukan jasa tukang bersama MR Properti.";
 export function indexingEnabled(

@@ -31,7 +31,12 @@ export function PropertyCard({
   return (
     <article className="property-card">
       <div className="property-image">
-        <Link href={`/properti/${p.slug}`} tabIndex={-1} aria-hidden="true">
+        <Link
+          href={`/properti/${p.slug}`}
+          prefetch={false}
+          tabIndex={-1}
+          aria-hidden="true"
+        >
           <Image
             src={p.gallery[0] || "/images/hero.webp"}
             alt={p.title}
@@ -63,7 +68,7 @@ export function PropertyCard({
             {p.values.transaksi === "Disewa" && <small> / tahun</small>}
           </p>
         )}
-        <Link href={`/properti/${p.slug}`}>
+        <Link href={`/properti/${p.slug}`} prefetch={false}>
           <h3>{p.title}</h3>
         </Link>
         {location && (
@@ -100,7 +105,11 @@ export function PropertyCard({
               );
             })}
         </div>
-        <Link href={`/properti/${p.slug}`} className="card-more">
+        <Link
+          href={`/properti/${p.slug}`}
+          prefetch={false}
+          className="card-more"
+        >
           Lihat properti <ArrowUpRight size={15} />
         </Link>
       </div>
