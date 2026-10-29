@@ -266,8 +266,8 @@ export function Partnership() {
       </section>
       <section id="mr-faq" className="tinted">
         <h2>Pertanyaan seputar kemitraan</h2>
-        {faqs.map(([q, a], i) => (
-          <details key={q} open={i === 1}>
+        {faqs.map(([q, a]) => (
+          <details key={q} name="partnership-faq">
             <summary>{q}</summary>
             <p>{a}</p>
           </details>

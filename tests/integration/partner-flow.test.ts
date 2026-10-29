@@ -165,6 +165,8 @@ test(
           exact: true,
         }),
       });
+      await expect(commission.locator("p")).toBeHidden();
+      await commission.locator("summary").click();
       await expect(commission.locator("p")).toBeVisible();
       await commission.locator("summary").click();
       await expect(commission.locator("p")).toBeHidden();
