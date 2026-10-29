@@ -274,3 +274,35 @@ klik backdrop, tombol X, dan mengembalikan fokus ke kartu setelah ditutup.
 Foto publik memakai Next Image dengan lazy loading, ukuran kartu 100×120 px
 di HP dan 120×140 px di desktop. Foto pratinjau admin tetap memakai jalur
 media terautentikasi yang sudah ada.
+
+### Kemitraan dan pengelolaan mitra
+
+Halaman `/kemitraan` menerima pendaftaran tanpa akun. Domisili dan wilayah layanan
+hanya mencakup Cikarang, Bekasi, Karawang, dan Cikampek. Pilihan bidang pada kartu
+tersambung dengan formulir dan mendukung lebih dari satu bidang.
+
+Data disimpan pada tabel Prisma `Partner` melalui `POST /api/mitra`.
+Permintaan ulang dengan `submissionId` yang sama tidak membuat pendaftaran ganda.
+Pesan berhasil hanya muncul setelah database mengonfirmasi penyimpanan. Saat
+penyimpanan gagal, formulir mempertahankan isian selama halaman tetap terbuka.
+Tidak ada unggahan identitas atau layanan tambahan yang diperlukan.
+
+Menu **Mitra** berada pada `/admin?tab=mitra`. Admin dapat mencari nama/usaha atau
+WhatsApp, memfilter wilayah layanan dan bidang, membuka detail, serta mengedit
+semua field pendaftaran. Data mitra tidak diterbitkan pada halaman publik.
+Pembacaan data memerlukan `requireAdmin`; `PATCH /api/mitra/[id]` memeriksa sesi
+dan peran admin terbaru di database. Kedua endpoint memvalidasi input dan origin.
+
+Sebelum menggunakan fitur di lingkungan tujuan, gunakan konfigurasi
+`DATABASE_URL`, `AUTH_SECRET`, dan `NEXT_PUBLIC_SITE_URL` proyek yang sudah ada,
+lalu jalankan `bun run db:generate` dan `bun run db:deploy` untuk menerapkan
+migrasi `202610290001_partners`. Migrasi hanya membuat tabel dan indeks Partner;
+tidak mengubah data lama. Jika koneksi database atau tabel belum tersedia,
+pendaftaran mengembalikan kegagalan, bukan keberhasilan semu.
+
+Pemeriksaan fitur: `bun run test`, `bun run build`, serta
+`bun x tsx --test tests/integration/partner-flow.test.ts` setelah build.
+Uji integrasi menggunakan PostgreSQL lokal terisolasi (PGlite) dan Chromium,
+meliputi pendaftaran, kegagalan database, pengiriman ulang, filter admin,
+pembatalan edit, koreksi tersimpan setelah refresh, serta penolakan pengguna
+non-admin. Tidak memerlukan kredensial database produksi.

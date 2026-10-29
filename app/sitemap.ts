@@ -21,6 +21,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: siteUrl(), changeFrequency: "daily", priority: 1 },
     { url: `${siteUrl()}/properti`, changeFrequency: "daily", priority: 0.9 },
     { url: `${siteUrl()}/layanan`, changeFrequency: "weekly", priority: 0.8 },
+    {
+      url: `${siteUrl()}/kemitraan`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     { url: `${siteUrl()}/tim-kami`, changeFrequency: "monthly", priority: 0.6 },
     {
       url: `${siteUrl()}/tentang-kami`,

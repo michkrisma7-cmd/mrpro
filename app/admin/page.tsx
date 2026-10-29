@@ -38,6 +38,7 @@ import {
 } from "@/components/testimonial-editor";
 import { initialTestimonials } from "@/lib/testimonials";
 import { BlogEditor } from "@/components/blog-editor";
+import { PartnerAdmin, type PartnerSearch } from "@/components/partner-admin";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Dashboard Admin",
@@ -50,18 +51,21 @@ const tabs = [
   ["layanan", "Layanan Tukang", Wrench],
   ["blog", "Blog", BookOpen],
   ["tim", "Manajemen Tim", UsersRound],
+  ["mitra", "Mitra", UsersRound],
   ["testimoni", "Testimoni", Quote],
   ["pengaturan", "Pengaturan Website", Settings],
 ] as const;
 export default async function Admin({
   searchParams,
 }: {
-  searchParams: Promise<{
-    tab?: string;
-    edit?: string;
-    tersimpan?: string;
-    terhapus?: string;
-  }>;
+  searchParams: Promise<
+    PartnerSearch & {
+      tab?: string;
+      edit?: string;
+      tersimpan?: string;
+      terhapus?: string;
+    }
+  >;
 }) {
   const user = await currentUser();
   const preview = !authConfigured || !databaseConfigured;
@@ -77,7 +81,8 @@ export default async function Admin({
         </Link>
       </div>
     );
-  const { tab = "ringkasan", edit, tersimpan, terhapus } = await searchParams;
+  const params = await searchParams;
+  const { tab = "ringkasan", edit, tersimpan, terhapus } = params;
   const [fields, settings] = await Promise.all([getFields(), getSettings()]);
   const properties: Listing[] = preview
     ? demoListings
@@ -252,6 +257,17 @@ export default async function Admin({
             </div>
           </>
         )}
+        {tab === "mitra" &&
+          (preview ? (
+            <div className="admin-panel">
+              <p>
+                Data mitra memerlukan konfigurasi database dan autentikasi admin
+                yang valid.
+              </p>
+            </div>
+          ) : (
+            <PartnerAdmin params={params} />
+          ))}
         {tab === "field" && (
           <div className="admin-panel">
             <FieldManager fields={fields} disabled={preview} />

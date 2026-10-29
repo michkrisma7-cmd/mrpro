@@ -4792,7 +4792,7 @@ td .text-button {
 }
 
 /* Keep the expanded navigation inside tablet screens as links are added. */
-@media (min-width: 701px) and (max-width: 1100px) {
+@media (min-width: 701px) and (max-width: 1200px) {
   .main-nav {
     display: none;
   }
@@ -5110,4 +5110,39 @@ td .text-button {
 .property-photo button:focus-visible {
   outline: 3px solid #16724b;
   outline-offset: -3px;
+}
+
+/* Partner forms share the site's existing inputs and buttons. */
+.partner-form-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 24px 0;
+}
+.partner-detail {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 24px 0;
+}
+.partner-detail dt {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.partner-detail dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 600px) {
+  .partner-detail {
+    grid-template-columns: 1fr;
+  }
+}
+
+.partner-success {
+  display: block;
+}
+.partner-success p {
+  margin: 12px 0;
 }

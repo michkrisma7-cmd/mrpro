@@ -22,6 +22,7 @@ export function Footer() {
             <h3 id="footer-company-title">MR Properti</h3>
             <Link href="/tentang-kami">Tentang MR Properti</Link>
             <Link href="/tim-kami">Tim Kami</Link>
+            <Link href="/kemitraan">Kemitraan</Link>
             <Link href="/kalkulator-kpr">Kalkulator KPR</Link>
             <Link href="/login">Masuk ke akun</Link>
           </nav>

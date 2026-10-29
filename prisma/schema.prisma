@@ -150,3 +150,18 @@ model Testimonial {
   @@index([active, position])
   @@index([photoId])
 }
+
+model Partner {
+  id String @id @default(cuid())
+  submissionId String @unique
+  name String
+  whatsapp String
+  domicile String
+  areas String[]
+  skills String[]
+  experience String
+  consent Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([createdAt])
+}

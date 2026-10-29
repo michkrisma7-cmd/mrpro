@@ -23,6 +23,7 @@ export function Header() {
             ["/layanan", "Layanan Tukang"],
             ["/blog", "Blog"],
             ["/tim-kami", "Tim Kami"],
+            ["/kemitraan", "Kemitraan"],
             ["/syarat-dan-ketentuan", "Syarat dan Ketentuan"],
             ["/tentang-kami", "Tentang Kami"],
           ].map(([href, label]) => (
