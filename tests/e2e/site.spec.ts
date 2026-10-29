@@ -1,52 +1,61 @@
 import { test, expect } from "@playwright/test";
-test("landing separates properties and services, with responsive navigation", async ({
+import { demoListings } from "../../lib/demo";
+test("landing starts with compact search, one listing H1 and unchanged cards", async ({
   page,
   isMobile,
 }) => {
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Ruang baru",
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+    "Temukan ruang yang tepat.",
   );
-  await expect(page.locator("#properti .property-card")).toHaveCount(3);
+  await expect(
+    page.locator(".property-hero, .property-hero-photo, #hero-title"),
+  ).toHaveCount(0);
+  await expect(
+    page.getByText("PARTNER UNTUK SETIAP RENCANA", { exact: true }),
+  ).toHaveCount(0);
+  await expect(page.locator("#properti .property-card")).toHaveCount(
+    demoListings.slice(0, 9).length,
+  );
   await expect(
     page.locator(".services-section .home-service-card"),
   ).toHaveCount(10);
   await expect(page.locator("#properti .service-card")).toHaveCount(0);
   await expect(page.locator(".services-section .property-card")).toHaveCount(0);
-  await expect(page.locator(".hero-photo img")).toBeVisible();
-  await expect(page.locator(".property-hero .eyebrow")).toHaveText(
-    "PARTNER UNTUK SETIAP RENCANA",
-  );
-  await expect(page.locator(".property-hero")).not.toContainText(
-    "Temukan tempat untuk pulang",
-  );
   const sale = page.getByRole("button", { name: "Dijual", exact: true });
   const rent = page.getByRole("button", { name: "Sewa", exact: true });
   await expect(sale).toHaveAttribute("aria-pressed", "true");
-  const saleBox = await sale.boundingBox();
-  const rentBox = await rent.boundingBox();
-  expect(Math.abs(saleBox!.y - rentBox!.y)).toBeLessThan(1);
-  const heroBox = await page.locator(".property-hero").boundingBox();
-  const headingBox = await page.locator("#hero-title").boundingBox();
-  expect(headingBox!.y).toBeGreaterThan(heroBox!.y);
-  expect(saleBox!.y + saleBox!.height).toBeLessThan(
-    heroBox!.y + heroBox!.height,
+  const saleBox = (await sale.boundingBox())!,
+    rentBox = (await rent.boundingBox())!;
+  expect(saleBox.y).toBe(rentBox.y);
+  const header = (await page.locator(".site-header").boundingBox())!;
+  const panel = (await page.locator(".property-hero-search").boundingBox())!;
+  expect(panel.y - (header.y + header.height)).toBeLessThanOrEqual(24);
+  await expect(page.locator(".property-hero-search")).toHaveCSS(
+    "background-color",
+    "rgb(255, 255, 255)",
   );
+  const actions = page.locator(".home-search-actions");
+  const links = actions.getByRole("link");
+  await expect(links).toHaveText(["Kalkulator KPR", "Kenali Kami"]);
+  const first = (await links.nth(0).boundingBox())!,
+    second = (await links.nth(1).boundingBox())!;
+  expect(first.y).toBe(second.y);
+  expect(first.y).toBeGreaterThanOrEqual(panel.y + panel.height);
+  const listing = (await page.locator("#properti").boundingBox())!;
+  expect(listing.y).toBeGreaterThanOrEqual(first.y + first.height);
+  expect(listing.y - (first.y + first.height)).toBeLessThan(2);
   if (isMobile) {
     await expect(
-      page.getByPlaceholder("Masukan lokasi atau nama proyek"),
+      page.getByPlaceholder("Lokasi atau nama properti"),
     ).toBeVisible();
     await expect(page.locator(".hero-search-desktop")).toBeHidden();
     await expect(page.locator(".home-trust-strip")).toBeHidden();
-    await expect(page.locator("#properti > .section-heading h2")).toHaveText(
-      "Temukan ruang yang tepat.",
-    );
-    await expect(page.locator("#properti > .section-heading h2")).toBeVisible();
     await expect(
       page.locator("#properti > .section-heading .eyebrow"),
     ).toBeHidden();
     const categories = page.locator("#properti > .catalog-tabs");
-    await expect(categories).toBeVisible();
     await expect(categories).toHaveCSS("flex-wrap", "nowrap");
     await expect(categories.locator("a")).toHaveText([
       "Semua Properti",
@@ -61,34 +70,34 @@ test("landing separates properties and services, with responsive navigation", as
         links.map((link) => link.getBoundingClientRect().y),
       );
     expect(Math.max(...positions) - Math.min(...positions)).toBeLessThan(1);
-    const search = await page.locator(".hero-search-mobile").boundingBox();
-    const actions = await page.locator(".property-hero-actions").boundingBox();
-    expect(search!.y + search!.height).toBeLessThan(actions!.y);
+    expect(
+      (await page.locator("#properti .property-card").first().boundingBox())!.y,
+    ).toBeLessThan(500);
   } else {
     await expect(page.getByPlaceholder("Mau tinggal di mana?")).toBeVisible();
     await expect(page.locator(".hero-search-mobile")).toBeHidden();
     await expect(page.locator(".home-trust-strip")).toBeVisible();
-    await expect(page.locator("#properti > .section-heading")).toBeVisible();
     await expect(page.locator(".hero-search-desktop select")).toHaveCount(2);
   }
-  const fits = await page.evaluate(
-    () => document.documentElement.scrollWidth <= window.innerWidth,
-  );
-  expect(fits).toBe(true);
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
   if (isMobile) {
-    const ruko = page
+    await page
       .locator("#properti > .catalog-tabs")
-      .getByRole("link", { name: "Ruko", exact: true });
-    await ruko.scrollIntoViewIfNeeded();
-    await ruko.click();
+      .getByRole("link", { name: "Ruko", exact: true })
+      .click();
     await expect(page).toHaveURL(/jenis=Ruko/);
   }
 });
-test("hero preserves search filters and uses the selected sale or rental transaction", async ({
+
+test("compact search preserves search filters and uses the selected sale or rental transaction", async ({
   page,
 }) => {
   await page.goto("/");
-  const query = page.locator('.property-hero input[name="q"]:visible');
+  const query = page.locator('.home-search input[name="q"]:visible');
   await query.fill("Bintaro");
   await page.getByRole("button", { name: "Sewa", exact: true }).click();
   await expect(

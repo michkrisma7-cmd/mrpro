@@ -1,8 +1,7 @@
 import "./consign-feature.css";
 import Link from "next/link";
 import { connection } from "next/server";
-import Image, { getImageProps } from "next/image";
-import { preload } from "react-dom";
+import Image from "next/image";
 import { Suspense } from "react";
 import Loading from "./loading";
 import {
@@ -34,12 +33,6 @@ export const metadata = pageMetadata({
   path: "/",
 });
 export const revalidate = 60;
-const heroImage = {
-  src: "/images/hero.webp",
-  alt: "Rumah tropis modern dengan taman asri dan pencahayaan alami",
-  fill: true,
-  sizes: "100vw",
-} as const;
 const homeFaq = [
   [
     "Bagaimana cara menjadwalkan survei properti?",
@@ -60,48 +53,19 @@ const homeFaq = [
 ] as const;
 
 export default function Home() {
-  // Discover the LCP image before waiting for database-backed content.
-  const { props } = getImageProps(heroImage);
-  preload(props.src, {
-    as: "image",
-    imageSrcSet: props.srcSet,
-    imageSizes: props.sizes,
-    fetchPriority: "high",
-    media: "(min-width: 641px)",
-  });
-  preload("/images/hero-mobile.webp", {
-    as: "image",
-    fetchPriority: "high",
-    media: "(max-width: 640px)",
-  });
   return (
     <>
-      <section className="property-hero" aria-labelledby="hero-title">
-        <div className="hero-photo property-hero-photo">
-          <picture>
-            <source
-              media="(max-width: 640px)"
-              srcSet="/images/hero-mobile.webp"
-            />
-            <Image
-              {...heroImage}
-              alt={heroImage.alt}
-              loading="eager"
-              fetchPriority="high"
-              className="cover"
-            />
-          </picture>
-        </div>
+      <section className="home-search" aria-label="Pencarian properti">
         <Suspense
           fallback={
             <div
-              className="container property-hero-content"
+              className="container home-search-content"
               role="status"
               aria-label="Menyiapkan pencarian"
             />
           }
         >
-          <HeroContent />
+          <HomeSearchContent />
         </Suspense>
       </section>
       <Suspense fallback={<Loading />}>
@@ -111,7 +75,7 @@ export default function Home() {
   );
 }
 
-async function HeroContent() {
+async function HomeSearchContent() {
   await connection();
   const [fields, settings] = await Promise.all([getFields(), getSettings()]);
   const wa = whatsappLink(
@@ -119,11 +83,7 @@ async function HeroContent() {
     "Halo MR Properti, saya ingin konsultasi properti.",
   );
   return (
-    <div className="container property-hero-content">
-      <div className="property-hero-heading">
-        <p className="eyebrow">PARTNER UNTUK SETIAP RENCANA</p>
-        <h1 id="hero-title">{settings.heroTitle}</h1>
-      </div>
+    <div className="container home-search-content">
       <HeroSearch
         types={
           fields.find(
@@ -131,12 +91,12 @@ async function HeroContent() {
           )?.options || []
         }
       />
-      <div className="hero-actions property-hero-actions">
+      <div className="home-search-actions">
         <Link href="/kalkulator-kpr" className="button">
           Kalkulator KPR <ArrowUpRight size={17} />
         </Link>
-        <Link href={wa || "/#tentang"} className="text-button">
-          Kenali kami <ArrowRight size={16} />
+        <Link href={wa || "/#tentang"} className="outline-button">
+          Kenali Kami <ArrowRight size={16} />
         </Link>
       </div>
     </div>
@@ -198,22 +158,6 @@ async function HomeContent() {
           }),
         }}
       />
-      <div className="trust-strip home-trust-strip">
-        <div className="container trust-strip-inner">
-          <span>
-            <ShieldCheck />
-            Informasi properti yang transparan
-          </span>
-          <span>
-            <HeartHandshake />
-            Pendampingan di setiap langkah
-          </span>
-          <span>
-            <BadgeCheck />
-            Kebutuhan rumah, satu partner
-          </span>
-        </div>
-      </div>
       <section
         className="section container home-property-section"
         id="properti"
@@ -222,9 +166,9 @@ async function HomeContent() {
         <div className="section-heading">
           <div>
             <p className="eyebrow">PILIHAN UNTUK LANGKAH BARU</p>
-            <h2>
+            <h1>
               Temukan ruang yang <span>tepat.</span>
-            </h2>
+            </h1>
             <p>Jelajahi pilihan properti, temukan yang terasa seperti rumah.</p>
           </div>
           <Link className="outline-button" href="/properti">
@@ -273,6 +217,22 @@ async function HomeContent() {
           </Link>
         </div>
       </section>
+      <div className="trust-strip home-trust-strip">
+        <div className="container trust-strip-inner">
+          <span>
+            <ShieldCheck />
+            Informasi properti yang transparan
+          </span>
+          <span>
+            <HeartHandshake />
+            Pendampingan di setiap langkah
+          </span>
+          <span>
+            <BadgeCheck />
+            Kebutuhan rumah, satu partner
+          </span>
+        </div>
+      </div>
       <section className="services-section">
         <div className="container section">
           <div className="section-heading">

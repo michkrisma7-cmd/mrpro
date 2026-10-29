@@ -4100,83 +4100,32 @@ td .text-button {
   }
 }
 
-.property-hero {
-  position: relative;
-  isolation: isolate;
-  background: var(--ink-dark);
-  color: white;
-}
-.property-hero .property-hero-photo {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  border-radius: 0;
-  z-index: -2;
-}
-.property-hero-photo img {
-  object-position: center 57%;
-}
-.property-hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(
-    180deg,
-    #10261ec4 0%,
-    #10261e70 60%,
-    #10261e9c 100%
-  );
-}
-.property-hero-content {
-  min-height: 560px;
-  padding-block: 85px 50px;
+.home-search-content {
+  max-width: 1000px;
+  padding-top: 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-}
-.property-hero-heading {
-  text-align: center;
-  max-width: 950px;
-}
-.property-hero-heading .eyebrow {
-  color: #f0eedc;
-  justify-content: center;
-  font-size: 11px;
-  letter-spacing: 2.8px;
-  text-shadow: 0 2px 12px #10261e70;
-}
-.property-hero-heading h1 {
-  color: white;
-  font-size: clamp(35px, 4.2vw, 58px);
-  line-height: 1.2;
-  letter-spacing: -2px;
-  margin-top: 18px;
-  text-shadow: 0 2px 18px #10261e65;
-  text-wrap: balance;
 }
 .property-hero-search {
   width: 100%;
-  max-width: 1000px;
-  margin-top: 38px;
-  padding: 0 22px 22px;
+  padding: 0 22px 20px;
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 15px 45px #10261e26;
+  border: 1px solid var(--line);
+  border-radius: 14px;
 }
 .property-hero-modes {
   display: flex;
   justify-content: center;
   gap: 34px;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 21px;
+  margin-bottom: 18px;
 }
 .property-hero-modes button {
   background: transparent;
   border: 0;
   border-bottom: 3px solid transparent;
-  padding: 17px 22px 14px;
+  padding: 15px 22px 12px;
   color: #687264;
   font-weight: 600;
   font-size: 14px;
@@ -4185,7 +4134,7 @@ td .text-button {
   color: var(--ink);
   border-bottom-color: var(--ink);
 }
-.property-hero .search-form {
+.home-search .search-form {
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -4196,59 +4145,64 @@ td .text-button {
 .hero-search-mobile {
   display: none;
 }
-.property-hero .search-form label > span {
+.home-search .search-form label > span {
   font-size: 11px;
 }
-.property-hero .search-form input,
-.property-hero .search-form select {
+.home-search .search-form input,
+.home-search .search-form select {
   font-size: 13px;
   color: #52604e;
 }
-.property-hero .search-form .button {
+.home-search .search-form .button {
   min-height: 46px;
   font-size: 12px;
 }
-.property-hero .property-hero-actions {
-  margin-top: 24px;
-  justify-content: center;
-  gap: 24px;
+.home-search-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  max-width: 400px;
+  gap: 12px;
+  margin-top: 14px;
 }
-.property-hero-actions .button {
-  background: #fff;
-  color: var(--ink);
-  border: 1px solid #fff;
+.home-search-actions :is(.button, .outline-button) {
+  min-width: 0;
+  min-height: 42px;
+  padding: 9px 14px;
   font-size: 12px;
-  min-height: 40px;
-  padding: 9px 16px;
+  gap: 8px;
+  white-space: nowrap;
 }
-.property-hero-actions .button:hover {
-  background: var(--soft);
+.home-property-section {
+  padding-top: 28px;
 }
-.property-hero-actions .text-button {
-  color: white;
-  font-size: 12px;
+.home-property-section > .section-heading h1 {
+  font-size: 32px;
+}
+.home-property-section h1 span {
+  color: #5f7058;
 }
 @media (max-width: 800px) {
-  .property-hero-content {
-    padding-block: 65px 40px;
-  }
-  .property-hero .search-form {
+  .home-search .search-form {
     grid-template-columns: 1fr 1fr;
   }
-  .property-hero .search-form label:first-child {
+  .home-search .search-form label:first-child {
     grid-column: 1 / -1;
     border-right: 0;
     border-bottom: 1px solid var(--line);
     padding: 0 0 14px;
   }
-  .property-hero .search-form label:nth-child(3) {
+  .home-search .search-form label:nth-child(3) {
     border-right: 0;
   }
-  .property-hero .search-form .button {
+  .home-search .search-form .button {
     grid-column: 1 / -1;
   }
 }
 @media (max-width: 560px) {
+  .home-search-content {
+    padding-top: 16px;
+  }
   .hero-search-desktop {
     display: none;
   }
@@ -4284,17 +4238,41 @@ td .text-button {
     flex-shrink: 0;
     border-radius: 6px;
   }
+  .property-hero-search {
+    padding: 0 14px 14px;
+    border-radius: 13px;
+  }
+  .property-hero-modes {
+    gap: 25px;
+    margin-bottom: 14px;
+  }
+  .property-hero-modes button {
+    padding: 12px 20px 10px;
+    font-size: 13px;
+  }
+  .home-search-actions {
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .home-search-actions :is(.button, .outline-button) {
+    padding-inline: 8px;
+    gap: 6px;
+  }
+  .home-search-actions svg {
+    width: 14px;
+    height: 14px;
+  }
   .home-trust-strip {
     display: none;
   }
   #properti {
-    padding-top: 28px;
+    padding-top: 22px;
   }
   #properti > .section-heading {
     display: block;
     margin-bottom: 16px;
   }
-  #properti > .section-heading h2 {
+  #properti > .section-heading h1 {
     font-size: 23px;
     line-height: 1.3;
     letter-spacing: -0.8px;
@@ -4325,46 +4303,6 @@ td .text-button {
   }
   #properti > .catalog-tabs > a.active {
     border-color: var(--ink);
-  }
-  .property-hero-content {
-    padding-block: 52px 34px;
-    min-height: 500px;
-  }
-  .property-hero-heading .eyebrow {
-    font-size: 9px;
-    letter-spacing: 1.8px;
-  }
-  .property-hero-heading h1 {
-    margin-top: 13px;
-    font-size: 38px;
-    letter-spacing: -1.4px;
-  }
-  .property-hero-search {
-    margin-top: 28px;
-    padding: 0 18px 18px;
-    border-radius: 13px;
-  }
-  .property-hero-modes {
-    gap: 25px;
-    margin-bottom: 18px;
-  }
-  .property-hero-modes button {
-    padding: 14px 20px 11px;
-    font-size: 13px;
-  }
-  .property-hero .search-form {
-    gap: 16px 12px;
-  }
-  .property-hero .search-form input,
-  .property-hero .search-form select {
-    font-size: 16px;
-  }
-  .property-hero .search-form label > span {
-    font-size: 10px;
-  }
-  .property-hero .property-hero-actions {
-    margin-top: 22px;
-    gap: 20px;
   }
 }
 @media (max-width: 360px) {

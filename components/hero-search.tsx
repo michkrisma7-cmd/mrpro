@@ -33,13 +33,13 @@ export function HeroSearch({ types }: { types: string[] }) {
       <form
         action="/properti"
         className="hero-search-mobile"
-        aria-label="Pencarian lokasi atau nama proyek"
+        aria-label="Pencarian lokasi atau nama properti"
       >
         <MapPin size={18} aria-hidden="true" />
         <input
           name="q"
-          placeholder="Masukan lokasi atau nama proyek"
-          aria-label="Lokasi atau nama proyek"
+          placeholder="Lokasi atau nama properti"
+          aria-label="Lokasi atau nama properti"
         />
         <input type="hidden" name="transaksi" value={transaction} />
         <button type="submit" className="button" aria-label="Cari Properti">

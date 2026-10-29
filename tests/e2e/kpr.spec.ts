@@ -5,13 +5,15 @@ test("home and footer open the KPR calculator with both bank choices", async ({
 }) => {
   await page.goto("/");
   await expect(
-    page.locator(".hero-actions").getByRole("link", { name: "Kalkulator KPR" }),
+    page
+      .locator(".home-search-actions")
+      .getByRole("link", { name: "Kalkulator KPR" }),
   ).toHaveAttribute("href", "/kalkulator-kpr");
   await expect(
     page.locator("footer").getByRole("link", { name: "Kalkulator KPR" }),
   ).toHaveAttribute("href", "/kalkulator-kpr");
   await page
-    .locator(".hero-actions")
+    .locator(".home-search-actions")
     .getByRole("link", { name: "Kalkulator KPR" })
     .click();
   await expect(page).toHaveTitle(/Kalkulator KPR.*BTN & BSI/);
