@@ -4984,18 +4984,29 @@ td .text-button {
   height: 28px;
 }
 .service-team-action {
-  display: flex;
-  justify-content: center;
+  /* Dominant solid red sampled from the r in public/brand/mrproperti-logo.png. */
+  --service-brand-red: #fb3000;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   margin-top: 22px;
 }
 .service-team-button {
-  width: 50%;
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+  background: var(--service-brand-red);
+  border-color: var(--service-brand-red);
   min-height: 48px;
   padding: 12px 8px;
   gap: 8px;
   border-radius: 14px;
   color: #fff;
   font-size: 13px;
+}
+.service-team-button:hover:not(:disabled) {
+  background: var(--service-brand-red);
+  filter: brightness(0.94);
 }
 .service-team-button span {
   flex: 1;
@@ -5036,6 +5047,16 @@ td .text-button {
   }
   .service-team-action {
     margin-top: 18px;
+    gap: 8px;
+  }
+  .service-team-button {
+    padding: 12px 8px;
+    gap: 6px;
+    font-size: 12px;
+  }
+  .service-team-button svg {
+    width: 14px;
+    height: 14px;
   }
 }
 

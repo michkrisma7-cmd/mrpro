@@ -303,6 +303,11 @@ async function HomeContent() {
               <span>Tim Kami</span>
               <ArrowRight size={18} aria-hidden="true" />
             </Link>
+            <Link href="/kemitraan" className="button service-team-button">
+              <HeartHandshake size={18} aria-hidden="true" />
+              <span>Daftar Mitra</span>
+              <ArrowRight size={18} aria-hidden="true" />
+            </Link>
           </div>
         </div>
       </section>

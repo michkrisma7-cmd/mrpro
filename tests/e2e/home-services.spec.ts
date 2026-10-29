@@ -157,26 +157,56 @@ test("service directory puts identity beside desktop descriptions and above mobi
   ).toBe(true);
 });
 
-test("homepage team button sits below consultation text at half content width and opens the same tab", async ({
+test("homepage service buttons stay balanced in one row through 320px and open their destinations", async ({
   page,
 }) => {
   await page.goto("/");
   const section = page.locator(".services-section");
-  const button = section.getByRole("link", { name: "Tim Kami", exact: true });
-  await expect(button).toHaveAttribute("href", "/tim-kami");
-  expect(await button.getAttribute("target")).not.toBe("_blank");
-  await expect(button.locator("svg")).toHaveCount(2);
-  const note = (await section.locator(".service-note").boundingBox())!;
-  const action = (await section.locator(".service-team-action").boundingBox())!;
-  const box = (await button.boundingBox())!;
-  expect(box.y).toBeGreaterThan(note.y + note.height);
-  expect(Math.abs(box.width - action.width / 2)).toBeLessThan(1);
-  expect(
-    Math.abs(box.x + box.width / 2 - (action.x + action.width / 2)),
-  ).toBeLessThan(1);
-  await button.click();
+  const group = section.locator(".service-team-action");
+  const links = group.getByRole("link");
+  await expect(links).toHaveText(["Tim Kami", "Daftar Mitra"]);
+  for (const width of [1440, 390, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    await group.scrollIntoViewIfNeeded();
+    const first = (await links.nth(0).boundingBox())!;
+    const second = (await links.nth(1).boundingBox())!;
+    const note = (await section.locator(".service-note").boundingBox())!;
+    expect(first.y).toBeGreaterThanOrEqual(note.y + note.height);
+    expect(first.y).toBe(second.y);
+    expect(first.height).toBe(second.height);
+    expect(Math.abs(first.width - second.width)).toBeLessThan(1);
+    expect(second.x).toBeGreaterThan(first.x + first.width);
+    for (const link of await links.all()) {
+      await expect(link).toHaveCSS("background-color", "rgb(251, 48, 0)");
+      await expect(link).toHaveCSS("color", "rgb(255, 255, 255)");
+      expect(await link.getAttribute("target")).not.toBe("_blank");
+      expect(
+        await link
+          .locator("span")
+          .evaluate((el) => el.scrollWidth <= el.clientWidth),
+      ).toBe(true);
+    }
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await group.screenshot({ path: `work/service-buttons-${width}.png` });
+  }
+  await expect(links.nth(0)).toHaveAttribute("href", "/tim-kami");
+  await expect(links.nth(1)).toHaveAttribute("href", "/kemitraan");
+  await links.nth(0).click();
   await expect(page).toHaveURL(/\/tim-kami$/);
   await expect(
     page.getByRole("heading", { name: "Tim Kami", exact: true }),
   ).toBeVisible();
+  await page.goto("/");
+  await page
+    .locator(".service-team-action")
+    .getByRole("link", { name: "Daftar Mitra" })
+    .click();
+  await expect(page).toHaveURL(/\/kemitraan$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Keahlian Anda.",
+  );
 });
