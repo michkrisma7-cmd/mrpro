@@ -117,127 +117,188 @@ export function PartnerForm({
         )}
       </div>
     );
-  return (
-    <form onSubmit={submit} className="partner-form">
-      <fieldset className="plain-fieldset" disabled={pending}>
-        <div className="form-grid">
-          <label>
-            Nama lengkap / nama usaha
+  const nameField = (
+    <label>
+      Nama lengkap / nama usaha
+      <input
+        required
+        minLength={2}
+        maxLength={150}
+        autoComplete="name"
+        placeholder={partner ? undefined : "Nama Anda atau usaha"}
+        value={values.name}
+        onChange={(e) => setValues((v) => ({ ...v, name: e.target.value }))}
+      />
+    </label>
+  );
+  const whatsappField = (
+    <label>
+      Nomor WhatsApp
+      <input
+        required
+        type="tel"
+        maxLength={30}
+        autoComplete="tel"
+        placeholder={
+          partner ? "081234567890 atau +6281234567890" : "08xxxxxxxxxx"
+        }
+        value={values.whatsapp}
+        onChange={(e) => setValues((v) => ({ ...v, whatsapp: e.target.value }))}
+      />
+    </label>
+  );
+  const domicileField = (
+    <label>
+      Domisili / area
+      <select
+        required
+        aria-label="Domisili / area"
+        value={values.domicile}
+        onChange={(e) => setValues((v) => ({ ...v, domicile: e.target.value }))}
+      >
+        <option value="">Pilih area</option>
+        {partnerAreas.map((a) => (
+          <option key={a}>{a}</option>
+        ))}
+      </select>
+      {partner && <small>Lokasi asal Anda.</small>}
+    </label>
+  );
+  const experienceField = (
+    <label>
+      Pengalaman kerja
+      <select
+        required
+        aria-label="Pengalaman kerja"
+        value={values.experience}
+        onChange={(e) =>
+          setValues((v) => ({ ...v, experience: e.target.value }))
+        }
+      >
+        <option value="">Pilih pengalaman</option>
+        {partnerExperience.map((a) => (
+          <option key={a}>{a}</option>
+        ))}
+      </select>
+    </label>
+  );
+  const areasField = (
+    <fieldset className={partner ? "checkbox-field full-span" : "checks"}>
+      <legend>Wilayah yang dapat dilayani{partner ? " (wajib)" : ""}</legend>
+      <div className={partner ? "checkbox-options" : "check-options"}>
+        {partnerAreas.map((a) => (
+          <label key={a}>
             <input
-              required
-              minLength={2}
-              maxLength={150}
-              autoComplete="name"
-              value={values.name}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, name: e.target.value }))
-              }
-            />
-          </label>
-          <label>
-            Nomor WhatsApp
-            <input
-              required
-              type="tel"
-              maxLength={30}
-              autoComplete="tel"
-              placeholder="081234567890 atau +6281234567890"
-              value={values.whatsapp}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, whatsapp: e.target.value }))
-              }
-            />
-          </label>
-          <label>
-            Domisili / area
-            <select
-              required
-              value={values.domicile}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, domicile: e.target.value }))
-              }
-            >
-              <option value="">Pilih domisili</option>
-              {partnerAreas.map((a) => (
-                <option key={a}>{a}</option>
-              ))}
-            </select>
-            <small>Lokasi asal Anda.</small>
-          </label>
-          <label>
-            Pengalaman kerja
-            <select
-              required
-              value={values.experience}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, experience: e.target.value }))
-              }
-            >
-              <option value="">Pilih pengalaman</option>
-              {partnerExperience.map((a) => (
-                <option key={a}>{a}</option>
-              ))}
-            </select>
-          </label>
-          <fieldset className="checkbox-field full-span">
-            <legend>Wilayah yang dapat dilayani (wajib)</legend>
-            <div className="checkbox-options">
-              {partnerAreas.map((a) => (
-                <label key={a}>
-                  <input
-                    type="checkbox"
-                    checked={values.areas.includes(a)}
-                    onChange={() => toggle("areas", a)}
-                  />
-                  {a}
-                </label>
-              ))}
-            </div>
-            <small>Pilih satu atau lebih area yang mampu Anda layani.</small>
-          </fieldset>
-          <fieldset className="checkbox-field full-span">
-            <legend>Bidang pekerjaan (wajib)</legend>
-            <div className="checkbox-options">
-              {partnerSkills.map((a) => (
-                <label key={a}>
-                  <input
-                    type="checkbox"
-                    checked={selectedSkills.includes(a)}
-                    onChange={() => toggle("skills", a)}
-                  />
-                  {a}
-                </label>
-              ))}
-            </div>
-            <small>Pilih satu atau lebih bidang sesuai keahlian Anda.</small>
-          </fieldset>
-          <label className="checkbox-label full-span">
-            <input
-              required
               type="checkbox"
-              checked={values.consent}
-              onChange={(e) =>
-                setValues((v) => ({ ...v, consent: e.target.checked }))
-              }
+              checked={values.areas.includes(a)}
+              onChange={() => toggle("areas", a)}
             />
-            Saya menyetujui untuk dihubungi terkait kemitraan oleh MR Properti.
+            {a}
           </label>
-        </div>
+        ))}
+      </div>
+      {partner && (
+        <small>Pilih satu atau lebih area yang mampu Anda layani.</small>
+      )}
+    </fieldset>
+  );
+  const skillsField = partner ? (
+    <fieldset className="checkbox-field full-span">
+      <legend>Bidang pekerjaan (wajib)</legend>
+      <div className="checkbox-options">
+        {partnerSkills.map((a) => (
+          <label key={a}>
+            <input
+              type="checkbox"
+              checked={selectedSkills.includes(a)}
+              onChange={() => toggle("skills", a)}
+            />
+            {a}
+          </label>
+        ))}
+      </div>
+      <small>Pilih satu atau lebih bidang sesuai keahlian Anda.</small>
+    </fieldset>
+  ) : (
+    <>
+      <div>Bidang dipilih</div>
+      <p id="mr-fields" className="small" aria-live="polite">
+        {selectedSkills.length
+          ? selectedSkills.join(", ")
+          : "Pilih pada kartu bidang pekerjaan di atas."}
+      </p>
+    </>
+  );
+  const consentField = (
+    <label className={partner ? "checkbox-label full-span" : "consent"}>
+      <input
+        required
+        type="checkbox"
+        checked={values.consent}
+        onChange={(e) =>
+          setValues((v) => ({ ...v, consent: e.target.checked }))
+        }
+      />
+      {partner
+        ? "Saya menyetujui untuk dihubungi terkait kemitraan oleh MR Properti."
+        : "Saya bersedia dihubungi untuk pembahasan kemitraan."}
+    </label>
+  );
+  const submitButton = (
+    <button className={partner ? "button" : "action"} disabled={pending}>
+      {pending
+        ? "Menyimpan…"
+        : partner
+          ? "Simpan Perubahan"
+          : "Kirim Pendaftaran"}
+      {!partner && !pending && <span aria-hidden="true">→</span>}
+    </button>
+  );
+  return (
+    <form
+      onSubmit={submit}
+      className="partner-form"
+      id={partner ? undefined : "mr-form"}
+    >
+      {!partner && (
+        <>
+          <h3>Formulir minat kemitraan</h3>
+          <p className="small">
+            Seluruh field wajib diisi. Data hanya diakses admin yang berwenang.
+          </p>
+        </>
+      )}
+      <fieldset className="plain-fieldset" disabled={pending}>
+        {partner ? (
+          <div className="form-grid">
+            {nameField}
+            {whatsappField}
+            {domicileField}
+            {experienceField}
+            {areasField}
+            {skillsField}
+            {consentField}
+          </div>
+        ) : (
+          <>
+            {nameField}
+            {whatsappField}
+            {domicileField}
+            {areasField}
+            {skillsField}
+            {experienceField}
+            {consentField}
+          </>
+        )}
       </fieldset>
       {error && (
         <p className="form-message error" role="alert">
           {error}
         </p>
       )}
-      <div className="partner-form-actions">
-        <button className="button" disabled={pending}>
-          {pending
-            ? "Menyimpan…"
-            : partner
-              ? "Simpan Perubahan"
-              : "Kirim Pendaftaran"}
-        </button>
-        {partner && (
+      {partner ? (
+        <div className="partner-form-actions">
+          {submitButton}
           <button
             type="button"
             className="outline-button"
@@ -246,8 +307,10 @@ export function PartnerForm({
           >
             Batal
           </button>
-        )}
-      </div>
+        </div>
+      ) : (
+        submitButton
+      )}
     </form>
   );
 }

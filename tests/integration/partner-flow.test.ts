@@ -95,7 +95,7 @@ test(
         await page.setViewportSize({ width, height: 900 });
         await page.goto(`${origin}/kemitraan`);
         await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-          "Keahlian Anda. Peluang kerja di wilayah Anda.",
+          "Keahlian Anda.Peluang kerjadi wilayah Anda.",
         );
         assert.equal(
           await page.evaluate(
@@ -104,6 +104,44 @@ test(
           true,
           `no overflow at ${width}`,
         );
+        const layout = await page.locator("#mr-mitra").evaluate((root) => {
+          return {
+            ...Object.fromEntries(
+              ["hero", "services", "benefits", "steps", "registration"].map(
+                (selector) => [
+                  selector,
+                  getComputedStyle(
+                    root.querySelector(`.${selector}`)!,
+                  ).gridTemplateColumns.split(" ").length,
+                ],
+              ),
+            ),
+            heading: getComputedStyle(root.querySelector("h1")!).fontSize,
+          };
+        });
+        assert.deepEqual(
+          layout,
+          width > 700
+            ? {
+                hero: 2,
+                services: 5,
+                benefits: 3,
+                steps: 4,
+                registration: 2,
+                heading: "38px",
+              }
+            : {
+                hero: 1,
+                services: 2,
+                benefits: 1,
+                steps: 1,
+                registration: 1,
+                heading: "32px",
+              },
+        );
+        assert.equal(await page.locator("#mr-services .service").count(), 10);
+        assert.equal(await page.locator(".site-header").count(), 1);
+        assert.equal(await page.locator(".site-footer").count(), 1);
         if (width <= 1200)
           await page.getByRole("button", { name: "Buka menu" }).click();
         const nav = page.getByRole("navigation", { name: "Navigasi utama" });
@@ -122,14 +160,24 @@ test(
           fullPage: true,
         });
       }
+      const commission = page.locator("#mr-faq details").filter({
+        has: page.getByText("Bagaimana pembagian upah atau komisi?", {
+          exact: true,
+        }),
+      });
+      await expect(commission.locator("p")).toBeVisible();
+      await commission.locator("summary").click();
+      await expect(commission.locator("p")).toBeHidden();
+      await commission.locator("summary").click();
+      await expect(commission.locator("p")).toHaveText(
+        "Nilai upah atau komisi dibahas secara transparan sesuai kesepakatan yang adil. Kami akan berpihak dan mengutamakan yang terbaik agar usaha Anda lancar terlebih dahulu.",
+      );
       await page.getByRole("button", { name: "AC", exact: true }).click();
       await page
         .getByRole("button", { name: "Kelistrikan", exact: true })
         .click();
-      await expect(
-        page.getByRole("checkbox", { name: "AC", exact: true }),
-      ).toBeChecked();
-      await page.getByRole("checkbox", { name: "Plafon", exact: true }).check();
+      await expect(page.locator("#mr-fields")).toHaveText("AC, Kelistrikan");
+      await page.getByRole("button", { name: "Plafon", exact: true }).click();
       await expect(
         page.getByRole("button", { name: "Plafon", exact: true }),
       ).toHaveAttribute("aria-pressed", "true");
@@ -145,7 +193,7 @@ test(
       await page
         .getByRole("checkbox", { name: "Cikarang", exact: true })
         .check();
-      await page.getByRole("checkbox", { name: /Saya menyetujui/ }).check();
+      await page.getByRole("checkbox", { name: /Saya bersedia/ }).check();
       // A real database error must preserve all inputs and never show success.
       await database.exec(
         'ALTER TABLE "Partner" RENAME TO "Partner_unavailable"',
@@ -173,7 +221,7 @@ test(
       await expect(
         page.getByRole("button", { name: "Menyimpan…" }),
       ).toBeDisabled();
-      await expect(page.getByRole("status")).toContainText(
+      await expect(page.locator(".partner-success")).toContainText(
         "Pendaftaran berhasil disimpan.",
       );
       const rows = await database.query<{ id: string; whatsapp: string }>(
@@ -305,7 +353,7 @@ test(
         'ALTER TABLE "Partner_unavailable" RENAME TO "Partner"',
       );
       await page.getByRole("button", { name: "Simpan Perubahan" }).click();
-      await expect(page.getByRole("status")).toContainText(
+      await expect(page.locator(".partner-success")).toContainText(
         "Perubahan berhasil disimpan.",
       );
       await expect(
