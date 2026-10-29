@@ -15,7 +15,7 @@ import {
   MoveUpRight,
   UsersRound,
 } from "lucide-react";
-import { getFields, getListings, getSettings } from "@/lib/data";
+import { getFields, getHomeListings, getSettings } from "@/lib/data";
 import { databaseConfigured } from "@/lib/db";
 import { PropertyCard } from "@/components/property-card";
 import { HomeServiceGrid } from "@/components/home-service-grid";
@@ -52,7 +52,12 @@ const homeFaq = [
   ],
 ] as const;
 
-export default function Home() {
+type HomeSearchParams = Promise<{ jenis?: string | string[] }>;
+export default function Home({
+  searchParams,
+}: {
+  searchParams: HomeSearchParams;
+}) {
   return (
     <>
       <section className="home-search" aria-label="Pencarian properti">
@@ -69,7 +74,7 @@ export default function Home() {
         </Suspense>
       </section>
       <Suspense fallback={<Loading />}>
-        <HomeContent />
+        <HomeContent searchParams={searchParams} />
       </Suspense>
     </>
   );
@@ -103,18 +108,26 @@ async function HomeSearchContent() {
   );
 }
 
-async function HomeContent() {
+async function HomeContent({
+  searchParams,
+}: {
+  searchParams: HomeSearchParams;
+}) {
   // Database-backed content must wait for a request, including when DATABASE_URL is set during builds.
   await connection();
-  const [fields, properties, settings, posts, testimonials] = await Promise.all(
-    [
-      getFields(),
-      getListings(),
-      getSettings(),
-      getBlogPosts(3),
-      getTestimonials(),
-    ],
-  );
+  const raw = await searchParams;
+  const category = typeof raw.jenis === "string" ? raw.jenis : "";
+  const [fields, catalog, settings, posts, testimonials] = await Promise.all([
+    getFields(),
+    getHomeListings(category),
+    getSettings(),
+    getBlogPosts(3),
+    getTestimonials(),
+  ]);
+  const { listings: properties, total } = catalog;
+  const catalogHref = category
+    ? `/properti?${new URLSearchParams({ jenis: category })}`
+    : "/properti";
   const wa = whatsappLink(
     settings.whatsapp,
     "Halo MR Properti, saya ingin konsultasi properti.",
@@ -176,13 +189,27 @@ async function HomeContent() {
           </Link>
         </div>
         <div className="catalog-tabs">
-          <Link className="active" href="/properti">
-            Semua Properti
-          </Link>
-          <Link href="/properti?jenis=Rumah">Rumah</Link>
-          <Link href="/properti?jenis=Apartemen">Apartemen</Link>
-          <Link href="/properti?jenis=Tanah">Tanah</Link>
-          <Link href="/properti?jenis=Ruko">Ruko</Link>
+          {[
+            ["", "Semua Properti"],
+            ["Rumah", "Rumah"],
+            ["Apartemen", "Apartemen"],
+            ["Tanah", "Tanah"],
+            ["Ruko", "Ruko"],
+          ].map(([value, label]) => (
+            <Link
+              key={value}
+              className={category === value ? "active" : ""}
+              aria-current={category === value ? "page" : undefined}
+              href={
+                value
+                  ? `/?${new URLSearchParams({ jenis: value })}#properti`
+                  : "/#properti"
+              }
+              scroll={false}
+            >
+              {label}
+            </Link>
+          ))}
           <span className="listing-note">
             {!databaseConfigured
               ? "Koleksi inspirasi · data contoh"
@@ -190,7 +217,7 @@ async function HomeContent() {
           </span>
         </div>
         <div className="property-grid">
-          {properties.slice(0, 9).map((p) => (
+          {properties.map((p) => (
             <PropertyCard key={p.id} property={p} fields={fields} />
           ))}
         </div>
@@ -204,16 +231,18 @@ async function HomeContent() {
             </Link>
           </div>
         )}
+        {total > 12 && (
+          <div className="home-property-next">
+            <Link className="outline-button" href={catalogHref}>
+              Listing Selanjutnya <ArrowRight size={18} aria-hidden="true" />
+            </Link>
+          </div>
+        )}
         <div className="section-footnote">
           <CircleCheck size={15} />
           Butuh bantuan memilih?{" "}
           <Link href={wa || "/titip-properti"}>
             Ceritakan kebutuhan Anda <ArrowUpRight size={13} />
-          </Link>
-        </div>
-        <div className="home-property-next">
-          <Link className="outline-button" href="/properti">
-            Listing selanjutnya <ArrowRight size={18} aria-hidden="true" />
           </Link>
         </div>
       </section>

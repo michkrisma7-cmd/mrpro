@@ -405,6 +405,7 @@ fieldset.kpr-bank-picker {
   }
 }
 :root {
+  --brand-red: #fb3000;
   --ink: #1d3f35;
   --ink-dark: #17372e;
   --sage: #7f947a;
@@ -609,7 +610,7 @@ svg {
 .site-header {
   background: #fffffff5;
   backdrop-filter: blur(14px);
-  border-bottom: 1px solid #f0f1eb;
+  border-bottom: 1px solid var(--brand-red);
   position: sticky;
   top: 0;
   z-index: 50;
@@ -4923,7 +4924,7 @@ td .text-button {
 }
 .service-team-action {
   /* Dominant solid red sampled from the r in public/brand/mrproperti-logo.png. */
-  --service-brand-red: #fb3000;
+  --service-brand-red: var(--brand-red);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;

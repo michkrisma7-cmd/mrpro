@@ -16,7 +16,7 @@ test("landing starts with compact search, one listing H1 and unchanged cards", a
     page.getByText("PARTNER UNTUK SETIAP RENCANA", { exact: true }),
   ).toHaveCount(0);
   await expect(page.locator("#properti .property-card")).toHaveCount(
-    demoListings.slice(0, 9).length,
+    demoListings.slice(0, 12).length,
   );
   await expect(
     page.locator(".services-section .home-service-card"),

@@ -49,25 +49,10 @@ function publicListing(
     ),
   };
 }
-export const getListings = cache(
-  unstable_cache(
-    async (): Promise<Listing[]> => {
-      if (!databaseConfigured) return demoListings;
-      const [fields, rows] = await Promise.all([
-        getFields(),
-        db().property.findMany({
-          include: { owner: { select: { name: true } } },
-          where: { status: "PUBLISHED" },
-          orderBy: { createdAt: "desc" },
-          take: 9,
-        }),
-      ]);
-      return rows.map((p) => publicListing(p, fields));
-    },
-    ["latest-properties"],
-    { revalidate: 60, tags: ["properties", "content"] },
-  ),
-);
+// Share the catalog's LIMIT 12, count and newest-first order; home always uses page one.
+export function getHomeListings(category = "") {
+  return getCatalog(category ? { jenis: category } : {});
+}
 export const getListing = cache(
   unstable_cache(
     async (slug: string): Promise<Listing | undefined> => {
