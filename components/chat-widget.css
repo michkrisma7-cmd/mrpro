@@ -1,4 +1,6 @@
 .mr-chat {
+  /* Dominant red in the “r” of public/brand/mrproperti-logo.png. */
+  --mr-chat-red: #fb3000;
   position: fixed;
   right: max(24px, env(safe-area-inset-right));
   bottom: max(24px, env(safe-area-inset-bottom));
@@ -53,12 +55,20 @@
   padding: 12px 18px;
 }
 .mr-chat-panel {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   width: 390px;
-  height: min(620px, calc(100dvh - 115px));
+  max-width: calc(
+    100vw - max(24px, env(safe-area-inset-right)) -
+      max(24px, env(safe-area-inset-left))
+  );
+  height: min(
+    620px,
+    calc(100dvh - 91px - max(24px, env(safe-area-inset-bottom)))
+  );
   margin-bottom: 13px;
-  border: 1px solid #dbe1d6;
+  border: 2px solid var(--mr-chat-red);
   border-radius: 24px;
   overflow: hidden;
   background: #f7f8f3;
@@ -224,17 +234,16 @@
   align-items: flex-end;
   gap: 8px;
   padding: 6px;
-  border: 1px solid #d8dfd1;
+  border: 1px solid var(--mr-chat-red);
   border-radius: 13px;
-  background: #f8faf5;
+  background: #fff;
   margin-top: 10px;
 }
 .mr-chat-team + .mr-chat-form {
   margin-top: 0;
 }
 .mr-chat-form:focus-within {
-  border-color: #7e9368;
-  box-shadow: 0 0 0 2px #e6eddc;
+  box-shadow: 0 0 0 2px rgb(251 48 0 / 15%);
 }
 .mr-chat-form textarea {
   flex: 1;
@@ -251,6 +260,10 @@
   color: #213e34;
   line-height: 1.6;
   border-radius: 0;
+}
+.mr-chat-form textarea::placeholder {
+  color: #6b7280;
+  opacity: 1;
 }
 .mr-chat-form button {
   display: grid;
@@ -359,8 +372,17 @@
   }
   .mr-chat-panel {
     width: calc(100vw - 28px);
-    max-width: 390px;
-    height: min(610px, calc(100dvh - 100px));
+    max-width: min(
+      390px,
+      calc(
+        100vw - max(14px, env(safe-area-inset-right)) -
+          max(14px, env(safe-area-inset-left))
+      )
+    );
+    height: min(
+      610px,
+      calc(100dvh - 86px - max(14px, env(safe-area-inset-bottom)))
+    );
     border-radius: 19px;
   }
   .mr-chat-header {
