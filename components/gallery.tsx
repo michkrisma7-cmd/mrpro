@@ -1,7 +1,8 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
-import { X, Images, ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef, useState } from "react";
+import { Images, ChevronLeft, ChevronRight } from "lucide-react";
+
 export function Gallery({
   images,
   title,
@@ -9,99 +10,97 @@ export function Gallery({
   images: string[];
   title: string;
 }) {
-  const [active, setActive] = useState<number | null>(null);
+  const [active, setActive] = useState(0);
+  const start = useRef<{ x: number; y: number } | null>(null);
+  const photos = images.length ? images : ["/images/hero.webp"];
+  const position = active % photos.length;
+  function move(direction: number) {
+    setActive(
+      (current) => (current + direction + photos.length) % photos.length,
+    );
+  }
   return (
-    <>
-      <div className="detail-gallery">
-        <button
-          className="gallery-main"
-          onClick={() => setActive(0)}
-          aria-label="Buka galeri"
-        >
-          <Image
-            src={images[0] || "/images/hero.webp"}
-            alt={title}
-            fill
-            priority
-            sizes="(max-width:800px) 95vw, 70vw"
-            className="cover"
-          />
-        </button>
-        {images.length > 1 && (
-          <div className="gallery-thumbs">
-            {images.slice(1, 3).map((src, i) => (
-              <button
-                key={i}
-                onClick={() => setActive(i + 1)}
-                aria-label={`Lihat foto ${i + 2}`}
-              >
-                <Image
-                  src={src}
-                  alt={`${title} foto ${i + 2}`}
-                  fill
-                  sizes="30vw"
-                  className="cover"
-                />
-              </button>
-            ))}
-          </div>
-        )}
-        <button
-          className="gallery-count outline-button"
-          onClick={() => setActive(0)}
-        >
-          <Images size={17} />
-          Lihat {images.length} foto
-        </button>
+    <section
+      className="detail-gallery"
+      aria-label={`Foto ${title}`}
+      aria-roledescription="karusel"
+      tabIndex={photos.length > 1 ? 0 : undefined}
+      onKeyDown={(event) => {
+        if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+          event.preventDefault();
+          event.stopPropagation();
+          move(event.key === "ArrowLeft" ? -1 : 1);
+        }
+      }}
+      onTouchStart={(event) => {
+        start.current =
+          event.touches.length === 1
+            ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
+            : null;
+      }}
+      onTouchCancel={() => {
+        start.current = null;
+      }}
+      onTouchEnd={(event) => {
+        const origin = start.current;
+        start.current = null;
+        if (!origin || !event.changedTouches.length) return;
+        const dx = event.changedTouches[0].clientX - origin.x;
+        const dy = event.changedTouches[0].clientY - origin.y;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+          move(dx < 0 ? 1 : -1);
+        }
+      }}
+    >
+      <div className="gallery-main">
+        <Image
+          key={photos[position]}
+          src={photos[position]}
+          alt={`${title} foto ${position + 1}`}
+          fill
+          priority={position === 0}
+          sizes="(max-width:700px) 100vw, (max-width:1336px) calc(100vw - 96px), 1240px"
+          className="cover"
+          draggable={false}
+        />
       </div>
-      {active !== null && (
-        <div
-          className="lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Galeri foto"
-          onKeyDown={(e) => {
-            if (e.key === "Escape") setActive(null);
-          }}
-        >
+      {photos.length > 1 && (
+        <>
           <button
-            autoFocus
-            className="lightbox-close icon-button"
-            onClick={() => setActive(null)}
-            aria-label="Tutup galeri"
-          >
-            <X />
-          </button>
-          <button
-            className="icon-button"
-            onClick={() =>
-              setActive((active - 1 + images.length) % images.length)
-            }
+            type="button"
+            className="gallery-arrow gallery-prev"
             aria-label="Foto sebelumnya"
+            onClick={(event) => {
+              event.stopPropagation();
+              move(-1);
+            }}
           >
-            <ChevronLeft />
+            <ChevronLeft aria-hidden="true" />
           </button>
-          <div className="lightbox-image">
-            <Image
-              src={images[active]}
-              alt={`${title} foto ${active + 1}`}
-              fill
-              sizes="90vw"
-              className="contain"
-            />
-          </div>
           <button
-            className="icon-button"
-            onClick={() => setActive((active + 1) % images.length)}
+            type="button"
+            className="gallery-arrow gallery-next"
             aria-label="Foto berikutnya"
+            onClick={(event) => {
+              event.stopPropagation();
+              move(1);
+            }}
           >
-            <ChevronRight />
+            <ChevronRight aria-hidden="true" />
           </button>
-          <span className="lightbox-position">
-            {active + 1} / {images.length}
-          </span>
-        </div>
+        </>
       )}
-    </>
+      <span
+        className="gallery-count"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <Images size={17} aria-hidden="true" />
+        {images.length
+          ? `${position + 1} / ${images.length}`
+          : "Belum ada foto"}
+      </span>
+    </section>
   );
 }

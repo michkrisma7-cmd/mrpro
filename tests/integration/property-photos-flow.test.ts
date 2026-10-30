@@ -164,6 +164,13 @@ test(
             "Rumah dengan informasi lengkap untuk pengujian foto utama properti.",
           );
         await page.locator('[name="whatsapp"]').fill("081234567890");
+        // The fixture may have no custom fields; fill any cached default required fields.
+        if (await page.locator('[name="field_harga"]').count()) {
+          await page.locator('[name="field_harga"]').fill("1850000000");
+          await page.locator('[name="field_lokasi"]').fill("Bintaro");
+          await page.locator('[name="field_jenis"]').selectOption("Rumah");
+          await page.locator('[name="field_transaksi"]').selectOption("Dijual");
+        }
         // Delay upload responses to test choosing a stable local photo while uploads finish.
         let uploadNumber = 0;
         await page.unroute("**/api/upload");
@@ -237,7 +244,8 @@ test(
         ]);
         const listing = result.rows[0];
         assert.deepEqual(listing.gallery, finalGallery);
-        const verifyPublic = async (cover: string) => {
+        const verifyPublic = async (gallery: string[]) => {
+          const cover = gallery[0];
           await page.goto(`${origin}/properti`);
           await expect(
             page
@@ -258,16 +266,31 @@ test(
               (await page.locator(".gallery-main img").getAttribute("src"))!,
             ).includes(cover),
           );
-          await page
-            .getByRole("button", { name: "Buka galeri", exact: true })
-            .click();
-          assert.ok(
-            decodeURIComponent(
-              (await page.locator(".lightbox img").getAttribute("src"))!,
-            ).includes(cover),
+          await expect(page.locator(".gallery-count")).toHaveText(
+            `1 / ${gallery.length}`,
           );
+          await expect(page.locator(".lightbox")).toHaveCount(0);
+          await expect(page.locator(".detail-gallery")).toBeVisible();
+          const frame = await page.locator(".detail-gallery").boundingBox();
+          for (let index = 1; index < gallery.length; index++) {
+            await page.getByRole("button", { name: "Foto berikutnya" }).click();
+            await expect(page.locator(".gallery-count")).toHaveText(
+              `${index + 1} / ${gallery.length}`,
+            );
+            assert.ok(
+              decodeURIComponent(
+                (await page.locator(".gallery-main img").getAttribute("src"))!,
+              ).includes(gallery[index]),
+            );
+            await expect(page.locator(".detail-gallery")).toBeVisible();
+            const nextFrame = await page
+              .locator(".detail-gallery")
+              .boundingBox();
+            assert.equal(nextFrame!.width, frame!.width);
+            assert.equal(nextFrame!.height, frame!.height);
+          }
         };
-        await verifyPublic(finalGallery[0]);
+        await verifyPublic(finalGallery);
         await page.goto(`${origin}/akun/properti/${listing.id}/foto`);
         await expect(cards.first()).toHaveClass(/is-primary/);
         await cards
@@ -288,7 +311,7 @@ test(
           JSON.parse(await page.locator('[name="gallery"]').inputValue()),
           edited,
         );
-        await verifyPublic(edited[0]);
+        await verifyPublic(edited);
         await page.goto(`${origin}/akun/properti/${listing.id}/foto`);
         while (await cards.count())
           await cards
