@@ -1111,19 +1111,23 @@ svg {
 }
 .property-specs {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  font-size: 12px;
+  justify-content: flex-start;
+  gap: 4px 6px;
+  font-size: 14px;
   color: #606c64;
 }
 .property-specs > span {
   display: flex;
   align-items: center;
   gap: 3px;
+  flex: 0 0 auto;
   min-width: 0;
+  max-width: 100%;
 }
 .property-specs > span > span {
+  min-width: 0;
   overflow-wrap: anywhere;
 }
 .property-specs svg {
@@ -1134,9 +1138,19 @@ svg {
 .property-extra-fields {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 8px;
-  font-size: 12px;
+  justify-content: flex-start;
+  gap: 4px 6px;
+  font-size: 14px;
   overflow-wrap: anywhere;
+}
+.property-extra-fields > span {
+  max-width: 100%;
+}
+@media (max-width: 374px) {
+  .property-specs,
+  .property-extra-fields {
+    column-gap: 2px;
+  }
 }
 .card-more {
   display: flex;
@@ -1841,6 +1855,12 @@ svg {
 }
 .preserve-lines {
   white-space: pre-wrap;
+}
+.detail-section > .preserve-lines {
+  font-size: 16px;
+  line-height: 1.8;
+  color: #26382d;
+  overflow-wrap: anywhere;
 }
 .specification-grid {
   display: grid;
