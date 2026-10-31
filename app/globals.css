@@ -5096,3 +5096,52 @@ td .text-button {
 .partner-success p {
   margin: 12px 0;
 }
+
+/* Compact homepage top; keep these overrides after the shared button states. */
+.home-search-content {
+  max-width: 1240px;
+  padding-top: 16px;
+}
+.home-search-actions {
+  align-self: flex-start;
+}
+.home-property-section.section {
+  padding-top: 16px;
+}
+.home-listing-divider {
+  border-top: 4px solid #000;
+  border-bottom: 1px solid #000;
+  height: 9px;
+  box-sizing: border-box;
+  margin-bottom: 16px;
+}
+.home-property-section > .catalog-tabs {
+  margin-bottom: 16px;
+}
+.home-catalog-link {
+  margin-top: 16px;
+}
+.site-header .nav-actions .button.home-neutral-button,
+.home-search .button.home-neutral-button,
+#properti.home-property-section .catalog-tabs > a.home-neutral-button,
+.home-property-section .home-catalog-link .home-neutral-button,
+.home-search .search-form .button {
+  background: #f2f2f2;
+  border: 1px solid #000;
+  color: #000;
+  transform: none;
+}
+.home-neutral-button:focus-visible,
+.home-search .search-form .button:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 3px;
+}
+@media (max-width: 560px) {
+  .home-property-section.section {
+    padding-top: 16px;
+  }
+  .home-property-section > .catalog-tabs {
+    margin-bottom: 16px;
+    padding-bottom: 0;
+  }
+}

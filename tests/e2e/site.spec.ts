@@ -7,7 +7,7 @@ test("landing starts with compact search, one listing H1 and unchanged cards", a
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-    "Temukan ruang yang tepat.",
+    "Properti terbaru",
   );
   await expect(
     page.locator(".property-hero, .property-hero-photo, #hero-title"),
@@ -52,9 +52,7 @@ test("landing starts with compact search, one listing H1 and unchanged cards", a
     ).toBeVisible();
     await expect(page.locator(".hero-search-desktop")).toBeHidden();
     await expect(page.locator(".home-trust-strip")).toBeHidden();
-    await expect(
-      page.locator("#properti > .section-heading .eyebrow"),
-    ).toBeHidden();
+    await expect(page.locator("#properti > .section-heading")).toBeHidden();
     const categories = page.locator("#properti > .catalog-tabs");
     await expect(categories).toHaveCSS("flex-wrap", "nowrap");
     await expect(categories.locator("a")).toHaveText([

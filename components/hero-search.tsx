@@ -42,7 +42,11 @@ export function HeroSearch({ types }: { types: string[] }) {
           aria-label="Lokasi atau nama properti"
         />
         <input type="hidden" name="transaksi" value={transaction} />
-        <button type="submit" className="button" aria-label="Cari Properti">
+        <button
+          type="submit"
+          className="button home-neutral-button"
+          aria-label="Cari Properti"
+        >
           <Search size={19} aria-hidden="true" />
         </button>
       </form>

@@ -97,7 +97,7 @@ async function HomeSearchContent() {
         }
       />
       <div className="home-search-actions">
-        <Link href="/kalkulator-kpr" className="button">
+        <Link href="/kalkulator-kpr" className="button home-neutral-button">
           Kalkulator KPR <ArrowUpRight size={17} />
         </Link>
         <Link href={wa || "/#tentang"} className="outline-button">
@@ -176,18 +176,8 @@ async function HomeContent({
         id="properti"
         aria-label="Properti terbaru"
       >
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">PILIHAN UNTUK LANGKAH BARU</p>
-            <h1>
-              Temukan ruang yang <span>tepat.</span>
-            </h1>
-            <p>Jelajahi pilihan properti, temukan yang terasa seperti rumah.</p>
-          </div>
-          <Link className="outline-button" href="/properti">
-            Semua Properti <ArrowUpRight size={17} />
-          </Link>
-        </div>
+        <div className="home-listing-divider" aria-hidden="true" />
+        <h1 className="sr-only">Properti terbaru</h1>
         <div className="catalog-tabs">
           {[
             ["", "Semua Properti"],
@@ -198,7 +188,12 @@ async function HomeContent({
           ].map(([value, label]) => (
             <Link
               key={value}
-              className={category === value ? "active" : ""}
+              className={[
+                value === "" ? "home-neutral-button" : "",
+                category === value ? "active" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
               aria-current={category === value ? "page" : undefined}
               href={
                 value
@@ -220,6 +215,11 @@ async function HomeContent({
           {properties.map((p) => (
             <PropertyCard key={p.id} property={p} fields={fields} />
           ))}
+        </div>
+        <div className="home-catalog-link">
+          <Link className="outline-button home-neutral-button" href="/properti">
+            Semua Properti <ArrowUpRight size={17} />
+          </Link>
         </div>
         {!properties.length && (
           <div className="empty-state">

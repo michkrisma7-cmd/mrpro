@@ -49,8 +49,12 @@ export function Header() {
             <UserRound size={17} />
             <span>Masuk</span>
           </Link>
-          <Link href="/titip-properti" className="button button-small">
-            Titip Properti <ArrowUpRight size={16} />
+          <Link
+            href="/titip-properti"
+            className={`button button-small ${path === "/" ? "home-neutral-button" : ""}`}
+          >
+            {path === "/" ? "Pasang Iklan" : "Titip Properti"}{" "}
+            <ArrowUpRight size={16} />
           </Link>
           <button
             className="icon-button menu-toggle"
