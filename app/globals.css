@@ -3240,13 +3240,17 @@ td .text-button {
   .main-nav.is-open {
     display: flex;
     position: absolute;
-    top: 72px;
+    top: var(--header-height);
     left: 0;
-    right: 0;
+    right: auto;
+    width: var(--mobile-menu-width);
     height: auto;
+    max-height: calc(100dvh - var(--header-height));
+    overflow-y: auto;
+    overscroll-behavior: contain;
     background: white;
     border-bottom: 1px solid var(--line);
-    padding: 20px;
+    padding: 8px 16px;
     flex-direction: column;
     align-items: stretch;
     box-shadow: 0 15px 20px #132a1d0a;
@@ -3254,7 +3258,12 @@ td .text-button {
   }
   .main-nav.is-open a {
     font-size: 14px;
-    padding: 12px;
+    padding: 8px 0;
+    height: auto;
+    flex-shrink: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: left;
   }
   .main-nav a.active:after {
     display: none;
