@@ -98,7 +98,7 @@ export function Header() {
           >
             <Heart size={19} />
           </Link>
-          <Link href="/akun" className="login-link">
+          <Link href="/login" className="login-link">
             <UserRound size={17} />
             <span>Masuk</span>
           </Link>

@@ -22,16 +22,14 @@ export function AuthForm({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [show, setShow] = useState(false);
-  const [notice, setNotice] = useState("");
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
     setError("");
-    setNotice("");
     const f = new FormData(e.currentTarget);
     try {
       const credentials = {
-        email: String(f.get("email")),
+        email: String(f.get("email")).trim(),
         password: String(f.get("password")),
       };
       if (register) {
@@ -66,16 +64,19 @@ export function AuthForm({
   return (
     <div className="auth-card">
       <p className="eyebrow">SELAMAT DATANG DI MR PROPERTI</p>
-      <h1>
-        {register ? "Mulai cerita baru Anda." : "Senang bertemu kembali."}
+      <h1 id="auth-title">
+        {register ? "Buat akun baru" : "Masuk ke akun Anda"}
       </h1>
       <p>
         {register
-          ? "Buat akun untuk menitipkan dan memantau properti Anda."
-          : "Masuk untuk melanjutkan rencana Anda."}
+          ? "Isi nama, email, dan buat kata sandi. Setelah daftar, Anda langsung masuk."
+          : "Sudah punya akun? Isi email dan kata sandi yang digunakan saat mendaftar."}
       </p>
       <div className="auth-tabs">
         <button
+          type="button"
+          disabled={busy}
+          aria-pressed={!register}
           className={!register ? "active" : ""}
           onClick={() => {
             setRegister(false);
@@ -85,104 +86,119 @@ export function AuthForm({
           Masuk
         </button>
         <button
+          type="button"
+          disabled={busy}
+          aria-pressed={register}
           className={register ? "active" : ""}
           onClick={() => {
             setRegister(true);
             setError("");
           }}
         >
-          Daftar Akun
+          Belum punya akun? Daftar
         </button>
       </div>
-      <form onSubmit={submit}>
-        {register && (
+      <form onSubmit={submit} aria-busy={busy}>
+        <fieldset disabled={busy} className="auth-fields">
+          {register && (
+            <label>
+              Nama lengkap
+              <input
+                name="name"
+                autoComplete="name"
+                required
+                minLength={2}
+                maxLength={100}
+                placeholder="Nama Anda"
+              />
+            </label>
+          )}
           <label>
-            Nama lengkap
+            <span>
+              <Mail size={15} />
+              Alamat email
+            </span>
             <input
-              name="name"
-              autoComplete="name"
+              name="email"
+              type="email"
+              autoComplete="username"
+              autoCapitalize="none"
+              spellCheck={false}
+              inputMode="email"
               required
-              minLength={2}
-              maxLength={100}
-              placeholder="Nama Anda"
+              placeholder="nama@email.com"
             />
           </label>
-        )}
-        <label>
-          <span>
-            <Mail size={15} />
-            Alamat email
-          </span>
-          <input
-            name="email"
-            type="email"
-            autoComplete="email"
-            required
-            placeholder="nama@email.com"
-          />
-        </label>
-        <label>
-          <span>
-            <LockKeyhole size={15} />
-            Kata sandi
-          </span>
-          <div className="password-input">
-            <input
-              name="password"
-              type={show ? "text" : "password"}
-              required
-              minLength={8}
-              maxLength={128}
-              autoComplete={register ? "new-password" : "current-password"}
-              placeholder="Minimal 8 karakter"
-            />
-            <button
-              type="button"
-              onClick={() => setShow(!show)}
-              aria-label={
-                show ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"
-              }
-            >
-              {show ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
-          </div>
-        </label>
-        {register && (
-          <label className="checkbox-label">
-            <input type="checkbox" required />
-            Saya setuju informasi akun digunakan untuk mengelola kiriman
-            properti saya.
+          <label>
+            <span>
+              <LockKeyhole size={15} />
+              Kata sandi
+            </span>
+            <div className="password-input">
+              <input
+                name="password"
+                type={show ? "text" : "password"}
+                required
+                minLength={8}
+                maxLength={128}
+                autoComplete={register ? "new-password" : "current-password"}
+                placeholder={
+                  register
+                    ? "Buat kata sandi minimal 8 karakter"
+                    : "Kata sandi Anda"
+                }
+                aria-describedby={register ? "password-help" : undefined}
+              />
+              <button
+                type="button"
+                onClick={() => setShow(!show)}
+                aria-pressed={show}
+                aria-label={
+                  show ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"
+                }
+              >
+                {show ? <EyeOff size={18} /> : <Eye size={18} />}
+                <span>{show ? "Sembunyikan" : "Lihat"}</span>
+              </button>
+            </div>
+            {register && (
+              <small id="password-help">
+                Minimal 8 karakter. Gunakan kata sandi yang mudah Anda ingat dan
+                jangan bagikan kepada orang lain.
+              </small>
+            )}
           </label>
-        )}
-        {error && (
-          <p className="form-message error" role="alert">
-            {error}
-          </p>
-        )}
-        {notice && (
-          <p className="form-message success" role="status">
-            {notice}
-          </p>
-        )}
-        {!configured && (
-          <p className="notice">
-            Login belum tersedia. Pengelola sedang menyiapkan koneksi akun.
-          </p>
-        )}
-        <button
-          className="button full-width"
-          type="submit"
-          disabled={busy || !configured}
-        >
-          {busy ? <LoaderCircle size={17} className="spin" /> : null}
-          {busy ? "Menghubungkan…" : register ? "Buat Akun" : "Masuk ke Akun"}
-          <ArrowUpRight size={17} />
-        </button>
+          {register && (
+            <label className="checkbox-label">
+              <input type="checkbox" required />
+              Saya setuju informasi akun digunakan untuk mengelola kiriman
+              properti saya.
+            </label>
+          )}
+          {error && (
+            <p className="form-message error" role="alert">
+              {error}
+            </p>
+          )}
+          {!configured && (
+            <p className="notice">
+              Login belum tersedia. Pengelola sedang menyiapkan koneksi akun.
+            </p>
+          )}
+          <button
+            className="button full-width"
+            type="submit"
+            disabled={busy || !configured}
+          >
+            {busy ? <LoaderCircle size={17} className="spin" /> : null}
+            {busy ? "Menghubungkan…" : register ? "Buat Akun" : "Masuk ke Akun"}
+            <ArrowUpRight size={17} />
+          </button>
+        </fieldset>
       </form>
       <p className="auth-footnote">
-        Akun yang sama untuk pengguna dan admin.
-        <br />
-        Hak akses disesuaikan dengan role akun Anda.
+        Tidak perlu akun untuk melihat properti. Masuk saat ingin memasang atau
+        mengelola iklan.
       </p>
       <Link href="/properti" className="text-button">
         Kembali jelajahi properti <ArrowUpRight size={15} />

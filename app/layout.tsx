@@ -67,7 +67,8 @@ async function SiteFooter() {
 
 export default function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  auth,
+}: Readonly<{ children: React.ReactNode; auth: React.ReactNode }>) {
   return (
     <html
       lang="id"
@@ -84,6 +85,7 @@ export default function RootLayout({
             <RequestContent>{children}</RequestContent>
           </Suspense>
         </main>
+        <Suspense>{auth}</Suspense>
         <Suspense>
           <SiteFooter />
         </Suspense>

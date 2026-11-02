@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import Image from "next/image";
 import { AuthForm } from "@/components/auth-form";
-import { authConfigured } from "@/lib/auth";
+import { authConfigured, currentUser } from "@/lib/auth";
 import { databaseConfigured } from "@/lib/db";
 export const metadata: Metadata = {
   title: "Masuk / Daftar",
@@ -13,6 +14,8 @@ export default async function Login({
   searchParams: Promise<{ lanjut?: string }>;
 }) {
   const { lanjut } = await searchParams;
+  if (await currentUser())
+    redirect(lanjut === "titip" ? "/titip-properti" : "/akun");
   return (
     <div className="container auth-layout">
       <div className="auth-visual">

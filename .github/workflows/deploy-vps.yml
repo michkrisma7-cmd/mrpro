@@ -37,7 +37,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/michkrisma7-cmd/mrpro:beta-test
+          tags: ghcr.io/michkrisma7-cmd/mrpro:latest
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
 
