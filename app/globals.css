@@ -2251,9 +2251,17 @@ fieldset:disabled {
   border-radius: 50%;
   padding: 3px;
 }
-.submit-area > .checkbox-label {
-  padding: 5px 0 20px;
-  max-width: 650px;
+.property-form .submit-area .button {
+  background: var(--brand-red);
+  border-color: var(--brand-red);
+  color: #fff;
+}
+.property-form .submit-area .button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-red), black 8%);
+}
+.property-form .submit-area .button:active:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-red), black 16%);
+  transform: translateY(0);
 }
 .submit-area > p {
   font-size: 10px;
@@ -3813,9 +3821,6 @@ td .text-button {
   }
   .upload-previews > div {
     height: 80px;
-  }
-  .submit-area .checkbox-label {
-    font-size: 10px;
   }
   .submit-area .button {
     width: 100%;

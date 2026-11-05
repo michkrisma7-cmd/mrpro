@@ -78,6 +78,12 @@ export default async function Properties({
           >
             Disewa
           </Link>
+          <Link
+            className={params.transaksi === "Over Kredit" ? "active" : ""}
+            href="/properti?transaksi=Over%20Kredit"
+          >
+            Over Kredit
+          </Link>
         </div>
         <form>
           <input type="hidden" name="q" value={params.q || ""} />

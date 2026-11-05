@@ -92,3 +92,15 @@ test("WhatsApp destinations normalize Indonesian phone numbers and reject missin
   );
   assert.equal(whatsappLink("12", "test"), null);
 });
+
+test("transaction validation accepts all three choices and rejects unknown values", () => {
+  const transaction = defaultFields.find((f) => f.key === "transaksi")!;
+  assert.deepEqual(transaction.options, ["Disewa", "Dijual", "Over Kredit"]);
+  const form = new FormData();
+  for (const value of transaction.options) {
+    form.set("field_transaksi", value);
+    assert.deepEqual(parseValues([transaction], form), { transaksi: value });
+  }
+  form.set("field_transaksi", "Unknown");
+  assert.throws(() => parseValues([transaction], form), /tidak valid/);
+});

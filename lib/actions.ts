@@ -64,7 +64,7 @@ export async function submitProperty(
   } catch (e) {
     return { error: actionError(e) };
   }
-  redirect("/akun?terkirim=1");
+  redirect("/");
 }
 // The existing gallery order is the database contract for cover and detail opening photo.
 export async function savePropertyPhotos(

@@ -16,6 +16,7 @@ export function HeroSearch({ types }: { types: string[] }) {
         {[
           ["Dijual", "Dijual"],
           ["Disewa", "Sewa"],
+          ["Over Kredit", "Over Kredit"],
         ].map(([value, label]) => (
           <button
             key={value}

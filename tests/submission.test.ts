@@ -142,10 +142,7 @@ test(
       );
       assert.equal(await prisma.property.count(), 0);
       form.set("field_lokasi", "Cikarang");
-      await assert.rejects(
-        exports.submitProperty({}, form),
-        /redirect:\/akun\?terkirim=1/,
-      );
+      await assert.rejects(exports.submitProperty({}, form), /redirect:\/$/);
       const listing = await prisma.property.findFirstOrThrow();
       assert.equal(listing.status, "PUBLISHED");
       assert.equal(listing.ownerId, user.id);

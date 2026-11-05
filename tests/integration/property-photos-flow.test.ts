@@ -14,10 +14,11 @@ import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 import { chromium, expect } from "@playwright/test";
 import sharp from "sharp";
 import { hashPassword } from "../../lib/password";
+import { defaultFields } from "../../lib/demo";
 
 test(
-  "property cover survives uploads, deletion, database save and reopening on mobile and desktop",
-  { timeout: 180000 },
+  "all transactions publish without consent, preserve failed input, refresh home and retain editable photos",
+  { timeout: 240000 },
   async () => {
     const database = await PGlite.create();
     const postgres = new PGLiteSocketServer({
@@ -58,6 +59,31 @@ test(
         await database.exec(
           await readFile(`prisma/migrations/${name}/migration.sql`, "utf8"),
         );
+      for (const f of defaultFields) {
+        await database.query(
+          'INSERT INTO "PropertyField" (id,key,name,type,options,required,"showInForm","showOnCard","showOnDetail","cardLabel",position) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
+          [
+            f.id,
+            f.key,
+            f.name,
+            f.type,
+            f.key === "transaksi" ? ["Disewa", "Dijual"] : f.options,
+            f.required,
+            f.showInForm,
+            f.showOnCard,
+            f.showOnDetail,
+            f.cardLabel,
+            f.position,
+          ],
+        );
+      }
+      // Upgrade the existing transaction configuration, just as a deployed database does.
+      await database.exec(
+        await readFile(
+          "prisma/migrations/202611050001_over_kredit/migration.sql",
+          "utf8",
+        ),
+      );
       const hash = await hashPassword("team-test-password");
       await database.query(
         'INSERT INTO "AppUser" (id,name,email,"passwordHash",role) VALUES ($1,$2,$3,$4,\'USER\')',
@@ -154,10 +180,20 @@ test(
       });
       const errors: string[] = [];
       page.on("pageerror", (error) => errors.push(error.message));
-      for (const width of [1440, 390]) {
+      for (const [width, transaction] of [
+        [1440, "Dijual"],
+        [390, "Disewa"],
+        [390, "Over Kredit"],
+      ] as const) {
+        const title = `Rumah foto utama ${width} ${transaction}`;
         await page.setViewportSize({ width, height: 900 });
-        await page.goto(`${origin}/titip-properti`);
-        await page.locator('[name="title"]').fill(`Rumah foto utama ${width}`);
+        // Warm the home cache before submission to catch stale redirects.
+        await page.goto(origin);
+        await expect(page.locator(".home-property-section")).toBeVisible();
+        await page
+          .getByRole("link", { name: "Pasang Iklan", exact: true })
+          .click();
+        await page.locator('[name="title"]').fill(title);
         await page
           .locator('textarea[name="description"]')
           .fill(
@@ -169,8 +205,14 @@ test(
           await page.locator('[name="field_harga"]').fill("1850000000");
           await page.locator('[name="field_lokasi"]').fill("Bintaro");
           await page.locator('[name="field_jenis"]').selectOption("Rumah");
-          await page.locator('[name="field_transaksi"]').selectOption("Dijual");
+          await page
+            .locator('[name="field_transaksi"]')
+            .selectOption(transaction);
         }
+        await page.locator('[name="field_fasilitas"][value="Taman"]').check();
+        await expect(
+          page.locator('[name="field_transaksi"] option'),
+        ).toHaveText(["Pilih transaksi", "Disewa", "Dijual", "Over Kredit"]);
         // Delay upload responses to test choosing a stable local photo while uploads finish.
         let uploadNumber = 0;
         await page.unroute("**/api/upload");
@@ -225,28 +267,108 @@ test(
         const finalGallery = JSON.parse(
           await page.locator('[name="gallery"]').inputValue(),
         );
-        assert.equal(
-          await page.locator('[name="title"]').inputValue(),
-          `Rumah foto utama ${width}`,
-        );
+        assert.equal(await page.locator('[name="title"]').inputValue(), title);
         await page
           .locator(".property-photos")
           .screenshot({ path: `work/property-photos-${width}.png` });
-        await page.locator('.submit-area input[type="checkbox"]').check();
-        await page.getByRole("button", { name: "Tayangkan Properti" }).click();
-        await expect(page).toHaveURL(/akun\?terkirim=1/);
+        await expect(
+          page.locator('.submit-area input[type="checkbox"]'),
+        ).toHaveCount(0);
+        const publish = page.getByRole("button", {
+          name: "Tayangkan Properti",
+        });
+        await expect(publish).toHaveCSS("background-color", "rgb(251, 48, 0)");
+        await expect(publish).toHaveCSS("color", "rgb(255, 255, 255)");
+        await publish.hover();
+        await expect(publish).not.toHaveCSS(
+          "background-color",
+          "rgb(251, 48, 0)",
+        );
+        const hoverColor = await publish.evaluate(
+          (button) => getComputedStyle(button).backgroundColor,
+        );
+        await page.mouse.down();
+        await expect(publish).not.toHaveCSS("background-color", hoverColor);
+        await page.mouse.move(0, 0);
+        await page.mouse.up();
+        if (transaction === "Dijual") {
+          await page.locator('[name="whatsapp"]').fill("invalid-phone");
+          await publish.click();
+          await expect(
+            page.locator(".property-form").getByRole("alert"),
+          ).toContainText("Nomor WhatsApp tidak valid");
+          await expect(page).toHaveURL(`${origin}/titip-properti`);
+          await expect(page.locator('[name="title"]')).toHaveValue(title);
+          await expect(page.locator('[name="whatsapp"]')).toHaveValue(
+            "invalid-phone",
+          );
+          await expect(page.locator('[name="field_transaksi"]')).toHaveValue(
+            transaction,
+          );
+          await expect(
+            page.locator('[name="field_fasilitas"][value="Taman"]'),
+          ).toBeChecked();
+          assert.deepEqual(
+            JSON.parse(await page.locator('[name="gallery"]').inputValue()),
+            finalGallery,
+          );
+          await page.locator('[name="whatsapp"]').fill("081234567890");
+          // An actual database failure must also preserve the form and prevent redirect.
+          await database.exec(
+            `ALTER TABLE "Property" ADD CONSTRAINT fail_submission CHECK (false)`,
+          );
+          await publish.click();
+          await expect(
+            page.locator(".property-form").getByRole("alert"),
+          ).toContainText("fail_submission");
+          await expect(page.locator('[name="title"]')).toHaveValue(title);
+          await expect(
+            page.locator('textarea[name="description"]'),
+          ).toHaveValue(
+            "Rumah dengan informasi lengkap untuk pengujian foto utama properti.",
+          );
+          await expect(page.locator('[name="field_harga"]')).toHaveValue(
+            "1850000000",
+          );
+          await expect(page.locator('[name="field_lokasi"]')).toHaveValue(
+            "Bintaro",
+          );
+          await expect(page).toHaveURL(`${origin}/titip-properti`);
+          assert.equal(
+            (await database.query('SELECT id FROM "Property"')).rows.length,
+            0,
+          );
+          await database.exec(
+            'ALTER TABLE "Property" DROP CONSTRAINT fail_submission',
+          );
+        }
+        await publish.click();
+        await expect(page).toHaveURL(`${origin}/`);
+        // No reload or page.goto here: the redirect must show the new card first.
+        await expect(
+          page.locator(".home-property-section .property-card h3").first(),
+        ).toHaveText(title);
+        await expect(
+          page.locator(".home-property-section .property-badge").first(),
+        ).toContainText(transaction);
         const result = await database.query<{
           id: string;
           slug: string;
           gallery: string[];
-        }>('SELECT id,slug,gallery FROM "Property" WHERE title=$1', [
-          `Rumah foto utama ${width}`,
+          values: { transaksi: string };
+        }>('SELECT id,slug,gallery,"values" FROM "Property" WHERE title=$1', [
+          title,
         ]);
         const listing = result.rows[0];
         assert.deepEqual(listing.gallery, finalGallery);
+        assert.equal(listing.values.transaksi, transaction);
         const verifyPublic = async (gallery: string[]) => {
           const cover = gallery[0];
           await page.goto(`${origin}/properti`);
+          await page
+            .locator(".catalog-tabs")
+            .getByRole("link", { name: transaction, exact: true })
+            .click();
           await expect(
             page
               .locator(`.property-card a[href="/properti/${listing.slug}"]`)
@@ -265,6 +387,9 @@ test(
             decodeURIComponent(
               (await page.locator(".gallery-main img").getAttribute("src"))!,
             ).includes(cover),
+          );
+          await expect(page.locator(".specification-grid")).toContainText(
+            transaction,
           );
           await expect(page.locator(".gallery-count")).toHaveText(
             `1 / ${gallery.length}`,
@@ -335,6 +460,51 @@ test(
           true,
         );
       }
+      await database.exec(
+        `UPDATE "AppUser" SET role='ADMIN' WHERE id='team-admin'`,
+      );
+      const over = (
+        await database.query<{ id: string; slug: string }>(
+          `SELECT id,slug FROM "Property" WHERE "values"->>'transaksi'='Over Kredit'`,
+        )
+      ).rows[0];
+      await page.goto(`${origin}/admin?tab=properti&edit=${over.id}`);
+      const editor = page.locator(".admin-edit-form");
+      await expect(editor.locator('[name="field_transaksi"]')).toHaveValue(
+        "Over Kredit",
+      );
+      for (const transaction of ["Dijual", "Over Kredit"]) {
+        await editor
+          .locator('[name="field_transaksi"]')
+          .selectOption(transaction);
+        await editor.getByRole("button", { name: "Simpan Informasi" }).click();
+        await expect(
+          editor.getByText("Informasi properti disimpan."),
+        ).toBeVisible();
+        await page.reload();
+        await expect(editor.locator('[name="field_transaksi"]')).toHaveValue(
+          transaction,
+        );
+      }
+      await page.goto(`${origin}/properti/${over.slug}`);
+      await expect(page.locator(".specification-grid")).toContainText(
+        "Over Kredit",
+      );
+      await page.goto(origin);
+      await page
+        .getByRole("button", { name: "Over Kredit", exact: true })
+        .click();
+      await page
+        .getByRole("button", { name: "Cari Properti", exact: true })
+        .click();
+      assert.equal(
+        new URL(page.url()).searchParams.get("transaksi"),
+        "Over Kredit",
+      );
+      await expect(page.locator(".property-card")).toHaveCount(1);
+      await expect(page.locator(".property-badge")).toContainText(
+        "Over Kredit",
+      );
       assert.deepEqual(errors, []);
       await context.close();
     } catch (error) {

@@ -28,7 +28,7 @@ export const defaultFields: Field[] = [
     showOnCard: false,
   }),
   field("transaksi", "Transaksi", "SELECT", 3, {
-    options: ["Dijual", "Disewa"],
+    options: ["Disewa", "Dijual", "Over Kredit"],
     required: true,
   }),
   field("kamar_tidur", "Kamar tidur", "NUMBER", 4, { cardLabel: "KT" }),

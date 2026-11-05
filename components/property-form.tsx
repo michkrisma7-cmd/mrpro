@@ -17,7 +17,13 @@ export function PropertyForm({
   const [state, action] = useActionState(submitProperty, {});
   const [photosReady, setPhotosReady] = useState(false);
   return (
-    <form action={action} className="property-form">
+    <form
+      action={action}
+      className="property-form"
+      // Failed actions return an error; keep the member's inputs for retry.
+      // Successful actions redirect away, so no form reset is needed.
+      onReset={(event) => event.preventDefault()}
+    >
       <fieldset disabled={!enabled} className="plain-fieldset">
         <div className="form-section">
           <div className="form-section-title">
@@ -159,11 +165,6 @@ export function PropertyForm({
           </div>
         </div>
         <div className="submit-area">
-          <label className="checkbox-label">
-            <input type="checkbox" required />
-            Saya menyatakan informasi yang saya kirim benar dan menyetujui
-            penayangan nomor WhatsApp untuk keperluan properti ini.
-          </label>
           <FormMessage state={state} />
           <SubmitButton disabled={!photosReady || !uploadEnabled}>
             Tayangkan Properti
