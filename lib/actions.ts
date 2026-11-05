@@ -13,7 +13,9 @@ import {
   actionError,
   phoneSchema,
 } from "./validation";
-import type { ActionState } from "./types";
+import type { ActionState, Values } from "./types";
+import { parseListingValues } from "./regions";
+import { setPublicationFlash } from "./publication-flash";
 function refresh() {
   updateTag("properties");
   updateTag("content");
@@ -48,7 +50,7 @@ export async function submitProperty(
     if (owned !== new Set(input.gallery).size)
       return { error: "Foto harus berasal dari unggahan Anda sendiri." };
     const fields = await getFields();
-    const values = parseValues(fields, form);
+    const values = parseListingValues(fields, form);
     const slug =
       input.title
         .toLowerCase()
@@ -56,15 +58,79 @@ export async function submitProperty(
         .replace(/^-|-$/g, "") +
       "-" +
       crypto.randomUUID().slice(0, 8);
-    await db().property.create({
+    const published = await db().property.create({
       // Trial policy: new consignment listings publish immediately until instructed otherwise.
       data: { ...input, values, slug, ownerId: user.id, status: "PUBLISHED" },
     });
     refresh();
+    await setPublicationFlash(published.id);
   } catch (e) {
     return { error: actionError(e) };
   }
   redirect("/");
+}
+// Validate only added photos; existing legacy URLs remain editable.
+async function memberGallery(
+  form: FormData,
+  ownerId: string,
+  existing: string[],
+) {
+  if (form.get("photosReady") === "0")
+    throw new Error(
+      "Tunggu semua foto selesai diunggah atau hapus foto yang gagal.",
+    );
+  const gallery = z
+    .array(z.string().min(1))
+    .min(1, "Unggah minimal satu foto.")
+    .max(12)
+    .refine(
+      (items) => new Set(items).size === items.length,
+      "Foto tidak boleh duplikat.",
+    )
+    .parse(JSON.parse(String(form.get("gallery") || "[]")));
+  const added = gallery.filter((url) => !existing.includes(url));
+  for (const url of added)
+    z.string()
+      .regex(/^\/api\/media\/[a-z0-9]+$/)
+      .parse(url);
+  const owned = await db().media.count({
+    where: { ownerId, id: { in: added.map((url) => url.split("/").pop()!) } },
+  });
+  if (owned !== added.length)
+    throw new Error("Foto harus berasal dari unggahan Anda sendiri.");
+  return gallery;
+}
+export async function updateMemberProperty(
+  _: ActionState,
+  form: FormData,
+): Promise<ActionState> {
+  const user = await requireUser();
+  try {
+    const id = z.string().min(1).parse(form.get("id"));
+    const existing = await db().property.findFirst({
+      where: { id, ownerId: user.id },
+    });
+    if (!existing)
+      return { error: "Properti tidak ditemukan atau bukan milik Anda." };
+    const input = basePropertySchema.omit({ gallery: true }).parse({
+      title: form.get("title"),
+      description: form.get("description"),
+      whatsapp: form.get("whatsapp"),
+    });
+    const gallery = await memberGallery(form, user.id, existing.gallery);
+    const fields = await getFields();
+    const values = parseListingValues(fields, form, existing.values as Values);
+    await db().property.update({
+      where: { id, ownerId: user.id },
+      data: { ...input, gallery, values },
+    });
+    refresh();
+    revalidatePath(`/akun/properti/${id}/edit`);
+    revalidatePath(`/akun/properti/${id}/foto`);
+    return { success: "Perubahan properti berhasil disimpan" };
+  } catch (e) {
+    return { error: actionError(e) };
+  }
 }
 // The existing gallery order is the database contract for cover and detail opening photo.
 export async function savePropertyPhotos(
@@ -316,20 +382,11 @@ export async function editProperty(
       gallery: existing.gallery,
     });
     const fields = await getFields();
-    const values = {
-      ...(existing.values as Record<string, string | number | string[]>),
-      ...parseValues(
-        fields.map((f) => ({ ...f, showInForm: true })),
-        form,
-      ),
-    };
-    for (const f of fields) {
-      if (
-        !form.get(`field_${f.key}`) &&
-        form.getAll(`field_${f.key}`).length === 0
-      )
-        delete values[f.key];
-    }
+    const values = parseListingValues(
+      fields.map((f) => ({ ...f, showInForm: true })),
+      form,
+      existing.values as Values,
+    );
     await db().property.update({
       where: { id },
       data: {

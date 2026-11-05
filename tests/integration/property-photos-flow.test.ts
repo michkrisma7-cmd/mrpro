@@ -15,9 +15,10 @@ import { chromium, expect } from "@playwright/test";
 import sharp from "sharp";
 import { hashPassword } from "../../lib/password";
 import { defaultFields } from "../../lib/demo";
+import { getRegions } from "../../lib/regions";
 
 test(
-  "all transactions publish without consent, preserve failed input, refresh home and retain editable photos",
+  "member listings publish, confirm, edit securely and preserve photos and regional location across desktop and mobile",
   { timeout: 240000 },
   async () => {
     const database = await PGlite.create();
@@ -61,7 +62,7 @@ test(
         );
       for (const f of defaultFields) {
         await database.query(
-          'INSERT INTO "PropertyField" (id,key,name,type,options,required,"showInForm","showOnCard","showOnDetail","cardLabel",position) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)',
+          'INSERT INTO "PropertyField" (id,key,name,type,options,required,"showInForm","showOnCard","showOnDetail","cardLabel",position) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT (key) DO NOTHING',
           [
             f.id,
             f.key,
@@ -178,6 +179,53 @@ test(
         mimeType: "image/png",
         buffer: photo,
       });
+      const regionValues = {
+        province: "32",
+        regency: "32.16",
+        district: getRegions("districts", "32.16")[0],
+      };
+      const village = getRegions("villages", regionValues.district.id)[0];
+      const chooseRegions = async () => {
+        const province = page.getByRole("combobox", {
+          name: "Provinsi",
+          exact: true,
+        });
+        await expect(province).toBeEnabled();
+        const search = page.getByRole("searchbox", {
+          name: "Cari provinsi",
+          exact: true,
+        });
+        await search.fill("Jawa Tengah");
+        await expect(
+          province.locator("option").filter({ hasText: /^Jawa Tengah$/ }),
+        ).toHaveCount(1);
+        await search.fill("");
+        await province.selectOption("32");
+        const regency = page.getByRole("combobox", {
+          name: "Kabupaten/Kota",
+          exact: true,
+        });
+        await expect(regency).toBeEnabled();
+        await expect(regency.locator("option").nth(1)).toHaveText(
+          "Kabupaten Bekasi",
+        );
+        await expect(regency.locator("option").nth(2)).toHaveText(
+          "Kota Bekasi",
+        );
+        await regency.selectOption("32.16");
+        const district = page.getByRole("combobox", {
+          name: "Kecamatan",
+          exact: true,
+        });
+        await expect(district).toBeEnabled();
+        await district.selectOption(regionValues.district.id);
+        const desa = page.getByRole("combobox", {
+          name: "Desa/Kelurahan",
+          exact: true,
+        });
+        await expect(desa).toBeEnabled();
+        await desa.selectOption(village.id);
+      };
       const errors: string[] = [];
       page.on("pageerror", (error) => errors.push(error.message));
       for (const [width, transaction] of [
@@ -208,6 +256,28 @@ test(
           await page
             .locator('[name="field_transaksi"]')
             .selectOption(transaction);
+        }
+        await chooseRegions();
+        if (transaction === "Dijual") {
+          await page
+            .getByRole("combobox", { name: "Provinsi", exact: true })
+            .selectOption("36");
+          for (const key of ["kota_kabupaten", "kecamatan", "kelurahan_desa"])
+            await expect(
+              page.locator(`[name="field_${key}_kode"]`),
+            ).toHaveValue("");
+          const regency = page.getByRole("combobox", {
+            name: "Kabupaten/Kota",
+            exact: true,
+          });
+          await expect(regency).toBeEnabled();
+          await expect(regency.locator("option").nth(1)).toHaveText(
+            "Kabupaten Tangerang",
+          );
+          await expect(regency.locator("option").nth(2)).toHaveText(
+            "Kota Tangerang Selatan",
+          );
+          await chooseRegions();
         }
         await page.locator('[name="field_fasilitas"][value="Taman"]').check();
         await expect(
@@ -268,9 +338,9 @@ test(
           await page.locator('[name="gallery"]').inputValue(),
         );
         assert.equal(await page.locator('[name="title"]').inputValue(), title);
-        await page
-          .locator(".property-photos")
-          .screenshot({ path: `work/property-photos-${width}.png` });
+        await page.locator(".property-photos").screenshot({
+          path: `/workspace/work/member-listing/property-photos-${width}.png`,
+        });
         await expect(
           page.locator('.submit-area input[type="checkbox"]'),
         ).toHaveCount(0);
@@ -308,6 +378,12 @@ test(
           await expect(
             page.locator('[name="field_fasilitas"][value="Taman"]'),
           ).toBeChecked();
+          await expect(
+            page.getByRole("combobox", { name: "Provinsi", exact: true }),
+          ).toHaveValue("32");
+          await expect(
+            page.getByRole("combobox", { name: "Desa/Kelurahan", exact: true }),
+          ).toHaveValue(village.id);
           assert.deepEqual(
             JSON.parse(await page.locator('[name="gallery"]').inputValue()),
             finalGallery,
@@ -351,17 +427,98 @@ test(
         await expect(
           page.locator(".home-property-section .property-badge").first(),
         ).toContainText(transaction);
+        const confirmation = page.locator(".publication-notice");
+        await expect(confirmation).toContainText("Properti berhasil tayang");
+        await expect(
+          confirmation.getByRole("link", { name: "Kelola Listing" }),
+        ).toHaveAttribute("href", "/akun");
         const result = await database.query<{
           id: string;
           slug: string;
           gallery: string[];
-          values: { transaksi: string };
+          values: {
+            transaksi: string;
+            lokasi: string;
+            provinsi: string;
+            provinsi_kode: string;
+            kelurahan_desa_kode: string;
+          };
         }>('SELECT id,slug,gallery,"values" FROM "Property" WHERE title=$1', [
           title,
         ]);
         const listing = result.rows[0];
         assert.deepEqual(listing.gallery, finalGallery);
         assert.equal(listing.values.transaksi, transaction);
+        assert.equal(listing.values.lokasi, "Bintaro");
+        assert.equal(listing.values.provinsi, "Jawa Barat");
+        assert.equal(listing.values.provinsi_kode, "32");
+        assert.equal(listing.values.kelurahan_desa_kode, village.id);
+        await expect(
+          confirmation.getByRole("link", { name: "Lihat Iklan", exact: true }),
+        ).toHaveAttribute("href", `/properti/${listing.slug}`);
+        await confirmation
+          .getByRole("button", { name: "Tutup pesan berhasil tayang" })
+          .click();
+        await expect(confirmation).toHaveCount(0);
+        // Reopen the full member editor; region hierarchy and every existing value must survive.
+        await page.goto(`${origin}/akun`);
+        await page
+          .locator(`a[href="/akun/properti/${listing.id}/edit"]`)
+          .click();
+        await expect(page.locator('[name="title"]')).toHaveValue(title);
+        await expect(page.locator('[name="field_transaksi"]')).toHaveValue(
+          transaction,
+        );
+        await expect(page.locator('[name="field_lokasi"]')).toHaveValue(
+          "Bintaro",
+        );
+        await expect(
+          page.getByRole("combobox", { name: "Provinsi", exact: true }),
+        ).toHaveValue("32");
+        await expect(
+          page.getByRole("combobox", { name: "Desa/Kelurahan", exact: true }),
+        ).toHaveValue(village.id);
+        await page.locator('[name="field_harga"]').fill("1900000000");
+        await page.locator('[name="whatsapp"]').fill("invalid-phone");
+        await page.getByRole("button", { name: "Simpan Perubahan" }).click();
+        await expect(
+          page.locator(".property-form").getByRole("alert"),
+        ).toContainText("Nomor WhatsApp tidak valid");
+        await expect(page.locator('[name="field_harga"]')).toHaveValue(
+          "1900000000",
+        );
+        await page.locator('[name="whatsapp"]').fill("081234567890");
+        await page.getByRole("button", { name: "Simpan Perubahan" }).click();
+        await expect(
+          page.getByText("Perubahan properti berhasil disimpan", {
+            exact: true,
+          }),
+        ).toBeVisible();
+        await page.reload();
+        await expect(page.locator('[name="field_harga"]')).toHaveValue(
+          "1900000000",
+        );
+        const afterEdit = (
+          await database.query<{
+            slug: string;
+            status: string;
+            ownerId: string;
+          }>('SELECT slug,status,"ownerId" FROM "Property" WHERE id=$1', [
+            listing.id,
+          ])
+        ).rows[0];
+        assert.deepEqual(afterEdit, {
+          slug: listing.slug,
+          status: "PUBLISHED",
+          ownerId: "team-admin",
+        });
+        await expect(page.locator(".property-form label").first()).toHaveCSS(
+          "color",
+          "rgb(17, 24, 39)",
+        );
+        await page.locator(".property-form").screenshot({
+          path: `/workspace/work/member-listing/member-editor-${width}.png`,
+        });
         const verifyPublic = async (gallery: string[]) => {
           const cover = gallery[0];
           await page.goto(`${origin}/properti`);
@@ -460,6 +617,41 @@ test(
           true,
         );
       }
+      await database.exec(`INSERT INTO "AppUser" (id,name,email,"passwordHash") VALUES ('other-owner','Other','other@example.test','unused');
+        INSERT INTO "Property" (id,slug,title,description,gallery,whatsapp,"ownerId",status,"values","updatedAt") VALUES
+        ('foreign-listing','foreign-listing','Rahasia orang lain','Deskripsi',ARRAY['/images/house-1.webp'],'081234567890','other-owner','PUBLISHED','{}',NOW()),
+        ('legacy-listing','legacy-listing','Rumah lama milik member','Deskripsi rumah lama yang cukup panjang untuk bisa disimpan.',ARRAY['/images/house-1.webp'],'081234567890','team-admin','PENDING','{"lokasi":"Alamat lama bebas","provinsi":"Jabar lama","kecamatan":"Daerah lama","harga":100,"jenis":"Rumah","transaksi":"Dijual","hidden_legacy":"tetap"}',NOW());`);
+      const denied = await page.goto(
+        `${origin}/akun/properti/foreign-listing/edit`,
+      );
+      // Next may stream a not-found page with HTTP 200 after headers have been sent.
+      assert.ok([200, 404].includes(denied!.status()));
+      await expect(
+        page.getByRole("heading", {
+          name: "Sepertinya Anda salah alamat.",
+          exact: true,
+        }),
+      ).toBeVisible();
+      await expect(page.locator(".property-form")).toHaveCount(0);
+      await page.goto(`${origin}/akun/properti/legacy-listing/edit`);
+      await expect(page.getByText("Jabar lama", { exact: true })).toBeVisible();
+      await page.locator('[name="title"]').fill("Rumah lama diperbarui member");
+      await page.getByRole("button", { name: "Simpan Perubahan" }).click();
+      await expect(
+        page.getByText("Perubahan properti berhasil disimpan", { exact: true }),
+      ).toBeVisible();
+      const legacy = (
+        await database.query<{
+          status: string;
+          values: Record<string, unknown>;
+        }>('SELECT status,"values" FROM "Property" WHERE id=$1', [
+          "legacy-listing",
+        ])
+      ).rows[0];
+      assert.equal(legacy.status, "PENDING");
+      assert.equal(legacy.values.provinsi, "Jabar lama");
+      assert.equal(legacy.values.hidden_legacy, "tetap");
+      assert.equal(legacy.values.provinsi_kode, undefined);
       await database.exec(
         `UPDATE "AppUser" SET role='ADMIN' WHERE id='team-admin'`,
       );

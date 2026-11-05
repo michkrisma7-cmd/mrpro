@@ -117,7 +117,7 @@ const getCachedCatalog = unstable_cache(
       let all = demoListings.filter(
         (p) =>
           (!q ||
-            `${p.title} ${p.values.lokasi || ""} ${p.values.proyek || ""} ${p.values.nama_proyek || ""}`
+            `${p.title} ${["lokasi", "provinsi", "kota_kabupaten", "kecamatan", "kelurahan_desa", "proyek", "nama_proyek"].map((key) => p.values[key] || "").join(" ")}`
               .toLowerCase()
               .includes(q)) &&
           (!params.jenis || p.values.jenis === params.jenis) &&

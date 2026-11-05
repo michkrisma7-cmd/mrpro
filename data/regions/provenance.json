@@ -1,0 +1,15 @@
+{
+  "source": "https://github.com/cahyadsn/wilayah",
+  "source_commit": "d68e8d5516f969d1905d0b2940f20034becb0db7",
+  "source_file": "db/wilayah.sql",
+  "source_note": "Kepmendagri No 300.2.2-2138 Tahun 2025; source last edit 2026-02-13",
+  "retrieved": "2026-11-05",
+  "sha256_sql": "c4c3396d9380d4edee072af1d9dff83573b574d7cd00a6562cf82e200e954031",
+  "counts": {
+    "provinces": 38,
+    "regencies": 514,
+    "districts": 7285,
+    "villages": 83762
+  },
+  "license": "MIT"
+}

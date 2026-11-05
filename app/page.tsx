@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import Image from "next/image";
 import { Suspense } from "react";
 import Loading from "./loading";
+import { PublicationNotice } from "@/components/publication-notice";
 import {
   ArrowUpRight,
   ArrowRight,
@@ -60,6 +61,9 @@ export default function Home({
 }) {
   return (
     <>
+      <Suspense fallback={null}>
+        <PublicationNotice />
+      </Suspense>
       <section className="home-search" aria-label="Pencarian properti">
         <Suspense
           fallback={

@@ -84,6 +84,12 @@ export default async function Account({
                   </td>
                   <td>
                     <Link
+                      href={`/akun/properti/${p.id}/edit`}
+                      className="text-button"
+                    >
+                      Edit Listing
+                    </Link>
+                    <Link
                       href={`/akun/properti/${p.id}/foto`}
                       className="text-button"
                     >

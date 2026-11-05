@@ -1,4 +1,5 @@
 import type { Field, Listing, Service, Settings } from "./types";
+import { defaultRegionFields } from "./region-config";
 const field = (
   key: string,
   name: string,
@@ -45,6 +46,7 @@ export const defaultFields: Field[] = [
     ],
     showOnCard: false,
   }),
+  ...defaultRegionFields,
 ];
 const base = {
   description:

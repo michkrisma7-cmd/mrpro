@@ -1,4 +1,6 @@
 "use client";
+import { PropertyRegions } from "./property-regions";
+import { isRegionKey } from "@/lib/region-config";
 import { useActionState, useState } from "react";
 import { Plus, SlidersHorizontal, Trash2, Pencil, Check } from "lucide-react";
 import {
@@ -457,7 +459,11 @@ export function PropertyEditor({
 }) {
   const [state, action] = useActionState(editProperty, {});
   return (
-    <form action={action} className="admin-edit-form">
+    <form
+      action={action}
+      className="admin-edit-form"
+      onReset={(event) => event.preventDefault()}
+    >
       <fieldset disabled={disabled} className="plain-fieldset">
         <input type="hidden" name="id" value={p.id} />
         <div className="form-grid">
@@ -479,55 +485,61 @@ export function PropertyEditor({
             WhatsApp
             <input name="whatsapp" required defaultValue={p.whatsapp} />
           </label>
-          {fields.map((f) => (
-            <div key={f.key}>
-              {f.type === "MULTISELECT" ? (
-                <fieldset className="checkbox-field">
-                  <legend>{f.name}</legend>
-                  {f.options.map((o) => (
-                    <label className="checkbox-label" key={o}>
-                      <input
-                        type="checkbox"
+          {fields
+            .filter((f) => !isRegionKey(f.key))
+            .map((f) => (
+              <div key={f.key}>
+                {f.type === "MULTISELECT" ? (
+                  <fieldset className="checkbox-field">
+                    <legend>{f.name}</legend>
+                    {f.options.map((o) => (
+                      <label className="checkbox-label" key={o}>
+                        <input
+                          type="checkbox"
+                          name={`field_${f.key}`}
+                          value={o}
+                          defaultChecked={
+                            Array.isArray(p.values[f.key]) &&
+                            (p.values[f.key] as string[]).includes(o)
+                          }
+                        />
+                        {o}
+                      </label>
+                    ))}
+                  </fieldset>
+                ) : (
+                  <label>
+                    {f.name}
+                    {f.type === "SELECT" ? (
+                      <select
                         name={`field_${f.key}`}
-                        value={o}
-                        defaultChecked={
-                          Array.isArray(p.values[f.key]) &&
-                          (p.values[f.key] as string[]).includes(o)
-                        }
+                        defaultValue={String(p.values[f.key] ?? "")}
+                        required={f.required}
+                      >
+                        <option value="">Pilih</option>
+                        {f.options.map((o) => (
+                          <option key={o}>{o}</option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        name={`field_${f.key}`}
+                        type={f.type === "TEXT" ? "text" : "number"}
+                        min={f.type === "TEXT" ? undefined : 0}
+                        step={f.type === "NUMBER" ? "any" : undefined}
+                        required={f.required}
+                        defaultValue={String(p.values[f.key] ?? "")}
                       />
-                      {o}
-                    </label>
-                  ))}
-                </fieldset>
-              ) : (
-                <label>
-                  {f.name}
-                  {f.type === "SELECT" ? (
-                    <select
-                      name={`field_${f.key}`}
-                      defaultValue={String(p.values[f.key] ?? "")}
-                      required={f.required}
-                    >
-                      <option value="">Pilih</option>
-                      {f.options.map((o) => (
-                        <option key={o}>{o}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <input
-                      name={`field_${f.key}`}
-                      type={f.type === "TEXT" ? "text" : "number"}
-                      min={f.type === "TEXT" ? undefined : 0}
-                      step={f.type === "NUMBER" ? "any" : undefined}
-                      required={f.required}
-                      defaultValue={String(p.values[f.key] ?? "")}
-                    />
-                  )}
-                </label>
-              )}
-            </div>
-          ))}
+                    )}
+                  </label>
+                )}
+              </div>
+            ))}
         </div>
+        <PropertyRegions
+          fields={fields.map((f) => ({ ...f, showInForm: true }))}
+          initial={p.values}
+        />
         <FormMessage state={state} />
         <SubmitButton>Simpan Informasi</SubmitButton>
       </fieldset>

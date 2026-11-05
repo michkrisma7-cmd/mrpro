@@ -5299,3 +5299,62 @@ td .text-button {
     font-size: 28px;
   }
 }
+
+/* Member listing forms: readable text without changing status or brand colors. */
+.property-form .form-section-title h2,
+.property-form label,
+.property-form legend,
+.property-form input,
+.property-form textarea,
+.property-form select,
+.property-form .property-regions h3,
+.property-form .upload-zone strong {
+  color: #111827;
+}
+.property-form .form-section-title p,
+.property-form label > small,
+.property-form .form-section > p,
+.property-form .property-regions p:not(.form-message),
+.property-form .submit-area > p,
+.property-form .checkbox-field small,
+.property-form .upload-zone > span:not(.outline-button) {
+  color: #374151;
+}
+.property-form input::placeholder,
+.property-form textarea::placeholder {
+  color: #626b78;
+}
+.region-choice {
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+.region-choice legend {
+  font-size: 12px;
+  font-weight: 550;
+}
+.region-choice input[type="search"] {
+  font-size: 12px;
+}
+.property-regions h3 { font-size: 16px; margin-bottom: 8px; }
+.property-regions > p { font-size: 12px; margin-bottom: 16px; }
+.property-regions dl { margin: 12px 0; }
+.property-regions dt { font-weight: 600; }
+.property-regions dd { margin: 0 0 10px; }
+.member-property-edit .property-form { max-width: 850px; }
+.publication-notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 24px;
+  padding-top: 16px;
+  padding-bottom: 16px;
+  margin-top: 16px;
+  background: #ecf4e7;
+  color: #254323;
+  border: 1px solid #d8e8cd;
+  border-radius: 8px;
+}
+.publication-notice > div { display: flex; flex-wrap: wrap; gap: 18px; }
+.publication-notice a { text-decoration: underline; font-size: 13px; }
+.publication-notice form { margin-left: auto; }

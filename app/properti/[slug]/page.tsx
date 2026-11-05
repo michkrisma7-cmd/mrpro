@@ -1,3 +1,5 @@
+import { propertyLocation } from "@/lib/property-location";
+import { isRegionKey } from "@/lib/region-config";
 import type { Metadata } from "next";
 import { pageMetadata, breadcrumbs, jsonLd } from "@/lib/seo";
 import Link from "next/link";
@@ -38,7 +40,10 @@ export default async function PropertyDetail({
     (f) => f.showOnDetail && filled(property.values[f.key]),
   );
   const price = visible.find((f) => f.type === "PRICE");
-  const location = visible.find((f) => f.key === "lokasi");
+  const location = propertyLocation(property.values, fields, "showOnDetail");
+  const specifications = visible.filter(
+    (f) => f.key !== "lokasi" && !isRegionKey(f.key),
+  );
   const phone = property.whatsapp || settings.whatsapp;
   const wa = whatsappLink(
     phone,
@@ -70,18 +75,18 @@ export default async function PropertyDetail({
           {location && (
             <p className="property-location">
               <MapPin size={17} />
-              {displayValue(location, property.values[location.key])}
+              {location}
             </p>
           )}
           <section className="detail-section">
             <h2>Tentang properti ini</h2>
             <p className="preserve-lines">{property.description}</p>
           </section>
-          {visible.length > 0 && (
+          {specifications.length > 0 && (
             <section className="detail-section">
               <h2>Spesifikasi properti</h2>
               <dl className="specification-grid">
-                {visible.map((f) => (
+                {specifications.map((f) => (
                   <div key={f.key}>
                     <dt>{f.name}</dt>
                     <dd>

@@ -1,4 +1,6 @@
 "use client";
+import { propertyLocation } from "@/lib/property-location";
+import { isRegionKey } from "@/lib/region-config";
 import { useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -60,7 +62,8 @@ export function PropertyCard({
   }
   const visible = fields.filter((f) => f.showOnCard && filled(p.values[f.key]));
   const price = visible.find((f) => f.type === "PRICE");
-  const location = visible.find((f) => f.key === "lokasi");
+  const locationField = visible.find((f) => f.key === "lokasi");
+  const location = propertyLocation(p.values, fields, "showOnCard");
   return (
     <article className="property-card">
       <div className="property-image">
@@ -140,15 +143,17 @@ export function PropertyCard({
           <p className="property-location">
             <MapPin size={14} />
             <span className="sr-only">
-              {location.cardLabel || location.name}:{" "}
+              {locationField?.cardLabel || locationField?.name || "Lokasi"}
+              :{" "}
             </span>
-            <span>{displayValue(location, p.values[location.key])}</span>
+            <span>{location}</span>
           </p>
         )}
         {visible.some(
           (f) =>
             f !== price &&
-            f !== location &&
+            f.key !== "lokasi" &&
+            !isRegionKey(f.key) &&
             f.key !== "transaksi" &&
             !specKeys.includes(f.key),
         ) && (
@@ -157,7 +162,8 @@ export function PropertyCard({
               .filter(
                 (f) =>
                   f !== price &&
-                  f !== location &&
+                  f.key !== "lokasi" &&
+                  !isRegionKey(f.key) &&
                   f.key !== "transaksi" &&
                   !specKeys.includes(f.key),
               )

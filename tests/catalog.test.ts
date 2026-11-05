@@ -80,6 +80,34 @@ test("catalog SQL filters, sorts and paginates published properties without expo
         "p0",
       ],
     );
+    await db.query(
+      'UPDATE "Property" SET "values" = "values" || $1::jsonb WHERE id=$2',
+      [
+        JSON.stringify({
+          provinsi: "Jawa Barat",
+          kota_kabupaten: "Kabupaten Bekasi",
+          kecamatan: "Babelan",
+          kelurahan_desa: "Kedung Pengawas",
+        }),
+        "p0",
+      ],
+    );
+    for (const [key, name] of [
+      ["provinsi", "Jawa Barat"],
+      ["kota_kabupaten", "Kabupaten Bekasi"],
+      ["kecamatan", "Babelan"],
+      ["kelurahan_desa", "Kedung Pengawas"],
+    ]) {
+      assert.equal(
+        (await run({ q: name }, new Set([...visible, key]))).rows[0].id,
+        "p0",
+      );
+      assert.equal(
+        (await run({ q: name })).rows.length,
+        0,
+        "hidden region fields must not be searchable",
+      );
+    }
     for (const [key, name] of [
       ["nama_proyek", "melati"],
       ["proyek", "citra"],

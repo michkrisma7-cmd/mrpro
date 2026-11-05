@@ -5,11 +5,12 @@ import { readFile, readdir } from "node:fs/promises";
 import { runInNewContext } from "node:vm";
 import ts from "typescript";
 import { z } from "zod";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Property } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 import * as validation from "../lib/validation";
+import * as regions from "../lib/regions";
 import { defaultFields } from "../lib/demo";
 import { catalogQueries } from "../lib/catalog-query";
 import type { ActionState } from "../lib/types";
@@ -55,7 +56,12 @@ test(
       let authenticated = false;
       const paths: string[] = [];
       const tags: string[] = [];
+      const flashed: string[] = [];
       const exports = {} as {
+        updateMemberProperty(
+          state: ActionState,
+          form: FormData,
+        ): Promise<ActionState>;
         submitProperty(
           state: ActionState,
           form: FormData,
@@ -74,11 +80,19 @@ test(
         { compilerOptions: { module: ts.ModuleKind.CommonJS } },
       ).outputText;
       runInNewContext(source, {
+        Error,
         exports,
         crypto: { randomUUID },
         require: (name: string) => {
           if (name === "zod") return { z };
           if (name === "./validation") return validation;
+          if (name === "./regions") return regions;
+          if (name === "./publication-flash")
+            return {
+              setPublicationFlash: async (id: string) => {
+                flashed.push(id);
+              },
+            };
           if (name === "./facebook-post")
             return {
               sendFacebookWebhook: async () => {
@@ -144,6 +158,7 @@ test(
       form.set("field_lokasi", "Cikarang");
       await assert.rejects(exports.submitProperty({}, form), /redirect:\/$/);
       const listing = await prisma.property.findFirstOrThrow();
+      assert.deepEqual(flashed, [listing.id]);
       assert.equal(listing.status, "PUBLISHED");
       assert.equal(listing.ownerId, user.id);
       assert.equal(listing.featured, false);
@@ -212,6 +227,94 @@ test(
           paths.includes("/akun"),
       );
       assert.ok(tags.includes("properties"));
+      // Full member edit may update content and owned photos, never identity or publication state.
+      const other = await prisma.appUser.create({
+        data: {
+          name: "Other",
+          email: "other@example.test",
+          passwordHash: "unused",
+        },
+      });
+      const foreign = await prisma.property.create({
+        data: {
+          slug: "foreign",
+          title: "Rumah milik orang lain",
+          description: listing.description,
+          gallery: [],
+          whatsapp: listing.whatsapp,
+          ownerId: other.id,
+        },
+      });
+      form.set("id", foreign.id);
+      assert.match(
+        (await exports.updateMemberProperty({}, form)).error!,
+        /bukan milik Anda/,
+      );
+      form.set("id", listing.id);
+      form.set("title", "Rumah diperbarui pemilik");
+      form.set("gallery", JSON.stringify(["/api/media/foreignphoto"]));
+      assert.match(
+        (await exports.updateMemberProperty({}, form)).error!,
+        /unggahan Anda sendiri/,
+      );
+      form.set(
+        "gallery",
+        JSON.stringify(["/images/legacy.webp", "/api/media/secondphoto"]),
+      );
+      form.set("field_lokasi", "Jalan baru Cikarang");
+      for (const status of [
+        "PUBLISHED",
+        "PENDING",
+        "REJECTED",
+        "ARCHIVED",
+      ] as const) {
+        await prisma.property.update({
+          where: { id: listing.id },
+          data: {
+            status,
+            values: {
+              lokasi: "lama",
+              hidden_admin: "tetap",
+              unknown_legacy: 0,
+            },
+          },
+        });
+        assert.equal(
+          (await exports.updateMemberProperty({}, form)).success,
+          "Perubahan properti berhasil disimpan",
+        );
+        const edited: Property = await prisma.property.findUniqueOrThrow({
+          where: { id: listing.id },
+        });
+        assert.equal(edited.status, status);
+        assert.equal(edited.ownerId, user.id);
+        assert.equal(edited.slug, listing.slug);
+        assert.equal(edited.title, "Rumah diperbarui pemilik");
+        assert.deepEqual(edited.values, {
+          lokasi: "Jalan baru Cikarang",
+          hidden_admin: "tetap",
+          unknown_legacy: 0,
+        });
+        assert.deepEqual(edited.gallery, [
+          "/images/legacy.webp",
+          "/api/media/secondphoto",
+        ]);
+      }
+      const saved = await prisma.property.findUniqueOrThrow({
+        where: { id: listing.id },
+      });
+      form.set("title", "short");
+      assert.ok((await exports.updateMemberProperty({}, form)).error);
+      assert.deepEqual(
+        await prisma.property.findUniqueOrThrow({ where: { id: listing.id } }),
+        saved,
+      );
+      assert.equal(await prisma.property.count(), 2);
+      assert.deepEqual(
+        flashed,
+        [listing.id],
+        "editing does not set a publication confirmation",
+      );
     } finally {
       await prisma?.$disconnect();
       await postgres.stop();

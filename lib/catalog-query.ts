@@ -11,9 +11,15 @@ export function catalogQueries(
   const conditions = [Prisma.sql`"status" = 'PUBLISHED'::"ListingStatus"`];
   if (params.q) {
     const q = params.q.slice(0, 150);
-    const searchable = ["lokasi", "proyek", "nama_proyek"].filter((key) =>
-      visible.has(key),
-    );
+    const searchable = [
+      "lokasi",
+      "provinsi",
+      "kota_kabupaten",
+      "kecamatan",
+      "kelurahan_desa",
+      "proyek",
+      "nama_proyek",
+    ].filter((key) => visible.has(key));
     const text = Prisma.join(
       [
         Prisma.sql`"title"`,
