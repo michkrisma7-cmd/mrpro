@@ -26,7 +26,7 @@ export function PropertyForm({
   return (
     <form
       action={action}
-      className="property-form"
+      className={property ? "property-form" : "property-form property-form-create"}
       // Failed actions return an error; keep the member's inputs for retry.
       // Successful actions redirect away, so no form reset is needed.
       onReset={(event) => event.preventDefault()}
@@ -194,7 +194,11 @@ export function PropertyForm({
                   )}
                 </div>
               ))}
-            <PropertyRegions fields={fields} initial={property?.values} />
+            <PropertyRegions
+              fields={fields}
+              initial={property?.values}
+              creation={!property}
+            />
           </div>
         </div>
         <div className="submit-area">

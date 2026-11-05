@@ -185,6 +185,16 @@ test(
         district: getRegions("districts", "32.16")[0],
       };
       const village = getRegions("villages", regionValues.district.id)[0];
+      const checkRegionPlaceholders = async () => {
+        await expect(
+          page.locator('.property-regions select option:first-child'),
+        ).toHaveText([
+          "Pilih provinsi",
+          "Pilih Kota / Kabupaten",
+          "Pilih Kecamatan",
+          "Pilih Kelurahan / Desa",
+        ]);
+      };
       const chooseRegions = async () => {
         const province = page.getByRole("combobox", {
           name: "Provinsi",
@@ -212,12 +222,14 @@ test(
           await province.locator("option").first().getAttribute("value"),
           "",
         );
+        await checkRegionPlaceholders();
         await province.selectOption("32");
         const regency = page.getByRole("combobox", {
           name: "Kota / Kabupaten",
           exact: true,
         });
         await expect(regency).toBeEnabled();
+        await checkRegionPlaceholders();
         await expect(regency.locator("option").nth(1)).toHaveText(
           "Kabupaten Bekasi",
         );
@@ -230,12 +242,14 @@ test(
           exact: true,
         });
         await expect(district).toBeEnabled();
+        await checkRegionPlaceholders();
         await district.selectOption(regionValues.district.id);
         const desa = page.getByRole("combobox", {
           name: "Kelurahan / Desa",
           exact: true,
         });
         await expect(desa).toBeEnabled();
+        await checkRegionPlaceholders();
         await desa.selectOption(village.id);
       };
       const errors: string[] = [];
@@ -277,7 +291,7 @@ test(
         ).toBeDisabled();
         await expect(
           page.getByRole("button", { name: "Tayangkan Properti", exact: true }),
-        ).toHaveCSS("background-color", "rgb(209, 213, 219)");
+        ).toHaveCSS("background-color", "rgb(251, 48, 0)");
         await chooseRegions();
         const locationBeforeRegions = await page
           .locator(".property-form")
@@ -327,6 +341,7 @@ test(
             exact: true,
           });
           await expect(regency).toBeEnabled();
+        await checkRegionPlaceholders();
           await expect(regency.locator("option").nth(1)).toHaveText(
             "Kabupaten Tangerang",
           );
@@ -403,22 +418,28 @@ test(
         const publish = page.getByRole("button", {
           name: "Tayangkan Properti",
         });
-        await expect(publish).toHaveCSS("background-color", "rgb(230, 0, 0)");
+        await expect(publish).toHaveCSS("background-color", "rgb(251, 48, 0)");
         await expect(publish).toHaveCSS("color", "rgb(255, 255, 255)");
         await expect(publish).toHaveCSS("opacity", "1");
         await expect(publish).toHaveCSS("filter", "none");
         await publish.hover();
         await expect(publish).not.toHaveCSS(
           "background-color",
-          "rgb(230, 0, 0)",
+          "rgb(251, 48, 0)",
         );
         const hoverColor = await publish.evaluate(
           (button) => getComputedStyle(button).backgroundColor,
         );
-        await expect(publish).toHaveCSS("background-color", "rgb(207, 0, 0)");
+        await expect(publish).toHaveCSS(
+          "background-color",
+          "color(srgb 0.905569 0.173176 0)",
+        );
         await page.mouse.down();
-        await expect(publish).toHaveCSS("background-color", "rgb(184, 0, 0)");
-        assert.notEqual(hoverColor, "rgb(230, 0, 0)");
+        await expect(publish).toHaveCSS(
+          "background-color",
+          "color(srgb 0.826824 0.158118 0)",
+        );
+        assert.notEqual(hoverColor, "rgb(251, 48, 0)");
         await page.mouse.move(0, 0);
         await page.mouse.up();
         if (transaction === "Dijual") {
@@ -433,7 +454,7 @@ test(
             exact: true,
           });
           await expect(pending).toBeDisabled();
-          await expect(pending).toHaveCSS("background-color", "rgb(207, 0, 0)");
+          await expect(pending).toHaveCSS("background-color", "rgb(251, 48, 0)");
           await expect(pending).toHaveCSS("color", "rgb(255, 255, 255)");
           await expect(pending.locator(".spin")).toHaveCount(1);
           await expect(

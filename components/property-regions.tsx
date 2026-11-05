@@ -15,6 +15,7 @@ function RegionSelect({
   parent,
   selected,
   required,
+  creation,
   onChange,
 }: {
   label: string;
@@ -22,6 +23,7 @@ function RegionSelect({
   parent: string;
   selected: Region;
   required: boolean;
+  creation: boolean;
   onChange: (region: Region) => void;
 }) {
   const enabled = level === "provinces" || Boolean(parent);
@@ -40,7 +42,11 @@ function RegionSelect({
         return response.json() as Promise<Region[]>;
       })
       .then((items) => {
-        setOptions(items);
+        setOptions(
+          creation && level === "provinces"
+            ? [...items].sort((a, b) => a.name.localeCompare(b.name, "id"))
+            : items,
+        );
         setLoading(false);
       })
       .catch((failure) => {
@@ -53,7 +59,7 @@ function RegionSelect({
         setLoading(false);
       });
     return () => controller.abort();
-  }, [enabled, level, parent, attempt]);
+  }, [enabled, level, parent, attempt, creation]);
   // Keep the stored label visible while its options are loading during edit.
   const displayed =
     selected.id && !options.some((r) => r.id === selected.id)
@@ -80,11 +86,18 @@ function RegionSelect({
         }}
       >
         <option value="">
-          {!enabled
-            ? "Pilih wilayah di atas terlebih dahulu"
-            : loading
-              ? "Memuat wilayah…"
-              : `Pilih ${label.toLowerCase()}`}
+          {creation
+            ? {
+                provinces: "Pilih provinsi",
+                regencies: "Pilih Kota / Kabupaten",
+                districts: "Pilih Kecamatan",
+                villages: "Pilih Kelurahan / Desa",
+              }[level]
+            : !enabled
+              ? "Pilih wilayah di atas terlebih dahulu"
+              : loading
+                ? "Memuat wilayah…"
+                : `Pilih ${label.toLowerCase()}`}
         </option>
         {displayed.map((r) => (
           <option key={r.id} value={r.id}>
@@ -120,9 +133,11 @@ function RegionSelect({
 export function PropertyRegions({
   fields,
   initial = {},
+  creation = false,
 }: {
   fields: Field[];
   initial?: Values;
+  creation?: boolean;
 }) {
   const active = activeRegionFields(fields);
   const [selected, setSelected] = useState<Region[]>(() =>
@@ -204,6 +219,7 @@ export function PropertyRegions({
                     parent={parent}
                     selected={selected[index]}
                     required={f.required}
+                    creation={creation}
                     onChange={(value) =>
                       setSelected((previous) =>
                         previous.map((r, i) =>

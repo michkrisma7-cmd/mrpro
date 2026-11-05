@@ -2278,6 +2278,30 @@ fieldset:disabled {
   color: #fff;
   cursor: wait;
 }
+.property-form-create > .plain-fieldset:disabled {
+  opacity: 1;
+}
+.property-form-create > .plain-fieldset:disabled > :not(.submit-area),
+.property-form-create > .plain-fieldset:disabled > .submit-area > :not(.button) {
+  opacity: 0.6;
+}
+.property-form-create .submit-area .button,
+.property-form-create .submit-area .button:disabled,
+.property-form-create .submit-area .button:disabled:has(.spin) {
+  background: var(--brand-red);
+  border-color: var(--brand-red);
+  color: #fff;
+  opacity: 1;
+  filter: none;
+}
+.property-form-create .submit-area .button:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-red), black 8%);
+  border-color: color-mix(in srgb, var(--brand-red), black 8%);
+}
+.property-form-create .submit-area .button:active:not(:disabled) {
+  background: color-mix(in srgb, var(--brand-red), black 16%);
+  border-color: color-mix(in srgb, var(--brand-red), black 16%);
+}
 .submit-area > p {
   font-size: 10px;
   display: flex;
