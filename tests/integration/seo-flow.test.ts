@@ -94,6 +94,40 @@ test(
           assert.ok(ready, "production server started");
           const robots = await (await get("/robots.txt")).text();
           const home = await (await get("/")).text();
+          const expectedHomeTitle = "Jual - Beli - Over Kredit Properti";
+          for (const userAgent of [
+            "Twitterbot",
+            "facebookexternalhit/1.1",
+            "WhatsApp/2.0",
+          ]) {
+            const html = await (
+              await fetch(`${local}/`, {
+                headers: { "user-agent": userAgent },
+              })
+            ).text();
+            const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1] || "";
+            assert.deepEqual(
+              [...head.matchAll(/<title>(.*?)<\/title>/g)].map(
+                (match) => match[1],
+              ),
+              [expectedHomeTitle],
+              `${userAgent}: exact server-rendered title`,
+            );
+            for (const attribute of [
+              'property="og:title"',
+              'name="twitter:title"',
+            ])
+              assert.ok(
+                head.includes(`${attribute} content="${expectedHomeTitle}"`),
+                `${userAgent}: ${attribute}`,
+              );
+            assert.ok(head.includes("/images/hero.webp"));
+            assert.ok(
+              head.includes(
+                "Cari rumah, tanah, apartemen, dan ruko dijual atau disewa di Cikarang dan Bekasi.",
+              ),
+            );
+          }
           assert.ok(home.includes("Cikarang dan Bekasi"));
           assert.ok(
             home.includes(`rel="canonical" href="${canonical}/"`) ||
@@ -134,6 +168,24 @@ test(
           const filtered = await (await get("/properti?q=Cikarang")).text();
           assert.ok(/name="robots" content="[^"]*noindex/.test(filtered));
           const article = await (await get("/blog/tips-rumah")).text();
+          assert.ok(
+            article.includes("<title>Tips Rumah Bekasi | MR Properti</title>"),
+          );
+          const property = await (await get("/properti/rumah-cikarang")).text();
+          assert.ok(
+            property.includes("<title>Rumah Cikarang | MR Properti</title>"),
+          );
+          for (const [html, title] of [
+            [article, "Tips Rumah Bekasi"],
+            [property, "Rumah Cikarang"],
+          ])
+            for (const attribute of [
+              'property="og:title"',
+              'name="twitter:title"',
+            ])
+              assert.ok(
+                html.includes(`${attribute} content="${title} | MR Properti"`),
+              );
           const scripts = [
             ...article.matchAll(
               /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,

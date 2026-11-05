@@ -9,7 +9,7 @@ import { Footer } from "@/components/footer";
 import { DeferredChat } from "@/components/deferred-chat";
 import { getSettings } from "@/lib/data";
 import { siteUrl } from "@/lib/format";
-import { brand, homeTitle, homeDescription, indexingEnabled } from "@/lib/seo";
+import { homeTitle, homeDescription, indexingEnabled } from "@/lib/seo";
 import { brandIcons, brandIconUrl } from "@/lib/brand";
 const dmSans = localFont({
   src: "../node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2",
@@ -27,7 +27,7 @@ const manrope = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: `${homeTitle} | ${brand}`,
+    default: homeTitle,
     template: "%s | MR Properti",
   },
   robots: { index: indexingEnabled(), follow: true },
@@ -48,11 +48,11 @@ export const metadata: Metadata = {
     type: "website",
     locale: "id_ID",
     siteName: "MR Properti",
-    title: `${homeTitle} | ${brand}`,
+    title: homeTitle,
     description: homeDescription,
     images: [{ url: "/images/hero.webp", width: 1536, height: 1024 }],
   },
-  twitter: { card: "summary_large_image" },
+  twitter: { card: "summary_large_image", title: homeTitle },
 };
 async function SiteFooter() {
   await connection();

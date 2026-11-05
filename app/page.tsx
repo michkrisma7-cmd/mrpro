@@ -30,6 +30,7 @@ import { pageMetadata, homeTitle, homeDescription, jsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/format";
 export const metadata = pageMetadata({
   title: homeTitle,
+  absoluteTitle: true,
   description: homeDescription,
   path: "/",
 });

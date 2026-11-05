@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { siteUrl } from "./format";
 export const brand = "MR Properti";
-export const homeTitle = "Jual Beli & Sewa Properti Cikarang dan Bekasi";
+export const homeTitle = "Jual - Beli - Over Kredit Properti";
 export const homeDescription =
   "Cari rumah, tanah, apartemen, dan ruko dijual atau disewa di Cikarang dan Bekasi. Titip properti dan temukan jasa tukang bersama MR Properti.";
 export function indexingEnabled(
@@ -30,19 +30,21 @@ export function pageMetadata({
   path,
   images = ["/images/hero.webp"],
   noindex = false,
+  absoluteTitle = false,
 }: {
   title: string;
   description: string;
   path: string;
   images?: string[];
   noindex?: boolean;
+  absoluteTitle?: boolean;
 }): Metadata {
   const summary = description.replace(/\s+/g, " ").trim().slice(0, 160);
   const imageUrls = (images.length ? images : ["/images/hero.webp"]).map(
     (image) => new URL(image, siteUrl()).href,
   );
   return {
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     description: summary,
     alternates: { canonical: path },
     robots: {
@@ -58,14 +60,14 @@ export function pageMetadata({
       type: "website",
       locale: "id_ID",
       siteName: brand,
-      title: `${title} | ${brand}`,
+      title: absoluteTitle ? title : `${title} | ${brand}`,
       description: summary,
       url: path,
       images: imageUrls,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | ${brand}`,
+      title: absoluteTitle ? title : `${title} | ${brand}`,
       description: summary,
       images: imageUrls,
     },
