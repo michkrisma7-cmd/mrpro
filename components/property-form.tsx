@@ -106,10 +106,18 @@ export function PropertyForm({
           <div className="form-grid">
             {fields
               .filter((f) => f.showInForm && !isRegionKey(f.key))
+              .sort(
+                (a, b) =>
+                  Number(a.key === "lokasi") - Number(b.key === "lokasi"),
+              )
               .map((f) => (
                 <div
                   key={f.key}
-                  className={f.type === "MULTISELECT" ? "full-span" : ""}
+                  className={
+                    f.type === "MULTISELECT" || f.key === "lokasi"
+                      ? "full-span"
+                      : ""
+                  }
                 >
                   {f.type === "MULTISELECT" ? (
                     <fieldset className="checkbox-field">

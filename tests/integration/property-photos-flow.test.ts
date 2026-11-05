@@ -191,18 +191,30 @@ test(
           exact: true,
         });
         await expect(province).toBeEnabled();
-        const search = page.getByRole("searchbox", {
-          name: "Cari provinsi",
-          exact: true,
-        });
-        await search.fill("Jawa Tengah");
         await expect(
-          province.locator("option").filter({ hasText: /^Jawa Tengah$/ }),
-        ).toHaveCount(1);
-        await search.fill("");
+          page.locator(".property-regions").getByRole("searchbox"),
+        ).toHaveCount(0);
+        await expect(page.locator(".property-regions h3")).toHaveCount(0);
+        await expect(
+          page.getByText(/Pilih wilayah secara berurutan/),
+        ).toHaveCount(0);
+        await expect(province.locator("option")).toHaveCount(39);
+        const names = (
+          await province.locator("option").allTextContents()
+        ).slice(1);
+        assert.deepEqual(
+          names,
+          [...names].sort((a, b) => a.localeCompare(b, "id")),
+        );
+        assert.equal(names[names.indexOf("Bali") + 1], "Banten");
+        assert.equal(names[names.indexOf("Jambi") + 1], "Jawa Barat");
+        assert.equal(
+          await province.locator("option").first().getAttribute("value"),
+          "",
+        );
         await province.selectOption("32");
         const regency = page.getByRole("combobox", {
-          name: "Kabupaten/Kota",
+          name: "Kota / Kabupaten",
           exact: true,
         });
         await expect(regency).toBeEnabled();
@@ -220,7 +232,7 @@ test(
         await expect(district).toBeEnabled();
         await district.selectOption(regionValues.district.id);
         const desa = page.getByRole("combobox", {
-          name: "Desa/Kelurahan",
+          name: "Kelurahan / Desa",
           exact: true,
         });
         await expect(desa).toBeEnabled();
@@ -257,7 +269,51 @@ test(
             .locator('[name="field_transaksi"]')
             .selectOption(transaction);
         }
+        await expect(
+          page.getByRole("combobox", { name: "Provinsi", exact: true }),
+        ).toHaveValue("");
+        await expect(
+          page.getByRole("button", { name: "Tayangkan Properti", exact: true }),
+        ).toBeDisabled();
+        await expect(
+          page.getByRole("button", { name: "Tayangkan Properti", exact: true }),
+        ).toHaveCSS("background-color", "rgb(209, 213, 219)");
         await chooseRegions();
+        const locationBeforeRegions = await page
+          .locator(".property-form")
+          .evaluate((form) => {
+            const manual = form.querySelector('[name="field_lokasi"]')!;
+            const region = form.querySelector(".property-regions")!;
+            return (
+              Boolean(
+                manual.compareDocumentPosition(region) &
+                Node.DOCUMENT_POSITION_FOLLOWING,
+              ) && manual.closest(".full-span")?.nextElementSibling === region
+            );
+          });
+        assert.equal(locationBeforeRegions, true);
+        await expect(page.locator(".property-regions legend")).toHaveText([
+          "Provinsi",
+          "Kota / Kabupaten",
+          "Kecamatan",
+          "Kelurahan / Desa",
+        ]);
+        if (width === 390) {
+          const boxes = await page
+            .locator(".property-regions select")
+            .evaluateAll((selects) =>
+              selects.map((select) => ({
+                x: select.getBoundingClientRect().x,
+                y: select.getBoundingClientRect().y,
+              })),
+            );
+          assert.ok(
+            boxes.every(
+              (box, index) =>
+                box.x === boxes[0].x && (!index || box.y > boxes[index - 1].y),
+            ),
+          );
+        }
         if (transaction === "Dijual") {
           await page
             .getByRole("combobox", { name: "Provinsi", exact: true })
@@ -267,7 +323,7 @@ test(
               page.locator(`[name="field_${key}_kode"]`),
             ).toHaveValue("");
           const regency = page.getByRole("combobox", {
-            name: "Kabupaten/Kota",
+            name: "Kota / Kabupaten",
             exact: true,
           });
           await expect(regency).toBeEnabled();
@@ -339,7 +395,7 @@ test(
         );
         assert.equal(await page.locator('[name="title"]').inputValue(), title);
         await page.locator(".property-photos").screenshot({
-          path: `/workspace/work/member-listing/property-photos-${width}.png`,
+          path: `/workspace/work/listing-ui/property-photos-${width}.png`,
         });
         await expect(
           page.locator('.submit-area input[type="checkbox"]'),
@@ -347,23 +403,39 @@ test(
         const publish = page.getByRole("button", {
           name: "Tayangkan Properti",
         });
-        await expect(publish).toHaveCSS("background-color", "rgb(251, 48, 0)");
+        await expect(publish).toHaveCSS("background-color", "rgb(230, 0, 0)");
         await expect(publish).toHaveCSS("color", "rgb(255, 255, 255)");
+        await expect(publish).toHaveCSS("opacity", "1");
+        await expect(publish).toHaveCSS("filter", "none");
         await publish.hover();
         await expect(publish).not.toHaveCSS(
           "background-color",
-          "rgb(251, 48, 0)",
+          "rgb(230, 0, 0)",
         );
         const hoverColor = await publish.evaluate(
           (button) => getComputedStyle(button).backgroundColor,
         );
+        await expect(publish).toHaveCSS("background-color", "rgb(207, 0, 0)");
         await page.mouse.down();
-        await expect(publish).not.toHaveCSS("background-color", hoverColor);
+        await expect(publish).toHaveCSS("background-color", "rgb(184, 0, 0)");
+        assert.notEqual(hoverColor, "rgb(230, 0, 0)");
         await page.mouse.move(0, 0);
         await page.mouse.up();
         if (transaction === "Dijual") {
+          await page.route("**/titip-properti", async (route) => {
+            if (route.request().method() === "POST") await delay(800);
+            await route.continue();
+          });
           await page.locator('[name="whatsapp"]').fill("invalid-phone");
           await publish.click();
+          const pending = page.getByRole("button", {
+            name: "Memproses…",
+            exact: true,
+          });
+          await expect(pending).toBeDisabled();
+          await expect(pending).toHaveCSS("background-color", "rgb(207, 0, 0)");
+          await expect(pending).toHaveCSS("color", "rgb(255, 255, 255)");
+          await expect(pending.locator(".spin")).toHaveCount(1);
           await expect(
             page.locator(".property-form").getByRole("alert"),
           ).toContainText("Nomor WhatsApp tidak valid");
@@ -382,7 +454,10 @@ test(
             page.getByRole("combobox", { name: "Provinsi", exact: true }),
           ).toHaveValue("32");
           await expect(
-            page.getByRole("combobox", { name: "Desa/Kelurahan", exact: true }),
+            page.getByRole("combobox", {
+              name: "Kelurahan / Desa",
+              exact: true,
+            }),
           ).toHaveValue(village.id);
           assert.deepEqual(
             JSON.parse(await page.locator('[name="gallery"]').inputValue()),
@@ -476,7 +551,7 @@ test(
           page.getByRole("combobox", { name: "Provinsi", exact: true }),
         ).toHaveValue("32");
         await expect(
-          page.getByRole("combobox", { name: "Desa/Kelurahan", exact: true }),
+          page.getByRole("combobox", { name: "Kelurahan / Desa", exact: true }),
         ).toHaveValue(village.id);
         await page.locator('[name="field_harga"]').fill("1900000000");
         await page.locator('[name="whatsapp"]').fill("invalid-phone");
@@ -516,8 +591,21 @@ test(
           "color",
           "rgb(17, 24, 39)",
         );
+        const editButton = page.getByRole("button", {
+          name: "Simpan Perubahan",
+          exact: true,
+        });
+        await expect(editButton).toHaveCSS(
+          "background-color",
+          "rgb(230, 0, 0)",
+        );
+        await expect(editButton).toHaveCSS("opacity", "1");
+        await expect(
+          page.locator(".property-regions").getByRole("searchbox"),
+        ).toHaveCount(0);
+        await expect(page.locator(".property-regions h3")).toHaveCount(0);
         await page.locator(".property-form").screenshot({
-          path: `/workspace/work/member-listing/member-editor-${width}.png`,
+          path: `/workspace/work/listing-ui/member-editor-${width}.png`,
         });
         const verifyPublic = async (gallery: string[]) => {
           const cover = gallery[0];

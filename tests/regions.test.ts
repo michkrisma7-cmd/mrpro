@@ -41,12 +41,13 @@ test("national snapshot has unique Kemendagri codes, all parents, recorded count
 });
 
 test("priority ordering keeps every region available and other provinces use alphabetical order", () => {
+  const provinces = getRegions("provinces").map((r) => r.name);
   assert.deepEqual(
-    getRegions("provinces")
-      .slice(0, 2)
-      .map((r) => r.name),
-    ["Jawa Barat", "Banten"],
+    provinces,
+    [...provinces].sort((a, b) => a.localeCompare(b, "id")),
   );
+  assert.equal(provinces[provinces.indexOf("Bali") + 1], "Banten");
+  assert.equal(provinces[provinces.indexOf("Jambi") + 1], "Jawa Barat");
   assert.ok(getRegions("provinces").some((r) => r.name === "Jawa Tengah"));
   assert.deepEqual(
     getRegions("regencies", "32")
@@ -70,7 +71,10 @@ function chosen() {
   const form = new FormData();
   let parent = "";
   for (const [index, level] of regionLevels.entries()) {
-    const region = getRegions(level, parent)[0];
+    const region =
+      index === 0
+        ? getRegions(level, parent).find((r) => r.id === "32")!
+        : getRegions(level, parent)[0];
     form.set(`field_${regionKeys[index]}_kode`, region.id);
     form.set(`field_${regionKeys[index]}`, "Forged name ignored");
     parent = region.id;

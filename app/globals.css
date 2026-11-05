@@ -2252,16 +2252,31 @@ fieldset:disabled {
   padding: 3px;
 }
 .property-form .submit-area .button {
-  background: var(--brand-red);
-  border-color: var(--brand-red);
+  background: #e60000;
+  border-color: #e60000;
   color: #fff;
+  opacity: 1;
+  filter: none;
 }
 .property-form .submit-area .button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--brand-red), black 8%);
+  background: #cf0000;
+  border-color: #cf0000;
 }
 .property-form .submit-area .button:active:not(:disabled) {
-  background: color-mix(in srgb, var(--brand-red), black 16%);
+  background: #b80000;
+  border-color: #b80000;
   transform: translateY(0);
+}
+.property-form .submit-area .button:disabled {
+  background: #d1d5db;
+  border-color: #d1d5db;
+  color: #374151;
+}
+.property-form .submit-area .button:disabled:has(.spin) {
+  background: #cf0000;
+  border-color: #cf0000;
+  color: #fff;
+  cursor: wait;
 }
 .submit-area > p {
   font-size: 10px;
@@ -5307,7 +5322,6 @@ td .text-button {
 .property-form input,
 .property-form textarea,
 .property-form select,
-.property-form .property-regions h3,
 .property-form .upload-zone strong {
   color: #111827;
 }
@@ -5333,10 +5347,6 @@ td .text-button {
   font-size: 12px;
   font-weight: 550;
 }
-.region-choice input[type="search"] {
-  font-size: 12px;
-}
-.property-regions h3 { font-size: 16px; margin-bottom: 8px; }
 .property-regions > p { font-size: 12px; margin-bottom: 16px; }
 .property-regions dl { margin: 12px 0; }
 .property-regions dt { font-weight: 600; }

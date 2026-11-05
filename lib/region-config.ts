@@ -22,7 +22,6 @@ export const regionLabels = [
   "Desa/Kelurahan",
 ];
 export const regionPriorities: Record<string, string[]> = {
-  provinces: ["32", "36"],
   "32": ["32.16", "32.75"], // Kabupaten Bekasi, Kota Bekasi
   "36": ["36.03", "36.74"], // Kabupaten Tangerang, Kota Tangerang Selatan
 };
@@ -54,12 +53,7 @@ export const defaultRegionFields: Field[] = regionKeys.map((key, index) => ({
 }));
 export function sortRegions(items: Region[], level: RegionLevel, parent = "") {
   const sorted = [...items].sort((a, b) => a.name.localeCompare(b.name, "id"));
-  const priority =
-    level === "provinces"
-      ? regionPriorities.provinces
-      : level === "regencies"
-        ? regionPriorities[parent]
-        : undefined;
+  const priority = level === "regencies" ? regionPriorities[parent] : undefined;
   if (!priority) return sorted;
   return [
     ...priority.flatMap((id) => sorted.filter((r) => r.id === id)),

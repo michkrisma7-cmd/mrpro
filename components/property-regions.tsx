@@ -26,7 +26,6 @@ function RegionSelect({
 }) {
   const enabled = level === "provinces" || Boolean(parent);
   const [options, setOptions] = useState<Region[]>([]);
-  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(enabled);
   const [error, setError] = useState("");
   const [attempt, setAttempt] = useState(0);
@@ -55,27 +54,17 @@ function RegionSelect({
       });
     return () => controller.abort();
   }, [enabled, level, parent, attempt]);
-  const filtered = options.filter((r) =>
-    r.name
-      .toLocaleLowerCase("id")
-      .includes(query.trim().toLocaleLowerCase("id")),
-  );
-  if (selected.id && !filtered.some((r) => r.id === selected.id))
-    filtered.unshift(selected);
+  // Keep the stored label visible while its options are loading during edit.
+  const displayed =
+    selected.id && !options.some((r) => r.id === selected.id)
+      ? [selected, ...options]
+      : options;
   return (
     <fieldset className="region-choice">
       <legend>
         {label}
         {required && <span className="required"> *</span>}
       </legend>
-      <input
-        type="search"
-        aria-label={`Cari ${label.toLowerCase()}`}
-        placeholder={`Cari ${label.toLowerCase()}`}
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        disabled={!enabled || loading || Boolean(error)}
-      />
       <select
         aria-label={label}
         value={selected.id}
@@ -88,7 +77,6 @@ function RegionSelect({
               name: "",
             },
           );
-          setQuery("");
         }}
       >
         <option value="">
@@ -98,12 +86,12 @@ function RegionSelect({
               ? "Memuat wilayah…"
               : `Pilih ${label.toLowerCase()}`}
         </option>
-        {filtered.map((r) => (
+        {displayed.map((r) => (
           <option key={r.id} value={r.id}>
             {r.name}
           </option>
         ))}
-        {!loading && enabled && !filtered.length && (
+        {!loading && enabled && !displayed.length && (
           <option disabled>Tidak ada wilayah yang cocok</option>
         )}
       </select>
@@ -154,7 +142,6 @@ export function PropertyRegions({
       className="property-regions full-span"
       aria-label="Wilayah properti"
     >
-      <h3>Wilayah properti</h3>
       <input
         type="hidden"
         name="region_mode"
@@ -189,11 +176,6 @@ export function PropertyRegions({
         </>
       ) : (
         <>
-          <p>
-            Pilih wilayah secara berurutan. Jika memilih satu wilayah, lengkapi
-            seluruh pilihan yang tersedia. Lokasi atau alamat tambahan tetap
-            diisi manual.
-          </p>
           <div className="form-grid">
             {active.map((f, index) => {
               const parent = index ? selected[index - 1].id : "";
@@ -211,7 +193,13 @@ export function PropertyRegions({
                   />
                   <RegionSelect
                     key={`${f.key}:${parent}`}
-                    label={f.name}
+                    label={
+                      index === 1
+                        ? "Kota / Kabupaten"
+                        : index === 3
+                          ? "Kelurahan / Desa"
+                          : f.name
+                    }
                     level={regionLevels[index]}
                     parent={parent}
                     selected={selected[index]}
