@@ -1,6 +1,9 @@
+import { business, businessPhone } from "@/lib/business";
+import type { Settings } from "@/lib/types";
 import Link from "next/link";
 import { BrandLogo } from "./brand-logo";
-export function Footer() {
+export function Footer({ settings }: { settings: Settings }) {
+  const phone = businessPhone(settings.whatsapp);
   return (
     <footer className="site-footer">
       <div className="container">
@@ -32,6 +35,7 @@ export function Footer() {
               Akses Media Sosial
             </a>
             <Link href="/login">Masuk ke akun</Link>
+            {phone && <a href={`tel:${phone}`}>{phone}</a>}
           </nav>
         </div>
         <div className="footer-bottom">
@@ -39,7 +43,9 @@ export function Footer() {
             <Link href="/syarat-dan-ketentuan">Syarat &amp; Ketentuan</Link>
             <Link href="/kebijakan-privasi">Kebijakan Privasi</Link>
           </nav>
-          <p>© {new Date().getFullYear()} MR Properti. Semua hak dilindungi.</p>
+          <p>
+            © {new Date().getFullYear()} {business.name}. Semua hak dilindungi.
+          </p>
         </div>
       </div>
     </footer>

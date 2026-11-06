@@ -28,6 +28,7 @@ import { TestimonialSection } from "@/components/testimonial-section";
 import { BlogList } from "@/components/blog-list";
 import { pageMetadata, homeTitle, homeDescription, jsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/format";
+import { businessSchema } from "@/lib/business";
 export const metadata = pageMetadata({
   title: homeTitle,
   absoluteTitle: true,
@@ -105,7 +106,7 @@ async function HomeSearchContent() {
         <Link href="/kalkulator-kpr" className="button home-neutral-button">
           Kalkulator KPR <ArrowUpRight size={17} />
         </Link>
-        <Link href={wa || "/#tentang"} className="outline-button">
+        <Link href={wa || "/tentang-kami"} className="outline-button">
           Kenali Kami <ArrowRight size={16} />
         </Link>
       </div>
@@ -145,17 +146,7 @@ async function HomeContent({
           __html: jsonLd({
             "@context": "https://schema.org",
             "@graph": [
-              {
-                "@type": "RealEstateAgent",
-                "@id": `${siteUrl()}/#organization`,
-                name: "MR Properti",
-                url: siteUrl(),
-                logo: `${siteUrl()}/brand/mrproperti-logo.png`,
-                image: `${siteUrl()}/images/hero.webp`,
-                areaServed: ["Cikarang", "Bekasi"],
-                ...(settings.whatsapp ? { telephone: settings.whatsapp } : {}),
-                ...(settings.email ? { email: settings.email } : {}),
-              },
+              businessSchema(settings),
               {
                 "@type": "WebSite",
                 "@id": `${siteUrl()}/#website`,

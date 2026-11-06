@@ -28,6 +28,7 @@ test(
           await readFile(`prisma/migrations/${name}/migration.sql`, "utf8"),
         );
       await database.exec(`
+      INSERT INTO "SiteSettings" (id,whatsapp,email) VALUES ('main','081234567890','kontak@example.test');
       INSERT INTO "AppUser" (id,name,email,"passwordHash") VALUES ('owner','Owner','owner@example.test','unusable');
       INSERT INTO "Property" (id,slug,title,description,gallery,whatsapp,"ownerId",status,"updatedAt") VALUES
       ('published','rumah-cikarang','Rumah Cikarang','Rumah untuk keluarga di Cikarang.',ARRAY['/api/media/test-image'],'','owner','PUBLISHED',NOW()),
@@ -159,6 +160,68 @@ test(
           ])
             assert.ok(!sitemap.includes(slug));
           assert.ok(sitemap.includes(`${canonical}/api/media/test-image`));
+          const about = await (await get("/tentang-kami")).text();
+          const parseSchemas = (html: string): Record<string, unknown>[] =>
+            [
+              ...html.matchAll(
+                /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,
+              ),
+            ].flatMap((match) => {
+              const data = JSON.parse(match[1]);
+              return data["@graph"] || data;
+            });
+          const entities = parseSchemas(home);
+          const agent = entities.filter(
+            (item) => item["@type"] === "RealEstateAgent",
+          );
+          assert.equal(agent.length, 1);
+          assert.equal(agent[0]["@id"], `${canonical}/#organization`);
+          assert.equal(agent[0].telephone, "+6281234567890");
+          assert.deepEqual(agent[0].areaServed, [
+            "Bekasi",
+            "Cikarang",
+            "Karawang",
+            "Cikampek",
+          ]);
+          assert.equal(
+            agent[0].address,
+            undefined,
+            "no invented office address",
+          );
+          assert.equal(
+            agent[0].sameAs,
+            undefined,
+            "no unverified social profiles",
+          );
+          for (const html of [home, about])
+            assert.ok(html.includes('href="tel:+6281234567890"'));
+          assert.ok(
+            parseSchemas(about).some(
+              (item) => item["@type"] === "BreadcrumbList",
+            ),
+          );
+          for (const path of [
+            "/brand/mrproperti-logo.png",
+            "/images/hero.webp",
+          ]) {
+            const response = await get(path);
+            assert.equal(response.status, 200);
+            assert.ok(
+              response.headers.get("content-type")?.startsWith("image/"),
+            );
+          }
+          for (const match of sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)) {
+            const url = new URL(match[1]);
+            assert.equal(url.origin, canonical);
+            const response = await get(url.pathname);
+            assert.equal(response.status, 200, url.pathname);
+            const html = await response.text();
+            assert.ok(
+              !/name="robots" content="[^"]*noindex/.test(html),
+              url.pathname,
+            );
+            parseSchemas(html);
+          }
           const page2 = await (await get("/properti?page=2")).text();
           assert.ok(
             page2.includes(
@@ -171,6 +234,10 @@ test(
           assert.ok(
             article.includes("<title>Tips Rumah Bekasi | MR Properti</title>"),
           );
+          const publisher = parseSchemas(article).find(
+            (item) => item["@type"] === "BlogPosting",
+          )?.publisher;
+          assert.deepEqual(publisher, { "@id": `${canonical}/#organization` });
           const property = await (await get("/properti/rumah-cikarang")).text();
           assert.ok(
             property.includes("<title>Rumah Cikarang | MR Properti</title>"),

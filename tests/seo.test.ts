@@ -1,3 +1,4 @@
+import { businessPhone } from "../lib/business";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
@@ -94,4 +95,15 @@ test("robots lets crawlers fetch public media and read private-page noindex tags
       else process.env[key] = before[key];
     }
   }
+});
+
+test("official contact normalization rejects placeholders and unrelated country codes", () => {
+  for (const value of [
+    "0812 3456 7890",
+    "6281234567890",
+    "+62 (812) 3456-7890",
+  ])
+    assert.equal(businessPhone(value), "+6281234567890");
+  for (const value of ["", "123", "+1 202 555 0123", "081234567890 ext 1"])
+    assert.equal(businessPhone(value), undefined);
 });

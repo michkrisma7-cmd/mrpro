@@ -1,16 +1,32 @@
+import { connection } from "next/server";
+import { business, businessPhone } from "@/lib/business";
+import { getSettings } from "@/lib/data";
 import Link from "next/link";
-import { pageMetadata } from "@/lib/seo";
+import { breadcrumbs, jsonLd, pageMetadata } from "@/lib/seo";
 
 export const metadata = pageMetadata({
   title: "Tentang Kami",
   description:
-    "Kenali mrproperti, mitra pemasaran properti serta perbaikan dan penataan rumah maupun tempat usaha di Bekasi, Cikarang, Karawang, hingga Cikampek.",
+    "Kenali MR Properti, mitra pemasaran properti serta perbaikan dan penataan rumah maupun tempat usaha di Bekasi, Cikarang, Karawang, hingga Cikampek.",
   path: "/tentang-kami",
 });
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  await connection();
+  const phone = businessPhone((await getSettings()).whatsapp);
   return (
     <article className="container page-wrap legal-page">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLd(
+            breadcrumbs([
+              { name: "Beranda", path: "/" },
+              { name: "Tentang Kami", path: "/tentang-kami" },
+            ]),
+          ),
+        }}
+      />
       <nav className="breadcrumb" aria-label="Breadcrumb">
         <Link href="/">Beranda</Link>
         <span>/</span>
@@ -21,11 +37,19 @@ export default function AboutPage() {
         <h1>Tentang Kami</h1>
       </header>
       <div className="legal-content">
+        {phone && (
+          <section className="legal-clause">
+            <h2>Kontak {business.name}</h2>
+            <p>
+              <a href={`tel:${phone}`}>{phone}</a>
+            </p>
+          </section>
+        )}
         <div className="legal-clause">
           <p>
             <strong>
-              mrproperti hadir untuk membantu kebutuhan pemasaran properti serta
-              perbaikan dan penataan rumah maupun tempat usaha.
+              MR Properti hadir untuk membantu kebutuhan pemasaran properti
+              serta perbaikan dan penataan rumah maupun tempat usaha.
             </strong>{" "}
             Kami mengutamakan komunikasi yang jelas, kesepakatan yang terbuka,
             dan pekerjaan yang disesuaikan dengan kebutuhan pelanggan.
@@ -57,11 +81,11 @@ export default function AboutPage() {
           <h2 id="about-service-area">Wilayah Layanan</h2>
           <p>
             Wilayah kerja kami saat ini mencakup{" "}
-            <strong>Bekasi, Cikarang, Karawang, hingga Cikampek</strong>.
-            Pembatasan wilayah ini membantu kami mengatur survei, koordinasi
-            tim, dan pemantauan pekerjaan dengan lebih terarah. Ketersediaan
-            layanan di setiap lokasi disesuaikan dengan jenis pekerjaan, akses
-            lokasi, dan kesiapan tim.
+            <strong>{business.areaServed.join(", ")}</strong>. Pembatasan
+            wilayah ini membantu kami mengatur survei, koordinasi tim, dan
+            pemantauan pekerjaan dengan lebih terarah. Ketersediaan layanan di
+            setiap lokasi disesuaikan dengan jenis pekerjaan, akses lokasi, dan
+            kesiapan tim.
           </p>
         </section>
         <section className="legal-clause" aria-labelledby="about-how-we-work">

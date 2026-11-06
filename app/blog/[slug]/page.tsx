@@ -1,3 +1,4 @@
+import { businessId } from "@/lib/business";
 import type { Metadata } from "next";
 import { pageMetadata, breadcrumbs, jsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/format";
@@ -44,11 +45,7 @@ export default async function BlogDetail({ params }: Props) {
               datePublished: post.createdAt.toISOString(),
               dateModified: post.updatedAt.toISOString(),
               inLanguage: "id-ID",
-              publisher: {
-                "@type": "Organization",
-                name: "MR Properti",
-                url: siteUrl(),
-              },
+              publisher: { "@id": businessId() },
             },
             breadcrumbs([
               { name: "Beranda", path: "/" },
@@ -58,6 +55,13 @@ export default async function BlogDetail({ params }: Props) {
           ]),
         }}
       />
+      <nav className="breadcrumb" aria-label="Breadcrumb">
+        <Link href="/">Beranda</Link>
+        <span>/</span>
+        <Link href="/blog">Blog</Link>
+        <span>/</span>
+        <span aria-current="page">{post.title}</span>
+      </nav>
       <Link className="text-button" href="/blog">
         ← Semua artikel
       </Link>

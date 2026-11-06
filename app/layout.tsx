@@ -59,7 +59,7 @@ async function SiteFooter() {
   const settings = await getSettings();
   return (
     <>
-      <Footer />
+      <Footer settings={settings} />
       <DeferredChat whatsapp={settings.whatsapp} />
     </>
   );
