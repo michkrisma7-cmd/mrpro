@@ -24,6 +24,13 @@ export function Footer() {
             <Link href="/tim-kami">Tim Kami</Link>
             <Link href="/kemitraan">Kemitraan</Link>
             <Link href="/kalkulator-kpr">Kalkulator KPR</Link>
+            <a
+              href="https://linktr.ee/mrpropertix"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Akses Media Sosial
+            </a>
             <Link href="/login">Masuk ke akun</Link>
           </nav>
         </div>
