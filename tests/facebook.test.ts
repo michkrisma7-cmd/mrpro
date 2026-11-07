@@ -57,6 +57,13 @@ test("only a transition to PUBLISHED sends a webhook; edits and repeated publica
     require: (name: string) => {
       if (name === "zod") return { z };
       if (name === "./validation") return validation;
+      if (name === "./regions")
+        return {
+          parseListingValues: (_fields: unknown, form: FormData) =>
+            validation.parseValues(fields, form),
+        };
+      if (name === "./publication-flash" || name === "./guest-listing")
+        return {};
       if (name === "./data") return { getFields: async () => fields };
       if (name === "./auth")
         return {

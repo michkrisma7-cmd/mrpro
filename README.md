@@ -306,3 +306,15 @@ Uji integrasi menggunakan PostgreSQL lokal terisolasi (PGlite) dan Chromium,
 meliputi pendaftaran, kegagalan database, pengiriman ulang, filter admin,
 pembatalan edit, koreksi tersimpan setelah refresh, serta penolakan pengguna
 non-admin. Tidak memerlukan kredensial database produksi.
+
+## Pemasangan iklan tanpa akun
+
+Semua tombol Pasang Iklan menuju `/titip-properti`. Formulir, unggah foto, dan pengiriman dapat digunakan tanpa login. Member tetap memakai formulir yang sama dan kirimannya tetap terhubung ke akun. Sesuai aturan masa uji coba, kiriman baru berstatus PUBLISHED, lalu pengguna diarahkan ke beranda dengan pemberitahuan keberhasilan.
+
+Terapkan migrasi `202611080001_guest_listings` dengan `bun run db:deploy` pada database tujuan sebelum menjalankan aplikasi baru, lalu regenerasi Prisma Client (`bun run db:generate`). Migrasi hanya membuat `Property.ownerId` dan `Media.ownerId` opsional serta menambahkan `Media.guestKey` beserta indeksnya; akun dan kepemilikan lama dipertahankan. Tidak ada pembuatan akun otomatis atau perubahan kebijakan bucket/database publik.
+
+Foto tamu diikat ke hash cookie acak HttpOnly, SameSite=Lax (Secure di produksi). Cookie ini hanya mengizinkan penggunaan dan pratinjau foto sendiri; tidak memberikan akses akun, edit listing, atau admin. Foto listing PUBLISHED tetap dapat dilihat publik melalui endpoint media yang sudah ada. Kontak publik berasal dari nomor WhatsApp dalam formulir.
+
+Perlindungan server: origin diperiksa, gambar JPG/PNG/WebP maksimal 5 MB dan 25 juta piksel divalidasi serta dikodekan ulang, maksimal 12 foto per listing, dan kepemilikan setiap foto diperiksa. Batas tamu menggunakan counter atomik database per jam: 36 percobaan unggah dan 6 percobaan kirim per sesi, serta 360 unggahan dan 60 kiriman secara global untuk membatasi penggantian cookie. Batas terpakai termasuk percobaan gagal. Konfigurasi database dan S3 yang ada tetap diperlukan; tidak ada variabel lingkungan baru.
+
+Verifikasi lengkap dengan database PostgreSQL terisolasi dan fixture S3 lokal: setelah build, jalankan `bun x tsx --test tests/integration/property-photos-flow.test.ts`. Pengujian mencakup browser tamu pada desktop/HP, foto dan kontak tersimpan, validasi gagal mempertahankan isian, pembatasan unggahan, isolasi foto privat, penolakan akses admin/edit, serta regresi alur member untuk Disewa/Dijual/Over Kredit.

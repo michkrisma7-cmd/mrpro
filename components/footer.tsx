@@ -17,7 +17,7 @@ export function Footer({ settings }: { settings: Settings }) {
             <h3 id="footer-services-title">Layanan</h3>
             <Link href="/properti?transaksi=Dijual">Properti dijual</Link>
             <Link href="/properti?transaksi=Disewa">Properti disewa</Link>
-            <Link href="/titip-properti">Titip properti</Link>
+            <Link href="/titip-properti">Pasang Iklan</Link>
             <Link href="/layanan">Layanan tukang</Link>
             <Link href="/layanan?jenis=Renovasi">Renovasi rumah</Link>
           </nav>

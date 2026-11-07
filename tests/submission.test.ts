@@ -16,7 +16,7 @@ import { catalogQueries } from "../lib/catalog-query";
 import type { ActionState } from "../lib/types";
 
 test(
-  "trial submissions publish immediately while enforcing authentication, fields and photo ownership",
+  "trial submissions publish immediately while enforcing ownership, fields and photo ownership",
   { timeout: 60000 },
   async () => {
     const database = await PGlite.create();
@@ -87,6 +87,11 @@ test(
           if (name === "zod") return { z };
           if (name === "./validation") return validation;
           if (name === "./regions") return regions;
+          if (name === "./guest-listing")
+            return {
+              guestUploadKey: async () => "test-guest-key",
+              allowGuestListingAttempt: async () => true,
+            };
           if (name === "./publication-flash")
             return {
               setPublicationFlash: async (id: string) => {
@@ -107,6 +112,7 @@ test(
             };
           if (name === "./auth")
             return {
+              currentUser: async () => (authenticated ? user : null),
               requireUser: async () => {
                 if (!authenticated) throw new Error("login required");
                 return user;
@@ -141,7 +147,18 @@ test(
       form.set("ownerId", "another-user");
       form.set("featured", "on");
       form.set("status", "ARCHIVED");
-      await assert.rejects(exports.submitProperty({}, form), /login required/);
+      assert.match(
+        (await exports.submitProperty({}, form)).error!,
+        /unggahan Anda sendiri/,
+      );
+      await assert.rejects(
+        exports.updateMemberProperty({}, form),
+        /login required/,
+      );
+      await assert.rejects(
+        exports.savePropertyPhotos({}, form),
+        /login required/,
+      );
       authenticated = true;
       form.set("gallery", JSON.stringify(["/api/media/foreignphoto"]));
       assert.match(

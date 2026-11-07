@@ -177,19 +177,23 @@ test("admin preview is read-only and field editor lists all visibility options",
     page.getByRole("button", { name: "Simpan Field" }),
   ).toBeDisabled();
 });
-test("login and submission do not pretend to work without configured credentials", async ({
+test("login stays disabled without configured credentials", async ({
   page,
 }) => {
   await page.goto("/login");
   await expect(
     page.getByRole("button", { name: "Masuk ke Akun" }),
   ).toBeDisabled();
-  await page.getByRole("button", { name: "Daftar Akun" }).click();
+  await page
+    .getByRole("button", { name: "Belum punya akun? Daftar", exact: true })
+    .click();
   await expect(page.getByLabel("Nama lengkap")).toBeVisible();
+});
+test("submission shows the form without a login gate and stays disabled without database configuration", async ({
+  page,
+}) => {
   await page.goto("/titip-properti");
-  await expect(
-    page.getByText("Masuk untuk menitipkan properti."),
-  ).toBeVisible();
+  await expect(page.locator(".login-notice")).toHaveCount(0);
   await expect(
     page.getByRole("button", { name: "Tayangkan Properti" }),
   ).toBeDisabled();

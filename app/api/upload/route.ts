@@ -4,6 +4,7 @@ import { bucket, s3, storageConfigured } from "@/lib/storage";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { optimizeUpload } from "@/lib/image-upload";
 import { boundedFormData } from "@/lib/upload-body";
+import { guestUploadKey, allowGuestListingAttempt } from "@/lib/guest-listing";
 export const runtime = "nodejs";
 export async function POST(request: Request) {
   const origin = request.headers.get("origin");
@@ -21,9 +22,10 @@ export async function POST(request: Request) {
   if (!sameOrigin)
     return Response.json({ error: "Origin tidak valid." }, { status: 403 });
   const user = await currentUser();
-  if (!user)
+  const guestKey = user ? null : await guestUploadKey();
+  if (!user && !guestKey)
     return Response.json(
-      { error: "Silakan login sebelum mengunggah." },
+      { error: "Buka formulir dan pilih foto untuk mulai mengunggah." },
       { status: 401 },
     );
   if (!storageConfigured)
@@ -36,9 +38,14 @@ export async function POST(request: Request) {
       { error: "Ukuran file maksimal 5 MB." },
       { status: 413 },
     );
+  if (!user && !(await allowGuestListingAttempt(guestKey!, "upload")))
+    return Response.json(
+      { error: "Batas unggahan per jam tercapai. Coba lagi nanti." },
+      { status: 429 },
+    );
   const recent = await db().media.count({
     where: {
-      ownerId: user.id,
+      ...(user ? { ownerId: user.id } : { ownerId: null, guestKey: guestKey! }),
       createdAt: { gte: new Date(Date.now() - 3600000) },
     },
   });
@@ -66,7 +73,7 @@ export async function POST(request: Request) {
       { status: 400 },
     );
   }
-  const key = `properties/${user.id}/${crypto.randomUUID()}.webp`;
+  const key = `properties/${user?.id ?? `guest/${guestKey}`}/${crypto.randomUUID()}.webp`;
   try {
     await s3().send(
       new PutObjectCommand({
@@ -79,7 +86,7 @@ export async function POST(request: Request) {
     );
     try {
       const media = await db().media.create({
-        data: { key, ownerId: user.id },
+        data: { key, ownerId: user?.id ?? null, guestKey },
       });
       return Response.json({ url: `/api/media/${media.id}` });
     } catch (e) {

@@ -23,7 +23,7 @@ export type Listing = {
   whatsapp: string;
   status: string;
   featured: boolean;
-  ownerId: string;
+  ownerId: string | null;
   ownerName?: string;
   createdAt: Date | string;
   updatedAt: Date | string;

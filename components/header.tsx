@@ -107,8 +107,7 @@ export function Header() {
             href="/titip-properti"
             className={`button button-small ${path === "/" ? "home-neutral-button" : ""}`}
           >
-            {path === "/" ? "Pasang Iklan" : "Titip Properti"}{" "}
-            <ArrowUpRight size={16} />
+            Pasang Iklan <ArrowUpRight size={16} />
           </Link>
           <button
             ref={toggleRef}

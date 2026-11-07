@@ -54,7 +54,7 @@ export default async function Account({
             </Link>
           )}
           <Link href="/titip-properti" className="button">
-            Titip Properti
+            Pasang Iklan
             <ArrowUpRight size={17} />
           </Link>
         </div>
@@ -121,7 +121,7 @@ export default async function Account({
             properti Anda.
           </p>
           <Link href="/titip-properti" className="button">
-            Titip Properti Pertama
+            Pasang Iklan
             <ArrowUpRight size={17} />
           </Link>
         </div>

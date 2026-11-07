@@ -2,6 +2,7 @@ import { db, databaseConfigured } from "@/lib/db";
 import { currentUser } from "@/lib/auth";
 import { bucket, s3 } from "@/lib/storage";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { guestUploadKey } from "@/lib/guest-listing";
 export async function GET(
   _: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -24,7 +25,13 @@ export async function GET(
   );
   if (!isPublic) {
     const user = await currentUser();
-    if (!user || (user.id !== media.ownerId && user.role !== "ADMIN"))
+    const guestKey = user ? null : await guestUploadKey();
+    const ownGuestUpload =
+      !media.ownerId && Boolean(guestKey && guestKey === media.guestKey);
+    if (
+      !ownGuestUpload &&
+      (!user || (user.id !== media.ownerId && user.role !== "ADMIN"))
+    )
       return new Response(null, { status: 404 });
   }
   try {

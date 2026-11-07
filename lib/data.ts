@@ -34,7 +34,10 @@ export const getSettings = cache(
   ),
 );
 function publicListing(
-  p: Omit<Listing, "values"> & { values: unknown; owner?: { name: string } },
+  p: Omit<Listing, "values"> & {
+    values: unknown;
+    owner?: { name: string } | null;
+  },
   fields: Field[],
 ): Listing {
   const visible = new Set(

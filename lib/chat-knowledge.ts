@@ -114,7 +114,7 @@ export async function getChatKnowledge(query: string) {
       id: "site:consign",
       title: "Titip properti",
       path: "/titip-properti",
-      text: "Pemilik dapat masuk atau daftar akun lalu mengisi form Titip Properti, melengkapi informasi dan mengunggah foto properti. Pantau kiriman di halaman Akun. Hubungi tim untuk bantuan pemasaran.",
+      text: "Pemilik dapat mengisi formulir Pasang Iklan tanpa masuk atau daftar akun, melengkapi informasi dan mengunggah foto properti. Member dapat memantau kiriman di halaman Akun. Hubungi tim untuk bantuan pemasaran.",
     },
     {
       id: "site:time",

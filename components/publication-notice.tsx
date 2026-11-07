@@ -8,9 +8,12 @@ export async function PublicationNotice() {
   const id = (await cookies()).get(publicationCookie)?.value;
   if (!id || !/^[a-z0-9-]{1,100}$/i.test(id)) return null;
   const user = await currentUser();
-  if (!user) return null;
   const listing = await db().property.findFirst({
-    where: { id, ownerId: user.id, status: "PUBLISHED" },
+    where: {
+      id,
+      ...(user ? { ownerId: user.id } : { ownerId: null }),
+      status: "PUBLISHED",
+    },
     select: { slug: true },
   });
   if (!listing) return null;
@@ -19,7 +22,7 @@ export async function PublicationNotice() {
       <strong>Properti berhasil tayang</strong>
       <div>
         <Link href={`/properti/${listing.slug}`}>Lihat Iklan</Link>
-        <Link href="/akun">Kelola Listing</Link>
+        {user && <Link href="/akun">Kelola Listing</Link>}
       </div>
       <form action={dismissPublication}>
         <button

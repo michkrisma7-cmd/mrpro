@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Star, UploadCloud, X } from "lucide-react";
+import { initializeListingUpload } from "@/lib/listing-upload-actions";
 
 type Photo = { id: string; preview: string; url?: string; error?: string };
 
@@ -67,6 +68,21 @@ export function PropertyPhotos({
     });
     setPhotos((prev) => [...prev, ...added]);
     setPrimary((prev) => prev ?? added[0].id);
+    try {
+      await initializeListingUpload();
+    } catch {
+      setPhotos((prev) =>
+        prev.map((p) =>
+          added.some((a) => a.id === p.id)
+            ? {
+                ...p,
+                error: "Unggah belum tersedia. Hapus foto lalu coba lagi.",
+              }
+            : p,
+        ),
+      );
+      return;
+    }
     await Promise.all(
       added.map(async (photo, index) => {
         try {

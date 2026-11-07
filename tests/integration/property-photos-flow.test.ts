@@ -18,7 +18,7 @@ import { defaultFields } from "../../lib/demo";
 import { getRegions } from "../../lib/regions";
 
 test(
-  "member listings publish, confirm, edit securely and preserve photos and regional location across desktop and mobile",
+  "guest and member listings publish, confirm, edit securely and preserve photos and regional location across desktop and mobile",
   { timeout: 240000 },
   async () => {
     const database = await PGlite.create();
@@ -187,7 +187,7 @@ test(
       const village = getRegions("villages", regionValues.district.id)[0];
       const checkRegionPlaceholders = async () => {
         await expect(
-          page.locator('.property-regions select option:first-child'),
+          page.locator(".property-regions select option:first-child"),
         ).toHaveText([
           "Pilih provinsi",
           "Pilih Kota / Kabupaten",
@@ -254,6 +254,201 @@ test(
       };
       const errors: string[] = [];
       page.on("pageerror", (error) => errors.push(error.message));
+      // Isolated browser contexts contain no member cookies: exercise real guest
+      // upload -> server action -> SQL -> object storage -> public contact links.
+      for (const width of [1440, 390]) {
+        const guest = await browser.newContext({
+          viewport: { width, height: 900 },
+        });
+        const page = await guest.newPage();
+        const title = `Rumah kiriman tamu ${width}`;
+        for (const path of ["/properti", "/layanan", "/blog"]) {
+          await page.goto(`${origin}${path}`);
+          const cta = page.locator('.nav-actions a[href="/titip-properti"]');
+          await expect(cta).toHaveText(/Pasang Iklan/);
+          await cta.click();
+          await expect(page).toHaveURL(`${origin}/titip-properti`);
+        }
+        await expect(page.locator(".login-notice")).toHaveCount(0);
+        await expect(page.locator('[name="title"]')).toBeEnabled();
+        await page.locator('[name="title"]').fill(title);
+        await page
+          .locator('textarea[name="description"]')
+          .fill(
+            "Rumah tamu dengan foto asli dan informasi lengkap untuk pengujian pengiriman tanpa akun.",
+          );
+        await page.locator('[name="whatsapp"]').fill("081399998888");
+        await page.locator('[name="field_harga"]').fill("1200000000");
+        await page.locator('[name="field_lokasi"]').fill("Bekasi");
+        await page.locator('[name="field_jenis"]').selectOption("Rumah");
+        await page
+          .locator('[name="field_transaksi"]')
+          .selectOption(width === 390 ? "Over Kredit" : "Disewa");
+        await page
+          .getByRole("combobox", { name: "Provinsi", exact: true })
+          .selectOption("32");
+        await page
+          .getByRole("combobox", { name: "Kota / Kabupaten", exact: true })
+          .selectOption("32.16");
+        await page
+          .getByRole("combobox", { name: "Kecamatan", exact: true })
+          .selectOption(regionValues.district.id);
+        await page
+          .getByRole("combobox", { name: "Kelurahan / Desa", exact: true })
+          .selectOption(village.id);
+        await page
+          .locator('input[type="file"]')
+          .setInputFiles([file("guest-one.png"), file("guest-two.png")]);
+        await expect(page.locator('[name="photosReady"]')).toHaveValue("1");
+        const gallery = JSON.parse(
+          await page.locator('[name="gallery"]').inputValue(),
+        );
+        const media = (
+          await database.query<{ ownerId: string | null; guestKey: string }>(
+            'SELECT "ownerId","guestKey" FROM "Media" WHERE id=$1',
+            [gallery[0].split("/").pop()],
+          )
+        ).rows[0];
+        assert.equal(media.ownerId, null);
+        assert.ok(media.guestKey);
+        assert.equal(
+          (await guest.request.get(`${origin}${gallery[0]}`)).status(),
+          200,
+        );
+        const stranger = await browser.newContext();
+        assert.equal(
+          (await stranger.request.get(`${origin}${gallery[0]}`)).status(),
+          404,
+        );
+        const invalid = await guest.request.post(`${origin}/api/upload`, {
+          headers: { origin },
+          multipart: {
+            file: {
+              name: "fake.png",
+              mimeType: "image/png",
+              buffer: Buffer.from("not an image"),
+            },
+          },
+        });
+        assert.equal(invalid.status(), 400);
+        const crossOrigin = await guest.request.post(`${origin}/api/upload`, {
+          headers: { origin: "https://evil.example" },
+        });
+        assert.equal(crossOrigin.status(), 403);
+        await page.locator('[name="whatsapp"]').fill("invalid-phone");
+        await page.getByRole("button", { name: "Tayangkan Properti" }).click();
+        await expect(
+          page.locator(".property-form").getByRole("alert"),
+        ).toContainText("Nomor WhatsApp tidak valid");
+        await expect(page.locator('[name="title"]')).toHaveValue(title);
+        assert.deepEqual(
+          JSON.parse(await page.locator('[name="gallery"]').inputValue()),
+          gallery,
+        );
+        await page.locator('[name="whatsapp"]').fill("081399998888");
+        if (width === 1440) {
+          await database.exec(
+            'ALTER TABLE "Property" ADD CONSTRAINT guest_save_failure CHECK (false)',
+          );
+          await page
+            .getByRole("button", { name: "Tayangkan Properti" })
+            .click();
+          await expect(
+            page.locator(".property-form").getByRole("alert"),
+          ).toContainText(/belum berhasil|guest_save_failure/);
+          await expect(page).toHaveURL(`${origin}/titip-properti`);
+          await expect(page.locator('[name="title"]')).toHaveValue(title);
+          assert.deepEqual(
+            JSON.parse(await page.locator('[name="gallery"]').inputValue()),
+            gallery,
+          );
+          await database.exec(
+            'ALTER TABLE "Property" DROP CONSTRAINT guest_save_failure',
+          );
+          await database.query(
+            'UPDATE "AuthAttempt" SET count=6 WHERE key=$1',
+            [`guest-listing:submit:${media.guestKey}`],
+          );
+          await page
+            .getByRole("button", { name: "Tayangkan Properti" })
+            .click();
+          await expect(
+            page.locator(".property-form").getByRole("alert"),
+          ).toContainText("Batas pengiriman per jam tercapai");
+          await expect(page.locator('[name="title"]')).toHaveValue(title);
+          await database.exec('DELETE FROM "AuthAttempt"');
+        }
+        assert.equal(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth,
+          ),
+          true,
+        );
+        await page.getByRole("button", { name: "Tayangkan Properti" }).click();
+        await expect(page).toHaveURL(`${origin}/`);
+        await expect(page.locator(".publication-notice")).toContainText(
+          "Properti berhasil tayang",
+        );
+        await expect(
+          page
+            .locator(".publication-notice")
+            .getByRole("link", { name: "Kelola Listing" }),
+        ).toHaveCount(0);
+        const listing = (
+          await database.query<{
+            id: string;
+            slug: string;
+            ownerId: string | null;
+            whatsapp: string;
+            gallery: string[];
+            status: string;
+          }>('SELECT * FROM "Property" WHERE title=$1', [title])
+        ).rows[0];
+        assert.equal(listing.ownerId, null);
+        assert.equal(listing.status, "PUBLISHED");
+        assert.deepEqual(listing.gallery, gallery);
+        assert.equal(
+          (await database.query('SELECT id FROM "AppUser"')).rows.length,
+          1,
+        );
+        assert.equal(
+          (await stranger.request.get(`${origin}${gallery[0]}`)).status(),
+          200,
+        );
+        await page.goto(`${origin}/properti/${listing.slug}`);
+        await expect(
+          page.locator('a[href^="https://wa.me/6281399998888"]'),
+        ).toBeVisible();
+        await expect(
+          page.locator('a[href="tel:+6281399998888"]'),
+        ).toBeVisible();
+        for (const path of [
+          "/admin",
+          `/akun/properti/${listing.id}/edit`,
+          `/akun/properti/${listing.id}/foto`,
+        ]) {
+          await page.goto(`${origin}${path}`);
+          await expect(page).toHaveURL(/\/login/);
+        }
+        await database.query(
+          'INSERT INTO "AuthAttempt" (key,count,"expiresAt") VALUES ($1,360,$2) ON CONFLICT (key) DO UPDATE SET count=360',
+          ["guest-listing:upload:global", new Date(Date.now() + 3600000)],
+        );
+        assert.equal(
+          (
+            await guest.request.post(`${origin}/api/upload`, {
+              headers: { origin },
+            })
+          ).status(),
+          429,
+        );
+        await database.exec('DELETE FROM "AuthAttempt"');
+        await database.query('DELETE FROM "Property" WHERE id=$1', [
+          listing.id,
+        ]);
+        await stranger.close();
+        await guest.close();
+      }
       for (const [width, transaction] of [
         [1440, "Dijual"],
         [390, "Disewa"],
@@ -266,6 +461,7 @@ test(
         await expect(page.locator(".home-property-section")).toBeVisible();
         await page
           .getByRole("link", { name: "Pasang Iklan", exact: true })
+          .first()
           .click();
         await page.locator('[name="title"]').fill(title);
         await page
@@ -341,7 +537,7 @@ test(
             exact: true,
           });
           await expect(regency).toBeEnabled();
-        await checkRegionPlaceholders();
+          await checkRegionPlaceholders();
           await expect(regency.locator("option").nth(1)).toHaveText(
             "Kabupaten Tangerang",
           );
@@ -454,7 +650,10 @@ test(
             exact: true,
           });
           await expect(pending).toBeDisabled();
-          await expect(pending).toHaveCSS("background-color", "rgb(251, 48, 0)");
+          await expect(pending).toHaveCSS(
+            "background-color",
+            "rgb(251, 48, 0)",
+          );
           await expect(pending).toHaveCSS("color", "rgb(255, 255, 255)");
           await expect(pending.locator(".spin")).toHaveCount(1);
           await expect(

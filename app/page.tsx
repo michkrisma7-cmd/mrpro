@@ -43,7 +43,7 @@ const homeFaq = [
   ],
   [
     "Apakah saya bisa menitipkan properti di sini?",
-    "Tentu. Buat akun, isi formulir Titip Properti, dan unggah foto. Selama masa uji coba, kiriman baru langsung tayang di katalog setelah berhasil dikirim.",
+    "Tentu. Isi formulir Pasang Iklan, dan unggah foto tanpa harus masuk atau daftar akun. Selama masa uji coba, kiriman baru langsung tayang di katalog setelah berhasil dikirim.",
   ],
   [
     "Bagaimana cara memesan jasa tukang?",
@@ -223,7 +223,7 @@ async function HomeContent({
             <h3>Ruang baru segera hadir.</h3>
             <p>Jadilah yang pertama menitipkan properti Anda.</p>
             <Link className="button" href="/titip-properti">
-              Titip properti
+              Pasang Iklan
             </Link>
           </div>
         )}
@@ -316,7 +316,7 @@ async function HomeContent({
             kami akan membantu langkah selanjutnya.
           </p>
           <Link className="button" href="/titip-properti">
-            Titip Properti Saya <ArrowUpRight size={18} />
+            Pasang Iklan <ArrowUpRight size={18} />
           </Link>
         </div>
       </section>

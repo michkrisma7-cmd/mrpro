@@ -44,8 +44,8 @@ model Property {
   whatsapp String
   status ListingStatus @default(PENDING)
   featured Boolean @default(false)
-  ownerId String
-  owner AppUser @relation(fields: [ownerId], references: [id])
+  ownerId String?
+  owner AppUser? @relation(fields: [ownerId], references: [id], onDelete: Restrict)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   @@index([status, createdAt])
@@ -80,12 +80,14 @@ model Service {
   createdAt DateTime @default(now())
 }
 model Media {
+  guestKey String?
+  @@index([guestKey])
   teamMembers TeamMember[]
   testimonials Testimonial[]
   id String @id @default(cuid())
   key String @unique
-  ownerId String
-  owner AppUser @relation(fields: [ownerId], references: [id])
+  ownerId String?
+  owner AppUser? @relation(fields: [ownerId], references: [id], onDelete: Restrict)
   createdAt DateTime @default(now())
 }
 model SiteSettings {

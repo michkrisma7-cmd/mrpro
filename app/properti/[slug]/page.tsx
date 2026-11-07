@@ -5,8 +5,12 @@ import { pageMetadata, breadcrumbs, jsonLd } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, ArrowUpRight, ShieldCheck, MessageCircle } from "lucide-react";
-import { getFields, getListing, getSettings } from "@/lib/data";
-import { displayValue, filled, whatsappLink, siteUrl } from "@/lib/format";
+import { getFields, getListing } from "@/lib/data";
+import { displayValue, filled, siteUrl } from "@/lib/format";
+import {
+  listingContactNumber,
+  listingWhatsappLink,
+} from "@/lib/listing-contact";
 import { Gallery } from "@/components/gallery";
 export async function generateMetadata({
   params,
@@ -35,7 +39,7 @@ export default async function PropertyDetail({
 }) {
   const property = await getListing((await params).slug);
   if (!property) notFound();
-  const [fields, settings] = await Promise.all([getFields(), getSettings()]);
+  const fields = await getFields();
   const visible = fields.filter(
     (f) => f.showOnDetail && filled(property.values[f.key]),
   );
@@ -44,11 +48,14 @@ export default async function PropertyDetail({
   const specifications = visible.filter(
     (f) => f.key !== "lokasi" && !isRegionKey(f.key),
   );
-  const phone = property.whatsapp || settings.whatsapp;
-  const wa = whatsappLink(
-    phone,
-    `Halo, saya tertarik dengan ${property.title}. ${siteUrl()}/properti/${property.slug}`,
-  );
+  const phone = listingContactNumber(property.whatsapp);
+  const wa = phone
+    ? listingWhatsappLink(
+        phone,
+        property.title,
+        `${siteUrl()}/properti/${property.slug}`,
+      )
+    : null;
   const schema = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
@@ -128,7 +135,11 @@ export default async function PropertyDetail({
               diterbitkan.
             </p>
           )}
-          {wa && <small className="contact-number">{phone}</small>}
+          {phone && (
+            <small className="contact-number">
+              <a href={`tel:+${phone}`}>{property.whatsapp}</a>
+            </small>
+          )}
           <div className="contact-assurance">
             <ShieldCheck size={19} />
             <span>

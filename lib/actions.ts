@@ -2,7 +2,7 @@
 import { revalidatePath, updateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { requireUser, requireAdmin } from "./auth";
+import { currentUser, requireUser, requireAdmin } from "./auth";
 import { db } from "./db";
 import { getFields } from "./data";
 import { sendFacebookWebhook } from "./facebook-post";
@@ -16,6 +16,7 @@ import {
 import type { ActionState, Values } from "./types";
 import { parseListingValues } from "./regions";
 import { setPublicationFlash } from "./publication-flash";
+import { guestUploadKey, allowGuestListingAttempt } from "./guest-listing";
 function refresh() {
   updateTag("properties");
   updateTag("content");
@@ -29,8 +30,19 @@ export async function submitProperty(
   _: ActionState,
   form: FormData,
 ): Promise<ActionState> {
-  const user = await requireUser();
+  const user = await currentUser();
   try {
+    const guestKey = user ? null : await guestUploadKey();
+    if (!user && !guestKey)
+      return {
+        error: "Unggah foto properti terlebih dahulu, lalu coba kirim lagi.",
+      };
+    if (!user && !(await allowGuestListingAttempt(guestKey!, "submit")))
+      return {
+        error:
+          "Batas pengiriman per jam tercapai. Coba lagi nanti. Isian Anda tetap tersimpan.",
+      };
+
     if (form.get("photosReady") === "0")
       return {
         error: "Tunggu semua foto selesai diunggah atau hapus foto yang gagal.",
@@ -43,7 +55,9 @@ export async function submitProperty(
     });
     const owned = await db().media.count({
       where: {
-        ownerId: user.id,
+        ...(user
+          ? { ownerId: user.id }
+          : { ownerId: null, guestKey: guestKey! }),
         id: { in: input.gallery.map((p) => p.split("/").pop()!) },
       },
     });
@@ -60,7 +74,13 @@ export async function submitProperty(
       crypto.randomUUID().slice(0, 8);
     const published = await db().property.create({
       // Trial policy: new consignment listings publish immediately until instructed otherwise.
-      data: { ...input, values, slug, ownerId: user.id, status: "PUBLISHED" },
+      data: {
+        ...input,
+        values,
+        slug,
+        ownerId: user?.id ?? null,
+        status: "PUBLISHED",
+      },
     });
     refresh();
     await setPublicationFlash(published.id);

@@ -1,15 +1,8 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
-import {
-  ArrowUpRight,
-  ShieldCheck,
-  Camera,
-  ClipboardCheck,
-  CircleCheck,
-} from "lucide-react";
+import { ShieldCheck, Camera, ClipboardCheck, CircleCheck } from "lucide-react";
 import { getFields } from "@/lib/data";
-import { currentUser } from "@/lib/auth";
 import { databaseConfigured } from "@/lib/db";
 import { storageConfigured } from "@/lib/storage";
 import { PropertyForm } from "@/components/property-form";
@@ -22,13 +15,13 @@ export const metadata: Metadata = pageMetadata({
   noindex: true,
 });
 export default async function SubmitProperty() {
-  const [fields, user] = await Promise.all([getFields(), currentUser()]);
-  const enabled = Boolean(user && databaseConfigured);
+  const fields = await getFields();
+  const enabled = databaseConfigured;
   return (
     <div className="container page-wrap">
       <div className="breadcrumb">
         <Link href="/">Beranda</Link>
-        <span>/</span>Titip Properti
+        <span>/</span>Pasang Iklan
       </div>
       <div className="page-heading">
         <p className="eyebrow">LANGKAH PERTAMA MENUJU PELUANG BARU</p>
@@ -40,18 +33,6 @@ export default async function SubmitProperty() {
       </div>
       <div className="submission-layout">
         <div>
-          {!user && (
-            <div className="login-notice">
-              <div>
-                <strong>Masuk untuk menitipkan properti.</strong>
-                <p>Simpan dan pantau status kiriman dari akun Anda.</p>
-              </div>
-              <Link href="/login?lanjut=titip" className="button button-small">
-                Masuk / Daftar
-                <ArrowUpRight size={16} />
-              </Link>
-            </div>
-          )}
           <PropertyForm
             fields={fields}
             enabled={enabled}
@@ -81,7 +62,7 @@ export default async function SubmitProperty() {
             [
               CircleCheck,
               "Langsung tayang",
-              "Selama masa uji coba, kiriman baru langsung tampil di katalog. Pantau dan buka tautannya dari halaman akun.",
+              "Selama masa uji coba, kiriman baru langsung tampil di katalog. Setelah berhasil, buka tautannya dari pemberitahuan di beranda.",
             ],
           ].map(([Icon, title, desc]) => {
             const I = Icon as typeof Camera;
