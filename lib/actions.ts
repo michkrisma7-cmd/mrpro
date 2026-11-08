@@ -8,6 +8,7 @@ import { getFields } from "./data";
 import { sendFacebookWebhook } from "./facebook-post";
 import {
   basePropertySchema,
+  submissionPropertySchema,
   parseValues,
   fieldSchema,
   actionError,
@@ -47,7 +48,8 @@ export async function submitProperty(
       return {
         error: "Tunggu semua foto selesai diunggah atau hapus foto yang gagal.",
       };
-    const input = basePropertySchema.parse({
+    const input = submissionPropertySchema.parse({
+      submitterName: form.get("submitterName"),
       title: form.get("title"),
       description: form.get("description"),
       whatsapp: form.get("whatsapp"),
@@ -132,7 +134,8 @@ export async function updateMemberProperty(
     });
     if (!existing)
       return { error: "Properti tidak ditemukan atau bukan milik Anda." };
-    const input = basePropertySchema.omit({ gallery: true }).parse({
+    const input = submissionPropertySchema.omit({ gallery: true }).parse({
+      submitterName: form.get("submitterName"),
       title: form.get("title"),
       description: form.get("description"),
       whatsapp: form.get("whatsapp"),

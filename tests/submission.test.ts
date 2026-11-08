@@ -147,6 +147,13 @@ test(
       form.set("ownerId", "another-user");
       form.set("featured", "on");
       form.set("status", "ARCHIVED");
+      form.set("submitterName", "   ");
+      assert.match(
+        (await exports.submitProperty({}, form)).error!,
+        /Nama wajib diisi/,
+      );
+      form.set("submitterName", "  Nama Pemasang  ");
+
       assert.match(
         (await exports.submitProperty({}, form)).error!,
         /unggahan Anda sendiri/,
@@ -177,6 +184,7 @@ test(
       const listing = await prisma.property.findFirstOrThrow();
       assert.deepEqual(flashed, [listing.id]);
       assert.equal(listing.status, "PUBLISHED");
+      assert.equal(listing.submitterName, "Nama Pemasang");
       assert.equal(listing.ownerId, user.id);
       assert.equal(listing.featured, false);
       await prisma.media.create({

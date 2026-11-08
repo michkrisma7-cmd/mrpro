@@ -24,6 +24,13 @@ export const basePropertySchema = z.object({
       "Foto tidak boleh duplikat.",
     ),
 });
+export const submissionPropertySchema = basePropertySchema.extend({
+  submitterName: z
+    .string()
+    .trim()
+    .min(1, "Nama wajib diisi.")
+    .max(150, "Nama maksimal 150 karakter."),
+});
 export function parseValues(fields: Field[], form: FormData): Values {
   const values: Values = {};
   for (const f of fields.filter((f) => f.showInForm)) {

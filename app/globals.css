@@ -5194,7 +5194,6 @@ td .text-button {
 .home-catalog-link {
   margin-top: 16px;
 }
-.site-header .nav-actions .button.home-neutral-button,
 .home-search .button.home-neutral-button,
 #properti.home-property-section .catalog-tabs > a.home-neutral-button,
 .home-property-section .home-catalog-link .home-neutral-button,
@@ -5392,3 +5391,21 @@ td .text-button {
 .publication-notice > div { display: flex; flex-wrap: wrap; gap: 18px; }
 .publication-notice a { text-decoration: underline; font-size: 13px; }
 .publication-notice form { margin-left: auto; }
+
+.site-header .nav-actions .button.home-advert-button {
+  background: var(--brand-red);
+  border-color: var(--brand-red);
+  color: #fff;
+}
+.site-header .nav-actions .button.home-advert-button:hover {
+  background: color-mix(in srgb, var(--brand-red), black 8%);
+  border-color: color-mix(in srgb, var(--brand-red), black 8%);
+}
+.site-header .nav-actions .button.home-advert-button:active {
+  background: color-mix(in srgb, var(--brand-red), black 16%);
+  border-color: color-mix(in srgb, var(--brand-red), black 16%);
+}
+.site-header .nav-actions .button.home-advert-button:focus-visible {
+  outline: 2px solid var(--brand-red);
+  outline-offset: 3px;
+}

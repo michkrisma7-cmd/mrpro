@@ -25,6 +25,7 @@ export type Listing = {
   featured: boolean;
   ownerId: string | null;
   ownerName?: string;
+  submitterName?: string | null;
   createdAt: Date | string;
   updatedAt: Date | string;
 };

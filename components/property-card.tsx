@@ -51,6 +51,7 @@ export function PropertyCard({
 }) {
   const { ids, toggle: toggleFavorite } = useFavorites();
   const saved = ids.includes(p.id);
+  const ownerName = p.submitterName?.trim() || p.ownerName;
   const origin = useSyncExternalStore(subscribeOrigin, browserOrigin, siteUrl);
   const detailPath = `/properti/${p.slug}`;
   const number = listingContactNumber(p.whatsapp);
@@ -180,16 +181,16 @@ export function PropertyCard({
         <div className="property-contact">
           <span
             className="property-contact-owner"
-            title={p.ownerName || undefined}
+            title={ownerName || undefined}
           >
             <UserRound size={16} aria-hidden="true" />
-            <span>Pemilik{p.ownerName ? `: ${p.ownerName}` : " listing"}</span>
+            <span>Pemilik{ownerName ? `: ${ownerName}` : " listing"}</span>
           </span>
           {number && (
             <a
               href={`tel:+${number}`}
               className="property-contact-phone"
-              aria-label={`Telepon ${p.ownerName || "pemilik listing"}`}
+              aria-label={`Telepon ${ownerName || "pemilik listing"}`}
             >
               <Phone size={18} aria-hidden="true" />
             </a>
@@ -200,7 +201,7 @@ export function PropertyCard({
               className="property-contact-whatsapp"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`WhatsApp ${p.ownerName || "pemilik listing"}`}
+              aria-label={`WhatsApp ${ownerName || "pemilik listing"}`}
             >
               <WhatsappIcon /> WhatsApp
             </a>

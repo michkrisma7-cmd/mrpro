@@ -26,7 +26,9 @@ export function PropertyForm({
   return (
     <form
       action={action}
-      className={property ? "property-form" : "property-form property-form-create"}
+      className={
+        property ? "property-form" : "property-form property-form-create"
+      }
       // Failed actions return an error; keep the member's inputs for retry.
       // Successful actions redirect away, so no form reset is needed.
       onReset={(event) => event.preventDefault()}
@@ -64,6 +66,22 @@ export function PropertyForm({
               maxLength={10000}
               rows={5}
               placeholder="Ceritakan kondisi, keunggulan, dan lingkungan properti Anda…"
+            />
+          </label>
+          <label>
+            Nama <span className="required">*</span>
+            <input
+              name="submitterName"
+              type="text"
+              autoComplete="name"
+              defaultValue={
+                property?.submitterName ?? property?.ownerName ?? ""
+              }
+              placeholder="Masukkan nama Anda"
+              required
+              pattern={".*\\S.*"}
+              title="Nama wajib diisi dan tidak boleh hanya berisi spasi."
+              maxLength={150}
             />
           </label>
           <label>

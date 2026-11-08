@@ -42,6 +42,7 @@ model Property {
   gallery String[]
   values Json @default("{}")
   whatsapp String
+  submitterName String?
   status ListingStatus @default(PENDING)
   featured Boolean @default(false)
   ownerId String?

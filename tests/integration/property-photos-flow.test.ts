@@ -271,12 +271,32 @@ test(
         }
         await expect(page.locator(".login-notice")).toHaveCount(0);
         await expect(page.locator('[name="title"]')).toBeEnabled();
+        const name = page.getByPlaceholder("Masukkan nama Anda", { exact: true });
+        await expect(name).toHaveAttribute("placeholder", "Masukkan nama Anda");
+        assert.equal(
+          await name.evaluate((input: HTMLInputElement) => {
+            input.value = "   ";
+            return input.checkValidity();
+          }),
+          false,
+        );
+        assert.equal(
+          await name.evaluate(
+            (input) =>
+              input.closest("label")?.nextElementSibling?.querySelector("input")
+                ?.name,
+          ),
+          "whatsapp",
+        );
         await page.locator('[name="title"]').fill(title);
         await page
           .locator('textarea[name="description"]')
           .fill(
             "Rumah tamu dengan foto asli dan informasi lengkap untuk pengujian pengiriman tanpa akun.",
           );
+        await page
+          .locator('[name="submitterName"]')
+          .fill(`Pemilik Tamu ${width}`);
         await page.locator('[name="whatsapp"]').fill("081399998888");
         await page.locator('[name="field_harga"]').fill("1200000000");
         await page.locator('[name="field_lokasi"]').fill("Bekasi");
@@ -345,6 +365,9 @@ test(
           JSON.parse(await page.locator('[name="gallery"]').inputValue()),
           gallery,
         );
+        await page
+          .locator('[name="submitterName"]')
+          .fill(`Pemilik Tamu ${width}`);
         await page.locator('[name="whatsapp"]').fill("081399998888");
         if (width === 1440) {
           await database.exec(
@@ -400,11 +423,28 @@ test(
             slug: string;
             ownerId: string | null;
             whatsapp: string;
+            submitterName: string;
             gallery: string[];
             status: string;
           }>('SELECT * FROM "Property" WHERE title=$1', [title])
         ).rows[0];
         assert.equal(listing.ownerId, null);
+        assert.equal(listing.submitterName, `Pemilik Tamu ${width}`);
+        const contact = page
+          .locator(".home-property-section .property-card")
+          .filter({ hasText: title })
+          .locator(".property-contact-owner");
+        await expect(contact).toContainText(`Pemilik Tamu ${width}`);
+        await page.reload();
+        await expect(contact).toContainText(`Pemilik Tamu ${width}`);
+        const headerCta = page.locator(
+          '.nav-actions a[href="/titip-properti"]',
+        );
+        await expect(headerCta).toHaveCSS(
+          "background-color",
+          "rgb(251, 48, 0)",
+        );
+        await expect(headerCta).toHaveCSS("color", "rgb(255, 255, 255)");
         assert.equal(listing.status, "PUBLISHED");
         assert.deepEqual(listing.gallery, gallery);
         assert.equal(
@@ -469,6 +509,9 @@ test(
           .fill(
             "Rumah dengan informasi lengkap untuk pengujian foto utama properti.",
           );
+        await page
+          .locator('[name="submitterName"]')
+          .fill("Nama Pemasang Member");
         await page.locator('[name="whatsapp"]').fill("081234567890");
         // The fixture may have no custom fields; fill any cached default required fields.
         if (await page.locator('[name="field_harga"]').count()) {
@@ -683,6 +726,9 @@ test(
             JSON.parse(await page.locator('[name="gallery"]').inputValue()),
             finalGallery,
           );
+          await page
+            .locator('[name="submitterName"]')
+            .fill("Nama Pemasang Member");
           await page.locator('[name="whatsapp"]').fill("081234567890");
           // An actual database failure must also preserve the form and prevent redirect.
           await database.exec(
@@ -782,6 +828,9 @@ test(
         await expect(page.locator('[name="field_harga"]')).toHaveValue(
           "1900000000",
         );
+        await page
+          .locator('[name="submitterName"]')
+          .fill("Nama Pemasang Member");
         await page.locator('[name="whatsapp"]').fill("081234567890");
         await page.getByRole("button", { name: "Simpan Perubahan" }).click();
         await expect(
@@ -944,6 +993,7 @@ test(
       await page.goto(`${origin}/akun/properti/legacy-listing/edit`);
       await expect(page.getByText("Jabar lama", { exact: true })).toBeVisible();
       await page.locator('[name="title"]').fill("Rumah lama diperbarui member");
+      await page.locator('[name="submitterName"]').fill("Pemilik Lama");
       await page.getByRole("button", { name: "Simpan Perubahan" }).click();
       await expect(
         page.getByText("Perubahan properti berhasil disimpan", { exact: true }),

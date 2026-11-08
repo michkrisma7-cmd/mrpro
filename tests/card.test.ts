@@ -109,3 +109,20 @@ test("card hides both contact actions for missing or invalid listing contacts", 
     assert.match(html, /Lihat properti/);
   }
 });
+
+test("card prefers persisted submitter name, escapes markup and preserves legacy fallback", () => {
+  const render = (submitterName?: string | null, ownerName?: string) =>
+    renderToStaticMarkup(
+      createElement(PropertyCard, {
+        property: { ...demoListings[0], submitterName, ownerName },
+        fields: defaultFields,
+      }),
+    );
+  assert.match(render("Nama Pemasang", "Nama Akun"), /Pemilik: Nama Pemasang/);
+  assert.match(render(null, "Nama Akun"), /Pemilik: Nama Akun/);
+  assert.match(render(null), /Pemilik listing/);
+  assert.match(render("   "), /Pemilik listing/);
+  const html = render('<script>alert("x")</script>');
+  assert.doesNotMatch(html, /<script>/);
+  assert.match(html, /&lt;script&gt;/);
+});

@@ -105,7 +105,7 @@ export function Header() {
           <Link
             ref={advertRef}
             href="/titip-properti"
-            className={`button button-small ${path === "/" ? "home-neutral-button" : ""}`}
+            className={`button button-small ${path === "/" ? "home-advert-button" : ""}`}
           >
             Pasang Iklan <ArrowUpRight size={16} />
           </Link>
