@@ -193,7 +193,7 @@ test(
       );
       assert.equal(rows.rows.length, 1);
       const member = rows.rows[0];
-      assert.equal(objects.size, 1);
+      assert.equal(objects.size, 2, "upload stores master and display copy");
       assert.equal(
         (await sharp([...objects.values()][0]).metadata()).format,
         "webp",
@@ -292,7 +292,7 @@ test(
       assert.equal((await fetch(mediaUrl)).status, 404);
       assert.equal(
         objects.size,
-        1,
+        2,
         "deleting a profile preserves shared media",
       );
       await database.exec('UPDATE "Testimonial" SET active=false');

@@ -5,6 +5,7 @@ import { useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useFavorites } from "@/lib/favorites";
+import { mediaDisplayUrl } from "@/lib/image-variants";
 import {
   Heart,
   UserRound,
@@ -75,7 +76,7 @@ export function PropertyCard({
           aria-hidden="true"
         >
           <Image
-            src={p.gallery[0] || "/images/hero.webp"}
+            src={mediaDisplayUrl(p.gallery[0] || "/images/hero.webp")}
             alt={p.title}
             fill
             sizes="(max-width: 640px) 92vw, (max-width: 900px) 46vw, 30vw"

@@ -1,7 +1,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import sharp from "sharp";
-import { optimizeUpload } from "../lib/image-upload";
+import { optimizeDisplay, optimizeUpload } from "../lib/image-upload";
+import { displayImageKey, mediaDisplayUrl } from "../lib/image-variants";
 
 test("WebP upload preserves dimensions, pixels and alpha without resizing", async () => {
   const input = await sharp({
@@ -69,5 +70,66 @@ test("detailed photos retain every decoded pixel and strip GPS/EXIF metadata", a
   assert.deepEqual(
     await sharp(output).raw().toBuffer(),
     await sharp(input).rotate().raw().toBuffer(),
+  );
+});
+
+test("display copies fit 1200px without changing the master", async () => {
+  const input = await sharp({
+    create: { width: 2400, height: 1600, channels: 3, background: "orange" },
+  })
+    .jpeg()
+    .withMetadata({ orientation: 6 })
+    .toBuffer();
+  const master = await optimizeUpload(input);
+  const display = await optimizeDisplay(master);
+  const metadata = await sharp(display).metadata();
+  assert.equal(metadata.format, "webp");
+  assert.equal(metadata.width, 800);
+  assert.equal(metadata.height, 1200);
+  assert.equal(metadata.exif, undefined);
+  assert.equal(metadata.orientation, undefined);
+  assert.ok(display.length <= 250 * 1024);
+  assert.deepEqual(
+    await sharp(master).raw().toBuffer(),
+    await sharp(input).rotate().raw().toBuffer(),
+  );
+});
+
+test("display copies preserve transparency and never enlarge small images", async () => {
+  const input = await sharp({
+    create: {
+      width: 128,
+      height: 96,
+      channels: 4,
+      background: { r: 42, g: 120, b: 200, alpha: 0.5 },
+    },
+  })
+    .png()
+    .toBuffer();
+  const metadata = await sharp(await optimizeDisplay(input)).metadata();
+  assert.equal(metadata.width, 128);
+  assert.equal(metadata.height, 96);
+  assert.equal(metadata.hasAlpha, true);
+});
+
+test("only local media display consumers request derivatives", () => {
+  assert.equal(
+    mediaDisplayUrl("/api/media/photo?version=2"),
+    "/api/media/photo/display.webp?version=2",
+  );
+  assert.equal(
+    mediaDisplayUrl("/api/media/photo?variant=display"),
+    "/api/media/photo/display.webp",
+  );
+  for (const source of [
+    "/images/hero.webp",
+    "https://example.com/photo.jpg",
+    "/api/media/photo/other",
+    "/api/media/photo/display.webp",
+  ])
+    assert.equal(mediaDisplayUrl(source), source);
+  assert.equal(
+    displayImageKey("properties/owner/photo.webp"),
+    "properties/owner/photo.webp.display-v1.webp",
   );
 });

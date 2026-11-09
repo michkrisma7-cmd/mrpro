@@ -2,22 +2,98 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { Images, ChevronLeft, ChevronRight } from "lucide-react";
+import { mediaDisplayUrl } from "@/lib/image-variants";
 
-export function Gallery({
-  images,
-  title,
-}: {
+type GalleryProps = {
   images: string[];
   title: string;
-}) {
-  const [active, setActive] = useState(0);
+};
+
+export function Gallery(props: GalleryProps) {
+  // A different listing must not retain the previous listing's photo state.
+  return <GalleryPhotos key={JSON.stringify(props.images)} {...props} />;
+}
+
+function GalleryPhotos({ images, title }: GalleryProps) {
+  const photos = images.length
+    ? images.map(mediaDisplayUrl)
+    : ["/images/hero.webp"];
+  const [photo, setPhoto] = useState({
+    target: 0,
+    visible: 0,
+    ready: false,
+    prefetch: false,
+    prefetchFailed: "",
+    failed: false,
+  });
+  const loaded = useRef(new Map<string, HTMLImageElement>());
   const start = useRef<{ x: number; y: number } | null>(null);
-  const photos = images.length ? images : ["/images/hero.webp"];
-  const position = active % photos.length;
+  const visibleSource = photos[photo.visible];
+  const targetSource = photos[photo.target];
+  const nextSource = photos[(photo.target + 1) % photos.length];
+  const shouldPrefetch =
+    photos.length > 1 &&
+    photo.prefetch &&
+    photo.ready &&
+    photo.target === photo.visible &&
+    !photo.failed &&
+    nextSource !== photo.prefetchFailed;
+  // Keep the decoded element when promoting a hidden responsive photo to visible.
+  const sources = Array.from(
+    new Set([
+      visibleSource,
+      ...(!photo.failed ? [targetSource] : []),
+      ...(shouldPrefetch ? [nextSource] : []),
+    ]),
+  );
+
   function move(direction: number) {
-    setActive(
-      (current) => (current + direction + photos.length) % photos.length,
-    );
+    setPhoto((current) => {
+      const target =
+        (current.target + direction + photos.length) % photos.length;
+      const image = loaded.current.get(photos[target]);
+      const ready = Boolean(
+        image?.isConnected && image.complete && image.naturalWidth > 0,
+      );
+      return {
+        ...current,
+        target,
+        visible: ready ? target : current.visible,
+        ready: ready || current.ready,
+        failed: false,
+      };
+    });
+  }
+
+  function imageLoaded(source: string, image: HTMLImageElement) {
+    loaded.current.set(source, image);
+    const connection = (
+      navigator as Navigator & { connection?: { saveData?: boolean } }
+    ).connection;
+    setPhoto((current) => {
+      if (source === photos[current.target]) {
+        return {
+          ...current,
+          visible: current.target,
+          ready: true,
+          prefetch: !connection?.saveData,
+          failed: false,
+        };
+      }
+      if (source === photos[current.visible] && !current.ready) {
+        return { ...current, ready: true, prefetch: !connection?.saveData };
+      }
+      return current;
+    });
+  }
+
+  function imageFailed(source: string) {
+    loaded.current.delete(source);
+    setPhoto((current) => ({
+      ...current,
+      prefetchFailed: source,
+      failed: source === photos[current.target] || current.failed,
+    }));
   }
   return (
     <section
@@ -52,17 +128,48 @@ export function Gallery({
         }
       }}
     >
-      <div className="gallery-main">
-        <Image
-          key={photos[position]}
-          src={photos[position]}
-          alt={`${title} foto ${position + 1}`}
-          fill
-          priority={position === 0}
-          sizes="(max-width:700px) 100vw, (max-width:1336px) calc(100vw - 96px), 1240px"
-          className="cover"
-          draggable={false}
-        />
+      <div
+        className="gallery-main"
+        aria-busy={photo.target !== photo.visible && !photo.failed}
+      >
+        {sources.map((source) => {
+          const visible = source === visibleSource;
+          const preload = visible && photo.visible === 0;
+          return (
+            <Image
+              key={source}
+              src={source}
+              alt={visible ? `${title} foto ${photo.visible + 1}` : ""}
+              aria-hidden={!visible}
+              fill
+              unoptimized={/^\/api\/media\/[^/?#]+\/display\.webp(?:[?#]|$)/.test(
+                source,
+              )}
+              preload={preload}
+              loading={preload ? undefined : "eager"}
+              fetchPriority={
+                preload ? undefined : source === targetSource ? "auto" : "low"
+              }
+              sizes="(max-width:700px) 100vw, (max-width:1336px) calc(100vw - 96px), 1240px"
+              className="cover"
+              style={{
+                opacity: visible ? 1 : 0,
+                pointerEvents: visible ? undefined : "none",
+              }}
+              draggable={false}
+              onLoad={async (event) => {
+                const image = event.currentTarget;
+                try {
+                  await image.decode();
+                  if (image.isConnected) imageLoaded(source, image);
+                } catch {
+                  if (image.isConnected) imageFailed(source);
+                }
+              }}
+              onError={() => imageFailed(source)}
+            />
+          );
+        })}
       </div>
       {photos.length > 1 && (
         <>
@@ -98,9 +205,14 @@ export function Gallery({
       >
         <Images size={17} aria-hidden="true" />
         {images.length
-          ? `${position + 1} / ${images.length}`
+          ? `${photo.visible + 1} / ${images.length}`
           : "Belum ada foto"}
       </span>
+      {photo.failed && (
+        <span className="visually-hidden" role="status">
+          Foto tidak dapat dimuat. Silakan coba foto lain.
+        </span>
+      )}
     </section>
   );
 }

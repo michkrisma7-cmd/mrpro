@@ -271,7 +271,9 @@ test(
         }
         await expect(page.locator(".login-notice")).toHaveCount(0);
         await expect(page.locator('[name="title"]')).toBeEnabled();
-        const name = page.getByPlaceholder("Masukkan nama Anda", { exact: true });
+        const name = page.getByPlaceholder("Masukkan nama Anda", {
+          exact: true,
+        });
         await expect(name).toHaveAttribute("placeholder", "Masukkan nama Anda");
         assert.equal(
           await name.evaluate((input: HTMLInputElement) => {
@@ -899,7 +901,9 @@ test(
           await page.goto(`${origin}/properti/${listing.slug}`);
           assert.ok(
             decodeURIComponent(
-              (await page.locator(".gallery-main img").getAttribute("src"))!,
+              (await page
+                .locator('.gallery-main img[aria-hidden="false"]')
+                .getAttribute("src"))!,
             ).includes(cover),
           );
           await expect(page.locator(".specification-grid")).toContainText(
@@ -918,7 +922,9 @@ test(
             );
             assert.ok(
               decodeURIComponent(
-                (await page.locator(".gallery-main img").getAttribute("src"))!,
+                (await page
+                  .locator('.gallery-main img[aria-hidden="false"]')
+                  .getAttribute("src"))!,
               ).includes(gallery[index]),
             );
             await expect(page.locator(".detail-gallery")).toBeVisible();

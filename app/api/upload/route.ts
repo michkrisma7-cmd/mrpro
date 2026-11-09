@@ -2,7 +2,8 @@ import { currentUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { bucket, s3, storageConfigured } from "@/lib/storage";
 import { PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { optimizeUpload } from "@/lib/image-upload";
+import { optimizeDisplay, optimizeUpload } from "@/lib/image-upload";
+import { displayImageKey } from "@/lib/image-variants";
 import { boundedFormData } from "@/lib/upload-body";
 import { guestUploadKey, allowGuestListingAttempt } from "@/lib/guest-listing";
 export const runtime = "nodejs";
@@ -55,6 +56,7 @@ export async function POST(request: Request) {
       { status: 429 },
     );
   let buffer: Buffer;
+  let display: Buffer;
   try {
     const file = (await boundedFormData(request)).get("file");
     if (
@@ -67,6 +69,7 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     buffer = await optimizeUpload(Buffer.from(await file.arrayBuffer()));
+    display = await optimizeDisplay(buffer);
   } catch {
     return Response.json(
       { error: "Gambar tidak valid atau terlalu besar." },
@@ -74,6 +77,7 @@ export async function POST(request: Request) {
     );
   }
   const key = `properties/${user?.id ?? `guest/${guestKey}`}/${crypto.randomUUID()}.webp`;
+  const displayKey = displayImageKey(key);
   try {
     await s3().send(
       new PutObjectCommand({
@@ -84,16 +88,25 @@ export async function POST(request: Request) {
         CacheControl: "public, max-age=31536000, immutable",
       }),
     );
-    try {
-      const media = await db().media.create({
-        data: { key, ownerId: user?.id ?? null, guestKey },
-      });
-      return Response.json({ url: `/api/media/${media.id}` });
-    } catch (e) {
-      await s3().send(new DeleteObjectCommand({ Bucket: bucket, Key: key }));
-      throw e;
-    }
+    await s3().send(
+      new PutObjectCommand({
+        Bucket: bucket,
+        Key: displayKey,
+        Body: display,
+        ContentType: "image/webp",
+      }),
+    );
+    const media = await db().media.create({
+      data: { key, ownerId: user?.id ?? null, guestKey },
+    });
+    return Response.json({ url: `/api/media/${media.id}` });
   } catch {
+    // Both writes use fresh random keys; clean up either partial upload safely.
+    await Promise.allSettled(
+      [key, displayKey].map((Key) =>
+        s3().send(new DeleteObjectCommand({ Bucket: bucket, Key })),
+      ),
+    );
     return Response.json(
       { error: "Unggahan belum berhasil. Coba lagi." },
       { status: 502 },
