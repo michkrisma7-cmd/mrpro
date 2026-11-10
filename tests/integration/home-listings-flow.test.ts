@@ -115,7 +115,7 @@ test(
         executablePath: "/usr/bin/chromium",
         args: ["--no-sandbox"],
       });
-      for (const width of [1440, 768, 390, 320]) {
+      for (const width of [1440, 768, 458, 390, 320]) {
         const context: BrowserContext = await browser.newContext({
           viewport: { width, height: 900 },
           hasTouch: width < 700,
@@ -133,6 +133,13 @@ test(
           exact: true,
         });
         const tabs = home.locator(".catalog-tabs");
+        await expect(home.locator(".home-catalog-link")).toHaveCount(0);
+        await expect(
+          home.getByRole("link", {
+            name: "Semua Properti",
+            exact: true,
+          }),
+        ).toHaveCount(1);
         await expect(header).toHaveCSS("border-bottom-width", "1px");
         await expect(header).toHaveCSS(
           "border-bottom-color",
@@ -151,23 +158,48 @@ test(
         );
         await expect(page.getByText("Rahasia belum terbit")).toHaveCount(0);
         await expect(next).toHaveAttribute("href", "/properti?page=2");
-        await expect(next).toHaveCSS("background-color", "rgb(251, 48, 0)");
-        await expect(next).toHaveCSS("color", "rgb(23, 23, 23)");
-        await next.hover();
-        await expect(next).toHaveCSS("background-color", "rgb(251, 48, 0)");
-        await next.focus();
-        await expect(next).toBeFocused();
         await expect(page.locator("footer")).not.toContainText("628811063079");
         await expect(
           page.locator('footer a[href*="628811063079"]'),
         ).toHaveCount(0);
+        await page.evaluate(() => document.fonts.ready);
         const group = (await home
           .locator(".home-property-next")
           .boundingBox())!;
         const button = (await next.boundingBox())!;
+        const reference = header.locator(".nav-actions > .button");
+        const styleKeys = [
+          "font-family",
+          "font-size",
+          "font-weight",
+          "line-height",
+          "padding",
+          "border-radius",
+          "border",
+          "color",
+          "background-color",
+          "gap",
+        ];
+        const referenceStyles = await reference.evaluate((el, keys) => {
+          const styles = getComputedStyle(el);
+          return keys.map((key) => styles.getPropertyValue(key));
+        }, styleKeys);
+        assert.deepEqual(
+          await next.evaluate((el, keys) => {
+            const styles = getComputedStyle(el);
+            return keys.map((key) => styles.getPropertyValue(key));
+          }, styleKeys),
+          referenceStyles,
+        );
+        assert.equal(button.height, (await reference.boundingBox())!.height);
+        const lastCard = (await cards.last().boundingBox())!;
+        assert.ok(button.y >= lastCard.y + lastCard.height);
+        await expect(next.locator("svg")).toHaveCSS("width", "16px");
+        await expect(next.locator("svg")).toHaveCSS("height", "16px");
         assert.ok(
           Math.abs(group.x + group.width / 2 - button.x - button.width / 2) < 1,
         );
+        await next.scrollIntoViewIfNeeded();
         await page.screenshot({
           path: `work/home-limit-${width}.png`,
           scale: "css",

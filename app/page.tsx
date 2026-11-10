@@ -212,11 +212,6 @@ async function HomeContent({
             <PropertyCard key={p.id} property={p} fields={fields} />
           ))}
         </div>
-        <div className="home-catalog-link">
-          <Link className="outline-button home-neutral-button" href="/properti">
-            Semua Properti <ArrowUpRight size={17} />
-          </Link>
-        </div>
         {!properties.length && (
           <div className="empty-state">
             <House />
@@ -229,8 +224,11 @@ async function HomeContent({
         )}
         {total > properties.length && (
           <div className="home-property-next">
-            <Link className="outline-button" href={catalogHref}>
-              Listing Selanjutnya <ArrowRight size={18} aria-hidden="true" />
+            <Link
+              className="button button-small home-advert-match"
+              href={catalogHref}
+            >
+              Listing Selanjutnya <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
         )}
@@ -283,15 +281,21 @@ async function HomeContent({
             </span>
           </div>
           <div className="service-team-action">
-            <Link href="/tim-kami" className="button service-team-button">
-              <UsersRound size={18} aria-hidden="true" />
+            <Link
+              href="/tim-kami"
+              className="button button-small home-advert-match"
+            >
+              <UsersRound size={16} aria-hidden="true" />
               <span>Tim Kami</span>
-              <ArrowRight size={18} aria-hidden="true" />
+              <ArrowRight size={16} aria-hidden="true" />
             </Link>
-            <Link href="/kemitraan" className="button service-team-button">
-              <HeartHandshake size={18} aria-hidden="true" />
+            <Link
+              href="/kemitraan"
+              className="button button-small home-advert-match"
+            >
+              <HeartHandshake size={16} aria-hidden="true" />
               <span>Daftar Mitra</span>
-              <ArrowRight size={18} aria-hidden="true" />
+              <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
         </div>

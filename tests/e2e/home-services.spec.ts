@@ -157,56 +157,89 @@ test("service directory puts identity beside desktop descriptions and above mobi
   ).toBe(true);
 });
 
-test("homepage service buttons stay balanced in one row through 320px and open their destinations", async ({
-  page,
-}) => {
-  await page.goto("/");
-  const section = page.locator(".services-section");
-  const group = section.locator(".service-team-action");
-  const links = group.getByRole("link");
-  await expect(links).toHaveText(["Tim Kami", "Daftar Mitra"]);
-  for (const width of [1440, 390, 320]) {
-    await page.setViewportSize({ width, height: 900 });
-    await group.scrollIntoViewIfNeeded();
-    const first = (await links.nth(0).boundingBox())!;
-    const second = (await links.nth(1).boundingBox())!;
-    const note = (await section.locator(".service-note").boundingBox())!;
-    expect(first.y).toBeGreaterThanOrEqual(note.y + note.height);
-    expect(first.y).toBe(second.y);
-    expect(first.height).toBe(second.height);
-    expect(Math.abs(first.width - second.width)).toBeLessThan(1);
-    expect(second.x).toBeGreaterThan(first.x + first.width);
-    for (const link of await links.all()) {
-      await expect(link).toHaveCSS("background-color", "rgb(251, 48, 0)");
-      await expect(link).toHaveCSS("color", "rgb(255, 255, 255)");
-      expect(await link.getAttribute("target")).not.toBe("_blank");
+for (const homePath of ["/", "/beranda"]) {
+  test(`homepage service buttons on ${homePath} match the header advert at each breakpoint and open their destinations`, async ({
+    page,
+  }) => {
+    await page.goto(homePath);
+    const section = page.locator(".services-section");
+    const group = section.locator(".service-team-action");
+    const links = group.getByRole("link");
+    await expect(links).toHaveText(["Tim Kami", "Daftar Mitra"]);
+    for (const width of [1440, 901, 900, 768, 701, 700, 458, 390, 320]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.evaluate(() => document.fonts.ready);
+      const styleKeys = [
+        "font-family",
+        "font-size",
+        "font-weight",
+        "line-height",
+        "padding",
+        "border-radius",
+        "border",
+        "color",
+        "background-color",
+        "gap",
+      ];
+      const reference = page.locator(".site-header .nav-actions > .button");
+      const referenceStyles = await reference.evaluate((el, keys) => {
+        const styles = getComputedStyle(el);
+        return keys.map((key) => styles.getPropertyValue(key));
+      }, styleKeys);
+      const referenceHeight = (await reference.boundingBox())!.height;
+      await group.scrollIntoViewIfNeeded();
+      const first = (await links.nth(0).boundingBox())!;
+      const second = (await links.nth(1).boundingBox())!;
+      const note = (await section.locator(".service-note").boundingBox())!;
+      expect(first.y).toBeGreaterThanOrEqual(note.y + note.height);
+      expect(first.y).toBe(second.y);
+      expect(first.height).toBe(second.height);
+      expect(first.height).toBe(referenceHeight);
+      expect(first.width + second.width).toBeLessThan(
+        (await group.boundingBox())!.width,
+      );
+      expect(second.x).toBeGreaterThan(first.x + first.width);
+      for (const link of await links.all()) {
+        expect(
+          await link.evaluate((el, keys) => {
+            const styles = getComputedStyle(el);
+            return keys.map((key) => styles.getPropertyValue(key));
+          }, styleKeys),
+        ).toEqual(referenceStyles);
+        await expect(link.locator("svg")).toHaveCount(2);
+        for (const icon of await link.locator("svg").all()) {
+          await expect(icon).toHaveCSS("width", "16px");
+          await expect(icon).toHaveCSS("height", "16px");
+        }
+        expect(await link.getAttribute("target")).not.toBe("_blank");
+        expect(
+          await link
+            .locator("span")
+            .evaluate((el) => el.scrollWidth <= el.clientWidth),
+        ).toBe(true);
+      }
       expect(
-        await link
-          .locator("span")
-          .evaluate((el) => el.scrollWidth <= el.clientWidth),
+        await page.evaluate(
+          () => document.documentElement.scrollWidth <= innerWidth,
+        ),
       ).toBe(true);
+      await group.screenshot({ path: `work/service-buttons-${width}.png` });
     }
-    expect(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-    ).toBe(true);
-    await group.screenshot({ path: `work/service-buttons-${width}.png` });
-  }
-  await expect(links.nth(0)).toHaveAttribute("href", "/tim-kami");
-  await expect(links.nth(1)).toHaveAttribute("href", "/kemitraan");
-  await links.nth(0).click();
-  await expect(page).toHaveURL(/\/tim-kami$/);
-  await expect(
-    page.getByRole("heading", { name: "Tim Kami", exact: true }),
-  ).toBeVisible();
-  await page.goto("/");
-  await page
-    .locator(".service-team-action")
-    .getByRole("link", { name: "Daftar Mitra" })
-    .click();
-  await expect(page).toHaveURL(/\/kemitraan$/);
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Keahlian Anda.",
-  );
-});
+    await expect(links.nth(0)).toHaveAttribute("href", "/tim-kami");
+    await expect(links.nth(1)).toHaveAttribute("href", "/kemitraan");
+    await links.nth(0).click();
+    await expect(page).toHaveURL(/\/tim-kami$/);
+    await expect(
+      page.getByRole("heading", { name: "Tim Kami", exact: true }),
+    ).toBeVisible();
+    await page.goto(homePath);
+    await page
+      .locator(".service-team-action")
+      .getByRole("link", { name: "Daftar Mitra" })
+      .click();
+    await expect(page).toHaveURL(/\/kemitraan$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(
+      "Keahlian Anda.",
+    );
+  });
+}

@@ -3074,7 +3074,8 @@ td .text-button {
   .saved-nav {
     display: none;
   }
-  .nav-actions > .button {
+  .nav-actions > .button,
+  .button.home-advert-match {
     font-size: 10px;
     padding-inline: 12px;
   }
@@ -3321,7 +3322,8 @@ td .text-button {
   .nav-actions {
     gap: 8px;
   }
-  .nav-actions > .button {
+  .nav-actions > .button,
+  .button.home-advert-match {
     font-size: 9px;
     padding: 9px 11px;
     min-height: 34px;
@@ -4870,19 +4872,7 @@ td .text-button {
   justify-content: center;
   margin-top: 20px;
 }
-.home-property-next .outline-button {
-  background: var(--brand-red);
-  border-color: var(--brand-red);
-  color: #171717;
-}
-.home-property-next .outline-button:hover {
-  background: var(--brand-red);
-  text-decoration: underline;
-}
-.home-property-next .outline-button:focus-visible {
-  outline: 2px solid var(--brand-red);
-  outline-offset: 4px;
-}
+
 
 .testimonial-grid {
   display: grid;
@@ -4999,36 +4989,14 @@ td .text-button {
   height: 28px;
 }
 .service-team-action {
-  /* Dominant solid red sampled from the r in public/brand/mrproperti-logo.png. */
-  --service-brand-red: var(--brand-red);
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  justify-content: center;
   gap: 12px;
   margin-top: 22px;
 }
-.service-team-button {
-  width: 100%;
-  min-width: 0;
+.button.home-advert-match {
+  flex: none;
   white-space: nowrap;
-  background: var(--service-brand-red);
-  border-color: var(--service-brand-red);
-  min-height: 48px;
-  padding: 12px 8px;
-  gap: 8px;
-  border-radius: 14px;
-  color: #fff;
-  font-size: 13px;
-}
-.service-team-button:hover:not(:disabled) {
-  background: var(--service-brand-red);
-  filter: brightness(0.94);
-}
-.service-team-button span {
-  flex: 1;
-  text-align: center;
-}
-.service-team-button svg {
-  flex-shrink: 0;
 }
 @media (max-width: 700px) {
   .services-section .home-service-grid {
@@ -5063,15 +5031,6 @@ td .text-button {
   .service-team-action {
     margin-top: 18px;
     gap: 8px;
-  }
-  .service-team-button {
-    padding: 12px 8px;
-    gap: 6px;
-    font-size: 12px;
-  }
-  .service-team-button svg {
-    width: 14px;
-    height: 14px;
   }
 }
 
@@ -5204,12 +5163,8 @@ td .text-button {
 .home-property-section > .catalog-tabs {
   margin-bottom: 16px;
 }
-.home-catalog-link {
-  margin-top: 16px;
-}
 .home-search .button.home-neutral-button,
 #properti.home-property-section .catalog-tabs > a.home-neutral-button,
-.home-property-section .home-catalog-link .home-neutral-button,
 .home-search .search-form .button {
   background: #f2f2f2;
   border: 1px solid #000;
@@ -5405,20 +5360,25 @@ td .text-button {
 .publication-notice a { text-decoration: underline; font-size: 13px; }
 .publication-notice form { margin-left: auto; }
 
-.site-header .nav-actions .button.home-advert-button {
+/* Share the header advert's colors and states without changing the reference. */
+.site-header .nav-actions .button.home-advert-button,
+.site-header:has(.home-advert-button) ~ main .button.home-advert-match {
   background: var(--brand-red);
   border-color: var(--brand-red);
   color: #fff;
 }
-.site-header .nav-actions .button.home-advert-button:hover {
+.site-header .nav-actions .button.home-advert-button:hover,
+.site-header:has(.home-advert-button) ~ main .button.home-advert-match:hover {
   background: color-mix(in srgb, var(--brand-red), black 8%);
   border-color: color-mix(in srgb, var(--brand-red), black 8%);
 }
-.site-header .nav-actions .button.home-advert-button:active {
+.site-header .nav-actions .button.home-advert-button:active,
+.site-header:has(.home-advert-button) ~ main .button.home-advert-match:active {
   background: color-mix(in srgb, var(--brand-red), black 16%);
   border-color: color-mix(in srgb, var(--brand-red), black 16%);
 }
-.site-header .nav-actions .button.home-advert-button:focus-visible {
+.site-header .nav-actions .button.home-advert-button:focus-visible,
+.site-header:has(.home-advert-button) ~ main .button.home-advert-match:focus-visible {
   outline: 2px solid var(--brand-red);
   outline-offset: 3px;
 }
