@@ -13,7 +13,7 @@ import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 import { chromium, expect, type BrowserContext } from "@playwright/test";
 
 test(
-  "home limits published listings to 12 per category and keeps the full catalog accessible",
+  "home shows 18 listings and category navigation, footer and continuation work at every viewport",
   { timeout: 180000 },
   async () => {
     const database = await PGlite.create();
@@ -38,15 +38,18 @@ test(
       ('jenis','jenis','Jenis','SELECT',ARRAY['Rumah','Tanah','Apartemen','Ruko'],true,true),
       ('harga','harga','Harga','PRICE',ARRAY[]::text[],true,true),
       ('lokasi','lokasi','Lokasi','TEXT',ARRAY[]::text[],true,true),
-      ('transaksi','transaksi','Transaksi','SELECT',ARRAY['Dijual','Disewa'],true,true);`);
+      ('transaksi','transaksi','Transaksi','SELECT',ARRAY['Dijual','Disewa','Over Kredit'],true,true);`);
+      await database.exec(
+        `INSERT INTO "SiteSettings" (id,whatsapp) VALUES ('main','+628811063079');`,
+      );
       let sequence = 0;
       for (const [category, count] of [
-        ["Rumah", 13],
-        ["Tanah", 12],
+        ["Rumah", 37],
+        ["Tanah", 18],
         ["Apartemen", 1],
       ] as const) {
         for (let i = 0; i < count; i++, sequence++) {
-          const slug = `${category.toLowerCase()}-${i}`;
+          const slug = `${category.toLowerCase()}-${String(i).padStart(2, "0")}`;
           await database.query(
             `INSERT INTO "Property" (id,slug,title,description,gallery,whatsapp,"ownerId",status,"values","createdAt","updatedAt") VALUES ($1,$1,$2,'Deskripsi',ARRAY['/images/house-1.webp'],'081234567890','owner','PUBLISHED',$3,$4,NOW())`,
             [
@@ -56,9 +59,9 @@ test(
                 jenis: category,
                 harga: 1000000000,
                 lokasi: "Bekasi",
-                transaksi: "Dijual",
+                transaksi: ["Dijual", "Disewa", "Over Kredit"][i % 3],
               }),
-              new Date(Date.UTC(2026, 9, 30, 0, -sequence)),
+              new Date(Date.UTC(2026, 9, 30, 0, -Math.floor(sequence / 3))),
             ],
           );
         }
@@ -121,7 +124,7 @@ test(
         const page = await context.newPage();
         const errors: string[] = [];
         page.on("pageerror", (e) => errors.push(e.message));
-        await page.goto(origin);
+        await page.goto(`${origin}/beranda`);
         const header = page.locator(".site-header");
         const home = page.locator("#properti");
         const cards = home.locator(".property-card");
@@ -139,15 +142,25 @@ test(
         assert.equal(bounds.x, 0);
         assert.equal(bounds.width, width);
         await expect(page.locator(".property-hero")).toHaveCount(0);
-        await expect(cards).toHaveCount(12);
+        await expect(cards).toHaveCount(18);
         await expect(cards.locator("h3")).toHaveText(
           Array.from(
-            { length: 12 },
+            { length: 18 },
             (_, i) => `Rumah ${String(i).padStart(2, "0")}`,
           ),
         );
         await expect(page.getByText("Rahasia belum terbit")).toHaveCount(0);
-        await expect(next).toHaveAttribute("href", "/properti");
+        await expect(next).toHaveAttribute("href", "/properti?page=2");
+        await expect(next).toHaveCSS("background-color", "rgb(251, 48, 0)");
+        await expect(next).toHaveCSS("color", "rgb(23, 23, 23)");
+        await next.hover();
+        await expect(next).toHaveCSS("background-color", "rgb(251, 48, 0)");
+        await next.focus();
+        await expect(next).toBeFocused();
+        await expect(page.locator("footer")).not.toContainText("628811063079");
+        await expect(
+          page.locator('footer a[href*="628811063079"]'),
+        ).toHaveCount(0);
         const group = (await home
           .locator(".home-property-next")
           .boundingBox())!;
@@ -160,30 +173,32 @@ test(
           scale: "css",
         });
         // Every published record remains reachable in the existing paginated catalog.
+        const seen = new Set(await cards.locator("h3").allTextContents());
         await next.click();
-        const seen = new Set<string>();
-        for (let n = 1; n <= 3; n++) {
+        for (let n = 2; n <= 4; n++) {
           await expect(page.locator(".pagination")).toContainText(
-            `Halaman ${n} dari 3`,
+            `Halaman ${n} dari 4`,
           );
           await expect(page.locator(".property-card")).toHaveCount(
-            n < 3 ? 12 : 2,
+            n < 4 ? 18 : 2,
           );
           for (const title of await page
             .locator(".property-card h3")
-            .allTextContents())
+            .allTextContents()) {
+            assert.ok(!seen.has(title), `duplicate listing ${title}`);
             seen.add(title);
-          if (n < 3)
+          }
+          if (n < 4)
             await page
               .locator(".pagination")
               .getByRole("link", { name: "Berikutnya", exact: true })
               .click();
         }
-        assert.equal(seen.size, 26);
+        assert.equal(seen.size, 56);
         await page.goto(origin);
         for (const [category, count, more] of [
-          ["Rumah", 12, true],
-          ["Tanah", 12, false],
+          ["Rumah", 18, true],
+          ["Tanah", 18, false],
           ["Apartemen", 1, false],
           ["Ruko", 0, false],
         ] as const) {
@@ -201,7 +216,7 @@ test(
           if (more)
             await expect(next).toHaveAttribute(
               "href",
-              `/properti?jenis=${category}`,
+              `/properti?jenis=${category}&page=2`,
             );
           await page.reload();
           await expect(cards).toHaveCount(count);
@@ -209,22 +224,64 @@ test(
         }
         await tabs.getByRole("link", { name: "Rumah", exact: true }).click();
         await next.click();
-        await expect(page).toHaveURL(`${origin}/properti?jenis=Rumah`);
+        await expect(page).toHaveURL(`${origin}/properti?jenis=Rumah&page=2`);
         await page
           .locator(".pagination")
           .getByRole("link", { name: "Berikutnya", exact: true })
           .click();
         await expect(page.locator(".property-card h3")).toHaveText([
-          "Rumah 12",
+          "Rumah 36",
         ]);
         await page.goto(origin);
-        await expect(cards).toHaveCount(12);
+        await expect(cards).toHaveCount(18);
         assert.equal(
           await page.evaluate(
             () => document.documentElement.scrollWidth <= innerWidth,
           ),
           true,
         );
+        for (const [label, transaction] of [
+          ["Dijual", "Dijual"],
+          ["Sewa", "Disewa"],
+          ["Over Kredit", "Over Kredit"],
+        ]) {
+          await page.goto(`${origin}/beranda`);
+          await page.getByRole("button", { name: label, exact: true }).click();
+          await expect(page).toHaveURL(new RegExp("/properti\\?transaksi="));
+          assert.equal(
+            new URL(page.url()).searchParams.get("transaksi"),
+            transaction,
+          );
+          await expect(page.locator(".property-card").first()).toBeVisible();
+          const filtered = await database.query<{ title: string }>(
+            `SELECT title FROM "Property" WHERE status='PUBLISHED' AND "values"->>'transaksi'=$1 ORDER BY "createdAt" DESC,id ASC LIMIT 18`,
+            [transaction],
+          );
+          await expect(page.locator(".property-card h3")).toHaveText(
+            filtered.rows.map((r) => r.title),
+          );
+        }
+        await page.goto(`${origin}/beranda`);
+        await page
+          .locator('.home-search input[name="q"]:visible')
+          .fill("Rumah");
+        if (width > 560) {
+          await page
+            .locator('.home-search select[name="jenis"]')
+            .selectOption("Rumah");
+          await page
+            .locator('.home-search select[name="harga"]')
+            .selectOption("2000000000");
+        }
+        await page.getByRole("button", { name: "Sewa", exact: true }).click();
+        await expect(page).toHaveURL(/transaksi=Disewa/);
+        const query = new URL(page.url()).searchParams;
+        assert.equal(query.get("q"), "Rumah");
+        if (width > 560) {
+          assert.equal(query.get("jenis"), "Rumah");
+          assert.equal(query.get("harga"), "2000000000");
+        }
+        await expect(page.locator(".property-card")).toHaveCount(12);
         assert.deepEqual(errors, []);
         await context.close();
       }

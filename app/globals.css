@@ -4870,6 +4870,19 @@ td .text-button {
   justify-content: center;
   margin-top: 20px;
 }
+.home-property-next .outline-button {
+  background: var(--brand-red);
+  border-color: var(--brand-red);
+  color: #171717;
+}
+.home-property-next .outline-button:hover {
+  background: var(--brand-red);
+  text-decoration: underline;
+}
+.home-property-next .outline-button:focus-visible {
+  outline: 2px solid var(--brand-red);
+  outline-offset: 4px;
+}
 
 .testimonial-grid {
   display: grid;

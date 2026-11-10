@@ -35,7 +35,9 @@ export function Footer({ settings }: { settings: Settings }) {
               Akses Media Sosial
             </a>
             <Link href="/login">Masuk ke akun</Link>
-            {phone && <a href={`tel:${phone}`}>{phone}</a>}
+            {phone && phone !== "+628811063079" && (
+              <a href={`tel:${phone}`}>{phone}</a>
+            )}
           </nav>
         </div>
         <div className="footer-bottom">

@@ -132,8 +132,8 @@ async function HomeContent({
   ]);
   const { listings: properties, total } = catalog;
   const catalogHref = category
-    ? `/properti?${new URLSearchParams({ jenis: category })}`
-    : "/properti";
+    ? `/properti?${new URLSearchParams({ jenis: category, page: "2" })}`
+    : "/properti?page=2";
   const wa = whatsappLink(
     settings.whatsapp,
     "Halo MR Properti, saya ingin konsultasi properti.",
@@ -227,7 +227,7 @@ async function HomeContent({
             </Link>
           </div>
         )}
-        {total > 12 && (
+        {total > properties.length && (
           <div className="home-property-next">
             <Link className="outline-button" href={catalogHref}>
               Listing Selanjutnya <ArrowRight size={18} aria-hidden="true" />

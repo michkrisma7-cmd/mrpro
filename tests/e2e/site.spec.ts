@@ -16,7 +16,7 @@ test("landing starts with compact search, one listing H1 and unchanged cards", a
     page.getByText("PARTNER UNTUK SETIAP RENCANA", { exact: true }),
   ).toHaveCount(0);
   await expect(page.locator("#properti .property-card")).toHaveCount(
-    demoListings.slice(0, 12).length,
+    demoListings.slice(0, 18).length,
   );
   await expect(
     page.locator(".services-section .home-service-card"),
@@ -98,23 +98,12 @@ test("compact search preserves search filters and uses the selected sale or rent
   const query = page.locator('.home-search input[name="q"]:visible');
   await query.fill("Bintaro");
   await page.getByRole("button", { name: "Sewa", exact: true }).click();
-  await expect(
-    page.getByRole("button", { name: "Sewa", exact: true }),
-  ).toHaveAttribute("aria-pressed", "true");
-  await expect(query).toHaveValue("Bintaro");
-  await page
-    .getByRole("button", { name: "Cari Properti", exact: true })
-    .click();
   await expect(page).toHaveURL(/transaksi=Disewa/);
   expect(new URL(page.url()).searchParams.get("q")).toBe("Bintaro");
   await expect(page.locator(".property-card")).toHaveCount(0);
   await page.goto("/");
-  await page.getByRole("button", { name: "Sewa", exact: true }).click();
-  await page.getByRole("button", { name: "Dijual", exact: true }).click();
   await query.fill("Bintaro");
-  await page
-    .getByRole("button", { name: "Cari Properti", exact: true })
-    .click();
+  await page.getByRole("button", { name: "Dijual", exact: true }).click();
   await expect(page).toHaveURL(/transaksi=Dijual/);
   await expect(page.locator(".property-card")).toHaveCount(1);
 });

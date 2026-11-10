@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { catalogQueries } from "./catalog-query";
+import { CATALOG_PAGE_SIZE } from "./catalog-pagination";
 import { db, databaseConfigured } from "./db";
 import {
   defaultFields,
@@ -52,7 +53,7 @@ function publicListing(
     ),
   };
 }
-// Share the catalog's LIMIT 12, count and newest-first order; home always uses page one.
+// Share the catalog's limit, count and stable order; home always uses page one.
 export function getHomeListings(category = "") {
   return getCatalog(category ? { jenis: category } : {});
 }
@@ -114,7 +115,7 @@ const getCachedCatalog = unstable_cache(
       1,
       Math.min(100000, Number.parseInt(params.page || "1", 10) || 1),
     );
-    const size = 12;
+    const size = CATALOG_PAGE_SIZE;
     if (!databaseConfigured) {
       const q = (params.q || "").toLowerCase();
       let all = demoListings.filter(

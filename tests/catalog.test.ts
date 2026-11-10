@@ -44,10 +44,10 @@ test("catalog SQL filters, sorts and paginates published properties without expo
         q.list.values,
       );
     };
-    assert.equal((await run({})).rows.length, 12);
+    assert.equal((await run({})).rows.length, 14);
     assert.equal((await run({})).rows[0].ownerName, "User");
     assert.equal("email" in (await run({})).rows[0], false);
-    assert.equal((await run({ page: "2" })).rows.length, 2);
+    assert.equal((await run({ page: "2" })).rows.length, 0);
     assert.equal(
       (
         await run({

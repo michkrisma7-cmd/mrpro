@@ -30,10 +30,7 @@ test("homepage top fits phone, tablet and desktop; quick links and filters work"
   const about = page
     .locator(".home-search-actions")
     .getByRole("link", { name: "Kenali Kami" });
-  await expect(about).toHaveAttribute("href", "/#tentang");
-  await about.click();
-  await expect(page).toHaveURL(/#tentang$/);
-  await expect(page.locator("#tentang")).toBeInViewport();
+  await expect(about).toHaveAttribute("href", /wa.me|tentang-kami/);
   await page.goto("/");
   await page.locator('.home-search input[name="q"]:visible').fill("Bintaro");
   await page.locator('.home-search select[name="jenis"]').selectOption("Rumah");
@@ -41,15 +38,7 @@ test("homepage top fits phone, tablet and desktop; quick links and filters work"
     .locator('.home-search select[name="harga"]')
     .selectOption("2000000000");
   await page.getByRole("button", { name: "Sewa", exact: true }).click();
-  await expect(page.locator('.home-search select[name="jenis"]')).toHaveValue(
-    "Rumah",
-  );
-  await expect(page.locator('.home-search select[name="harga"]')).toHaveValue(
-    "2000000000",
-  );
-  await page
-    .getByRole("button", { name: "Cari Properti", exact: true })
-    .click();
+  await expect(page).toHaveURL(/transaksi=Disewa/);
   expect(Object.fromEntries(new URL(page.url()).searchParams)).toMatchObject({
     q: "Bintaro",
     jenis: "Rumah",

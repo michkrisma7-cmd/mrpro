@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { CATALOG_PAGE_SIZE } from "./catalog-pagination";
 export function catalogQueries(
   params: Record<string, string>,
   visible: Set<string>,
@@ -7,7 +8,7 @@ export function catalogQueries(
     1,
     Math.min(100000, Number.parseInt(params.page || "1", 10) || 1),
   );
-  const size = 12;
+  const size = CATALOG_PAGE_SIZE;
   const conditions = [Prisma.sql`"status" = 'PUBLISHED'::"ListingStatus"`];
   if (params.q) {
     const q = params.q.slice(0, 150);
@@ -53,8 +54,8 @@ export function catalogQueries(
   const where = Prisma.join(conditions, " AND ");
   const order =
     params.urut === "termurah" && visible.has("harga")
-      ? Prisma.sql`${price} ASC NULLS LAST, "createdAt" DESC`
-      : Prisma.sql`"createdAt" DESC`;
+      ? Prisma.sql`${price} ASC NULLS LAST, "createdAt" DESC, "id" ASC`
+      : Prisma.sql`"createdAt" DESC, "id" ASC`;
   return {
     page,
     size,
