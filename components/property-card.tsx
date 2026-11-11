@@ -17,6 +17,8 @@ import {
 } from "lucide-react";
 import type { Field, Listing } from "@/lib/types";
 import { displayValue, filled, siteUrl } from "@/lib/format";
+import { listingDetailPath } from "@/lib/listing-share";
+import { PropertyShareButton } from "./property-share-button";
 import {
   listingContactNumber,
   listingWhatsappLink,
@@ -53,7 +55,7 @@ export function PropertyCard({
   const saved = ids.includes(p.id);
   const ownerName = p.submitterName?.trim() || p.ownerName;
   const origin = useSyncExternalStore(subscribeOrigin, browserOrigin, siteUrl);
-  const detailPath = `/properti/${p.slug}`;
+  const detailPath = listingDetailPath(p.slug);
   const number = listingContactNumber(p.whatsapp);
   const whatsapp = number
     ? listingWhatsappLink(number, p.title, new URL(detailPath, origin).href)
@@ -130,13 +132,26 @@ export function PropertyCard({
             })}
         </div>
 
-        {price && (
-          <p className="property-price">
-            <span className="sr-only">{price.cardLabel || price.name}: </span>
-            {displayValue(price, p.values[price.key])}
-            {p.values.transaksi === "Disewa" && <small> / tahun</small>}
-          </p>
-        )}
+        <div className="property-price-row">
+          {price && (
+            <p className="property-price">
+              <span className="sr-only">{price.cardLabel || price.name}: </span>
+              {displayValue(price, p.values[price.key])}
+              {p.values.transaksi === "Disewa" && <small> / tahun</small>}
+            </p>
+          )}
+          <PropertyShareButton
+            listing={{
+              slug: p.slug,
+              title: p.title,
+              price: price
+                ? `${displayValue(price, p.values[price.key])}${p.values.transaksi === "Disewa" ? " / tahun" : ""}`
+                : undefined,
+              location,
+              image: p.gallery[0],
+            }}
+          />
+        </div>
         <Link href={detailPath} prefetch={false}>
           <h3>{p.title}</h3>
         </Link>
