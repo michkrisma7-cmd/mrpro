@@ -3,7 +3,7 @@ import { siteUrl } from "./format";
 export const brand = "MR Properti";
 export const homeTitle = "Jual - Beli - Over Kredit Properti";
 export const homeDescription =
-  "Cari rumah, tanah, apartemen, dan ruko dijual atau disewa di Cikarang dan Bekasi. Titip properti dan temukan jasa tukang bersama MR Properti.";
+  "Jual, beli, sewa, dan over kredit properti di seluruh Indonesia. Temukan rumah, tanah, apartemen, dan ruko atau pasang iklan di Mr Properti.";
 export function indexingEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {
@@ -31,6 +31,7 @@ export function pageMetadata({
   images = ["/images/hero.webp"],
   noindex = false,
   absoluteTitle = false,
+  descriptionLimit = 160,
 }: {
   title: string;
   description: string;
@@ -38,8 +39,13 @@ export function pageMetadata({
   images?: string[];
   noindex?: boolean;
   absoluteTitle?: boolean;
+  descriptionLimit?: number | null;
 }): Metadata {
-  const summary = description.replace(/\s+/g, " ").trim().slice(0, 160);
+  const normalizedDescription = description.replace(/\s+/g, " ").trim();
+  const summary =
+    descriptionLimit === null
+      ? normalizedDescription
+      : normalizedDescription.slice(0, descriptionLimit);
   const imageUrls = (images.length ? images : ["/images/hero.webp"]).map(
     (image) => new URL(image, siteUrl()).href,
   );

@@ -1,4 +1,4 @@
-import { businessId } from "@/lib/business";
+import { business, businessId } from "@/lib/business";
 import type { Metadata } from "next";
 import { pageMetadata, breadcrumbs, jsonLd } from "@/lib/seo";
 import Link from "next/link";
@@ -53,6 +53,7 @@ export default async function ServiceDetail({
     name: s.type,
     description: s.description,
     provider: { "@id": businessId() },
+    areaServed: business.workAreas,
     url: `${siteUrl()}/layanan/${s.slug}`,
   };
   return (

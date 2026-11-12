@@ -28,7 +28,14 @@ import { TestimonialSection } from "@/components/testimonial-section";
 import { BlogList } from "@/components/blog-list";
 import { pageMetadata, homeTitle, homeDescription, jsonLd } from "@/lib/seo";
 import { siteUrl } from "@/lib/format";
-import { businessSchema } from "@/lib/business";
+import {
+  businessId,
+  businessSchema,
+  listingPlatformId,
+  listingPlatformSchema,
+  workServiceId,
+  workServiceSchema,
+} from "@/lib/business";
 export const metadata = pageMetadata({
   title: homeTitle,
   absoluteTitle: true,
@@ -147,13 +154,19 @@ async function HomeContent({
             "@context": "https://schema.org",
             "@graph": [
               businessSchema(settings),
+              listingPlatformSchema(),
+              workServiceSchema(),
               {
                 "@type": "WebSite",
                 "@id": `${siteUrl()}/#website`,
                 name: "MR Properti",
                 url: siteUrl(),
                 inLanguage: "id-ID",
-                publisher: { "@id": `${siteUrl()}/#organization` },
+                publisher: { "@id": businessId() },
+                about: [
+                  { "@id": listingPlatformId() },
+                  { "@id": workServiceId() },
+                ],
               },
               {
                 "@type": "FAQPage",

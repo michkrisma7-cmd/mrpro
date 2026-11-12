@@ -52,7 +52,11 @@ export const metadata: Metadata = {
     description: homeDescription,
     images: [{ url: "/images/hero.webp", width: 1536, height: 1024 }],
   },
-  twitter: { card: "summary_large_image", title: homeTitle },
+  twitter: {
+    card: "summary_large_image",
+    title: homeTitle,
+    description: homeDescription,
+  },
 };
 async function SiteFooter() {
   await connection();

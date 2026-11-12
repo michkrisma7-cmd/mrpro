@@ -1,5 +1,5 @@
 import { connection } from "next/server";
-import { business, businessPhone } from "@/lib/business";
+import { business, businessPhone, workAreaDescription } from "@/lib/business";
 import { getSettings } from "@/lib/data";
 import Link from "next/link";
 import { breadcrumbs, jsonLd, pageMetadata } from "@/lib/seo";
@@ -7,7 +7,8 @@ import { breadcrumbs, jsonLd, pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata({
   title: "Tentang Kami",
   description:
-    "Kenali MR Properti, mitra pemasaran properti serta perbaikan dan penataan rumah maupun tempat usaha di Bekasi, Cikarang, Karawang, hingga Cikampek.",
+    "Kenali Mr Properti, platform jual beli over kredit properti di seluruh Indonesia dengan layanan pekerjaan dan perbaikan rumah tempat usaha di Bekasi, Cikarang, Karawang, dan Cikampek.",
+  descriptionLimit: null,
   path: "/tentang-kami",
 });
 
@@ -80,13 +81,10 @@ export default async function AboutPage() {
         <section className="legal-clause" aria-labelledby="about-service-area">
           <h2 id="about-service-area">Wilayah Layanan</h2>
           <p>
-            Wilayah kerja kami saat ini mencakup{" "}
-            <strong>{business.areaServed.join(", ")}</strong>. Pembatasan
-            wilayah ini membantu kami mengatur survei, koordinasi tim, dan
-            pemantauan pekerjaan dengan lebih terarah. Ketersediaan layanan di
-            setiap lokasi disesuaikan dengan jenis pekerjaan, akses lokasi, dan
-            kesiapan tim.
+            Platform listing Mr Properti melayani jual, beli, sewa, dan over
+            kredit properti di seluruh Indonesia.
           </p>
+          <p>{workAreaDescription}</p>
         </section>
         <section className="legal-clause" aria-labelledby="about-how-we-work">
           <h2 id="about-how-we-work">Cara Kami Bekerja</h2>

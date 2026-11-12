@@ -1,4 +1,4 @@
-import { businessId } from "@/lib/business";
+import { business, businessId } from "@/lib/business";
 import Link from "next/link";
 import { HomeServiceIcon } from "./home-service-icon";
 import { ArrowLeft, ArrowUpRight, Clock3, MessageCircle } from "lucide-react";
@@ -138,6 +138,7 @@ export async function HomeServiceDetail({ service }: { service: HomeService }) {
               description: service.jobs.map((job) => job.title).join(", "),
               url: `${siteUrl()}/layanan/${service.slug}`,
               provider: { "@id": businessId() },
+              areaServed: business.workAreas,
             },
             breadcrumbs([
               { name: "Beranda", path: "/" },

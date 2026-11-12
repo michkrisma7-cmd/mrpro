@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "@/lib/seo";
+import { workAreaDescription } from "@/lib/business";
 import Link from "next/link";
 import { ShieldCheck, MessageCircle, Wrench } from "lucide-react";
 import { getServices } from "@/lib/data";
@@ -42,6 +43,7 @@ export default async function Services({
           Kenali layanannya, pilih kebutuhan Anda, dan biarkan kami membantu
           koordinasinya.
         </p>
+        <p>{workAreaDescription}</p>
       </div>
       <div className="service-process">
         <span>

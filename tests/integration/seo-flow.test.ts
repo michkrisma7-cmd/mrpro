@@ -96,13 +96,30 @@ test(
           const robots = await (await get("/robots.txt")).text();
           const home = await (await get("/")).text();
           const expectedHomeTitle = "Jual - Beli - Over Kredit Properti";
-          for (const userAgent of [
-            "Twitterbot",
-            "facebookexternalhit/1.1",
-            "WhatsApp/2.0",
-          ]) {
+          const expectedHomeDescription =
+            "Jual, beli, sewa, dan over kredit properti di seluruh Indonesia. Temukan rumah, tanah, apartemen, dan ruko atau pasang iklan di Mr Properti.";
+          function assertDescriptions(html: string, expected: string) {
+            const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1] || "";
+            for (const attribute of [
+              'name="description"',
+              'property="og:description"',
+              'name="twitter:description"',
+            ]) {
+              const tags = head.match(
+                new RegExp(`<meta ${attribute} content="[^"]*"`, "g"),
+              );
+              assert.deepEqual(tags, [
+                `<meta ${attribute} content="${expected}"`,
+              ]);
+            }
+          }
+          for (const [path, userAgent] of ["/", "/beranda"].flatMap((path) =>
+            ["Twitterbot", "facebookexternalhit/1.1", "WhatsApp/2.0"].map(
+              (agent) => [path, agent],
+            ),
+          )) {
             const html = await (
-              await fetch(`${local}/`, {
+              await fetch(`${local}${path}`, {
                 headers: { "user-agent": userAgent },
               })
             ).text();
@@ -123,13 +140,9 @@ test(
                 `${userAgent}: ${attribute}`,
               );
             assert.ok(head.includes("/images/hero.webp"));
-            assert.ok(
-              head.includes(
-                "Cari rumah, tanah, apartemen, dan ruko dijual atau disewa di Cikarang dan Bekasi.",
-              ),
-            );
+            assertDescriptions(html, expectedHomeDescription);
           }
-          assert.ok(home.includes("Cikarang dan Bekasi"));
+          assert.ok(home.includes("properti di seluruh Indonesia"));
           assert.ok(
             home.includes(`rel="canonical" href="${canonical}/"`) ||
               home.includes(`rel="canonical" href="${canonical}"`),
@@ -161,6 +174,32 @@ test(
             assert.ok(!sitemap.includes(slug));
           assert.ok(sitemap.includes(`${canonical}/api/media/test-image`));
           const about = await (await get("/tentang-kami")).text();
+          const services = await (await get("/layanan")).text();
+          const localAreaDescription =
+            "Untuk sementara, wilayah layanan pekerjaan kami masih terbatas di Bekasi, Cikarang, Karawang, dan Cikampek. Ketersediaan layanan di setiap lokasi disesuaikan dengan jenis pekerjaan, akses lokasi, dan kesiapan tim.";
+          for (const html of [about, services]) {
+            const content = html
+              .replace(/<script\b[^>]*>[\s\S]*?<\/script>/g, "")
+              .replace(/<[^>]+>/g, " ")
+              .replace(/\s+/g, " ");
+            assert.equal(
+              content.split(localAreaDescription).length,
+              2,
+              "one local work-area notice",
+            );
+            assert.ok(
+              !content.includes("Wilayah kerja kami saat ini mencakup"),
+            );
+          }
+          assertDescriptions(
+            about,
+            "Kenali Mr Properti, platform jual beli over kredit properti di seluruh Indonesia dengan layanan pekerjaan dan perbaikan rumah tempat usaha di Bekasi, Cikarang, Karawang, dan Cikampek.",
+          );
+          const partnership = await (await get("/kemitraan")).text();
+          assertDescriptions(
+            partnership,
+            "Bergabung sebagai mitra MR Properti untuk perbaikan dan renovasi rumah di Cikarang, Bekasi, Karawang, dan Cikampek.",
+          );
           const parseSchemas = (html: string): Record<string, unknown>[] =>
             [
               ...html.matchAll(
@@ -171,25 +210,53 @@ test(
               return data["@graph"] || data;
             });
           const entities = parseSchemas(home);
-          const agent = entities.filter(
-            (item) => item["@type"] === "RealEstateAgent",
+          const organizations = entities.filter((item) =>
+            ["Organization", "RealEstateAgent"].includes(String(item["@type"])),
           );
-          assert.equal(agent.length, 1);
-          assert.equal(agent[0]["@id"], `${canonical}/#organization`);
-          assert.equal(agent[0].telephone, "+6281234567890");
-          assert.deepEqual(agent[0].areaServed, [
+          assert.equal(organizations.length, 1);
+          const organization = organizations[0];
+          assert.equal(organization["@type"], "Organization");
+          assert.equal(organization["@id"], `${canonical}/#organization`);
+          assert.equal(organization.telephone, "+6281234567890");
+          assert.equal(organization.areaServed, undefined);
+          const listingPlatform = entities.find(
+            (item) => item["@id"] === `${canonical}/#listing-platform`,
+          );
+          const workService = entities.find(
+            (item) => item["@id"] === `${canonical}/#work-services`,
+          );
+          assert.equal(listingPlatform?.["@type"], "Service");
+          assert.equal(workService?.["@type"], "Service");
+          assert.deepEqual(listingPlatform?.areaServed, {
+            "@type": "Country",
+            name: "Indonesia",
+          });
+          assert.deepEqual(workService?.areaServed, [
             "Bekasi",
             "Cikarang",
             "Karawang",
             "Cikampek",
           ]);
+          for (const service of [listingPlatform, workService]) {
+            assert.deepEqual(service?.provider, {
+              "@id": `${canonical}/#organization`,
+            });
+          }
+          const website = entities.find((item) => item["@type"] === "WebSite");
+          assert.deepEqual(website?.publisher, {
+            "@id": `${canonical}/#organization`,
+          });
+          assert.deepEqual(website?.about, [
+            { "@id": `${canonical}/#listing-platform` },
+            { "@id": `${canonical}/#work-services` },
+          ]);
           assert.equal(
-            agent[0].address,
+            organization.address,
             undefined,
             "no invented office address",
           );
           assert.equal(
-            agent[0].sameAs,
+            organization.sameAs,
             undefined,
             "no unverified social profiles",
           );
@@ -269,6 +336,21 @@ test(
             service.includes('property="og:title" content="Renovasi Rumah'),
           );
           assert.ok(service.includes("Budi di Cikarang dan Bekasi"));
+          const serviceCategory = await (await get("/layanan/ac")).text();
+          for (const html of [service, serviceCategory]) {
+            const schema = parseSchemas(html).find(
+              (item) => item["@type"] === "Service",
+            );
+            assert.deepEqual(schema?.areaServed, [
+              "Bekasi",
+              "Cikarang",
+              "Karawang",
+              "Cikampek",
+            ]);
+            assert.deepEqual(schema?.provider, {
+              "@id": `${canonical}/#organization`,
+            });
+          }
           const form = await (await get("/titip-properti")).text();
           assert.ok(/name="robots" content="[^"]*noindex/.test(form));
         } catch (error) {
