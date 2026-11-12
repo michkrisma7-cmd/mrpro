@@ -4,7 +4,7 @@ test("blog is reachable from home and has an empty state without a database", as
 }) => {
   await page.goto("/");
   await expect(page.locator("#blog")).toContainText(
-    "Inspirasi & panduan rumah.",
+    "Tips Properti dan Panduan Rumah",
   );
   await page
     .locator("#blog")
@@ -12,7 +12,7 @@ test("blog is reachable from home and has an empty state without a database", as
     .click();
   await expect(page).toHaveURL(/\/blog$/);
   await expect(
-    page.getByRole("heading", { name: "Inspirasi & panduan rumah." }),
+    page.getByRole("heading", { name: "Tips Properti dan Panduan Rumah" }),
   ).toBeVisible();
   await expect(page.getByText("Artikel terbaru segera hadir.")).toBeVisible();
 });

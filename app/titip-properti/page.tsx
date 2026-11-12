@@ -8,11 +8,10 @@ import { storageConfigured } from "@/lib/storage";
 import { PropertyForm } from "@/components/property-form";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = pageMetadata({
-  title: "Titip Jual & Sewa Properti Cikarang dan Bekasi",
+  title: "Pasang Iklan Properti untuk Jual, Sewa & Over Kredit",
   description:
-    "Titipkan properti di Cikarang dan Bekasi bersama MR Properti. Selama masa uji coba, kiriman baru langsung tayang di katalog.",
+    "Pasang iklan rumah, tanah, apartemen, dan ruko di seluruh Indonesia melalui MR Properti. Unggah foto dan detail properti tanpa perlu masuk atau daftar akun.",
   path: "/titip-properti",
-  noindex: true,
 });
 export default async function SubmitProperty() {
   const fields = await getFields();
@@ -25,10 +24,11 @@ export default async function SubmitProperty() {
       </div>
       <div className="page-heading">
         <p className="eyebrow">LANGKAH PERTAMA MENUJU PELUANG BARU</p>
-        <h1>Properti Anda, kami bantu.</h1>
+        <h1>Pasang Iklan Properti</h1>
         <p>
-          Ceritakan tentang properti Anda. Kami bantu mempertemukannya dengan
-          orang yang tepat.
+          Iklankan rumah, tanah, apartemen, atau ruko untuk dijual, disewakan,
+          maupun over kredit di seluruh Indonesia. Lengkapi harga, lokasi,
+          spesifikasi, dan foto properti tanpa perlu masuk atau daftar akun.
         </p>
       </div>
       <div className="submission-layout">

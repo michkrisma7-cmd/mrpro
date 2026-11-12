@@ -21,10 +21,11 @@ export default function KprPage() {
       </div>
       <div className="page-heading kpr-heading">
         <p className="eyebrow">RENCANAKAN RUMAH, MULAI DARI ANGKANYA</p>
-        <h1>Kalkulator KPR</h1>
+        <h1>Kalkulator KPR dan Simulasi Cicilan Rumah</h1>
         <p>
-          Rumah impian, rencana yang terukur. Pilih pembiayaan Anda, atur uang
-          muka, lalu temukan gambaran cicilan yang nyaman.
+          Hitung simulasi cicilan KPR rumah berdasarkan harga properti, uang
+          muka, dan tenor. Pilih ilustrasi pembiayaan BTN atau BSI untuk
+          membantu merencanakan anggaran rumah.
         </p>
       </div>
       <KprCalculator />

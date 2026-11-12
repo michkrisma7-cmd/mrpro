@@ -12,9 +12,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const seo = catalogSeo(await searchParams);
   return pageMetadata({
-    title: `Properti Dijual & Disewa di Cikarang dan Bekasi${seo.page > 1 ? ` — Halaman ${seo.page}` : ""}`,
+    title: `Properti Dijual, Disewa & Over Kredit di Indonesia${seo.page > 1 ? ` — Halaman ${seo.page}` : ""}`,
     description:
-      "Jelajahi rumah, tanah, apartemen, dan ruko dijual atau disewa di Cikarang dan Bekasi. Bandingkan harga dan spesifikasi properti di MR Properti.",
+      "Cari rumah, tanah, apartemen, dan ruko dijual, disewa, atau over kredit di seluruh Indonesia. Bandingkan lokasi, harga, dan spesifikasi di MR Properti.",
     ...seo,
   });
 }
@@ -48,9 +48,12 @@ export default async function Properties({
         <h1>
           {params.favorit
             ? "Ruang yang Anda simpan."
-            : "Temukan tempat untuk pulang."}
+            : "Properti Dijual, Disewa, dan Over Kredit"}
         </h1>
-        <p>Setiap ruang punya cerita. Temukan yang cocok untuk cerita Anda.</p>
+        <p>
+          Temukan rumah, tanah, apartemen, dan ruko di seluruh Indonesia. Pilih
+          jenis properti, transaksi, dan kisaran harga sesuai kebutuhan.
+        </p>
       </div>
       <SearchForm
         initial={params}

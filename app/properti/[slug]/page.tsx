@@ -12,6 +12,7 @@ import {
   listingWhatsappLink,
 } from "@/lib/listing-contact";
 import { Gallery } from "@/components/gallery";
+import { listingSearchText } from "@/lib/listing-seo";
 export async function generateMetadata({
   params,
 }: {
@@ -20,14 +21,10 @@ export async function generateMetadata({
   const p = await getListing((await params).slug);
   if (!p)
     return { title: "Properti tidak ditemukan", robots: { index: false } };
-  const location = typeof p.values.lokasi === "string" ? p.values.lokasi : "";
-  const title =
-    location && !p.title.toLowerCase().includes(location.toLowerCase())
-      ? `${p.title} di ${location}`
-      : p.title;
+  const { title, description } = listingSearchText(p);
   return pageMetadata({
     title,
-    description: p.description,
+    description,
     path: `/properti/${p.slug}`,
     images: p.gallery.slice(0, 1),
   });

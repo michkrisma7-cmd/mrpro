@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { Check, Hammer, MessageCircle, ArrowUpRight } from "lucide-react";
 import { getServices, getSettings } from "@/lib/data";
 import { money, whatsappLink, siteUrl } from "@/lib/format";
-import { getHomeService } from "@/lib/home-services";
+import { getHomeService, homeServiceSearchTitle } from "@/lib/home-services";
 import { HomeServiceDetail } from "@/components/home-service-detail";
 export async function generateMetadata({
   params,
@@ -17,8 +17,8 @@ export async function generateMetadata({
   const category = getHomeService(slug);
   if (category) {
     return pageMetadata({
-      title: `${category.name} — Layanan Perbaikan & Pemeliharaan Rumah`,
-      description: `Layanan ${category.name} di Cikarang dan Bekasi: ${category.jobs.map((job) => job.title).join(", ")}. Lihat rincian pekerjaan, estimasi waktu, dan biaya.`,
+      title: `${homeServiceSearchTitle(category)} di Bekasi dan Cikarang`,
+      description: `${homeServiceSearchTitle(category)} di Bekasi, Cikarang, Karawang, dan Cikampek. ${category.summary}`,
       path: `/layanan/${category.slug}`,
     });
   }

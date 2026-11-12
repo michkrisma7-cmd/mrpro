@@ -95,9 +95,10 @@ test(
           assert.ok(ready, "production server started");
           const robots = await (await get("/robots.txt")).text();
           const home = await (await get("/")).text();
-          const expectedHomeTitle = "Jual - Beli - Over Kredit Properti";
+          const expectedHomeTitle =
+            "MR Properti | Jual Beli, Sewa &amp; Over Kredit Properti";
           const expectedHomeDescription =
-            "Jual, beli, sewa, dan over kredit properti di seluruh Indonesia. Temukan rumah, tanah, apartemen, dan ruko atau pasang iklan di Mr Properti.";
+            "Jual, beli, sewa, dan over kredit properti di seluruh Indonesia. Temukan rumah, tanah, apartemen, dan ruko atau pasang iklan di MR Properti.";
           function assertDescriptions(html: string, expected: string) {
             const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1] || "";
             for (const attribute of [
@@ -352,7 +353,9 @@ test(
             });
           }
           const form = await (await get("/titip-properti")).text();
-          assert.ok(/name="robots" content="[^"]*noindex/.test(form));
+          assert.ok(!/name="robots" content="[^"]*noindex/.test(form));
+          assert.ok(sitemap.includes(`${canonical}/titip-properti`));
+          assert.ok(form.includes("<h1>Pasang Iklan Properti</h1>"));
         } catch (error) {
           console.error(logs.slice(-1500));
           throw error;

@@ -13,9 +13,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { jenis } = await searchParams;
   return pageMetadata({
-    title: "Jasa Tukang & Renovasi Rumah Cikarang dan Bekasi",
+    title: "Jasa Renovasi Rumah & Tukang di Bekasi dan Cikarang",
     description:
-      "Cari jasa tukang renovasi rumah, kelistrikan, baja ringan, kanopi, dan teralis di Cikarang dan Bekasi. Konsultasikan kebutuhan melalui MR Properti.",
+      "Jasa renovasi dan perbaikan rumah, kanopi, plafon, AC, serta kelistrikan di Bekasi, Cikarang, Karawang, dan Cikampek. Konsultasi pekerjaan melalui MR Properti.",
     path: `/layanan${jenis ? `?${new URLSearchParams({ jenis })}` : ""}`,
     noindex: Boolean(jenis),
   });
@@ -38,10 +38,11 @@ export default async function Services({
       </div>
       <div className="page-heading">
         <p className="eyebrow">TENAGA TEPAT, RUMAH LEBIH NYAMAN</p>
-        <h1>Urusan rumah, kami bantu.</h1>
+        <h1>Jasa Renovasi dan Perbaikan Rumah</h1>
         <p>
-          Kenali layanannya, pilih kebutuhan Anda, dan biarkan kami membantu
-          koordinasinya.
+          Pilih jasa tukang untuk renovasi rumah, pemasangan kanopi, plafon,
+          pagar, baja ringan, kitchen set, pengecatan, AC, dan kelistrikan. Kami
+          membantu koordinasi kebutuhan dan jadwal pekerjaan.
         </p>
         <p>{workAreaDescription}</p>
       </div>

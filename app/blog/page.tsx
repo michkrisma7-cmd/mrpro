@@ -4,9 +4,9 @@ import { getBlogPosts } from "@/lib/blog";
 import { BlogList } from "@/components/blog-list";
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = pageMetadata({
-  title: "Tips Properti & Panduan Rumah Cikarang dan Bekasi",
+  title: "Tips Jual Beli Properti, KPR & Renovasi Rumah",
   description:
-    "Baca tips memilih properti, inspirasi renovasi, dan panduan perawatan rumah untuk rencana hunian Anda di Cikarang dan Bekasi.",
+    "Baca panduan jual beli dan sewa properti, perencanaan KPR, renovasi, serta perawatan rumah di jurnal MR Properti.",
   path: "/blog",
 });
 export default async function Blog() {
@@ -15,8 +15,11 @@ export default async function Blog() {
       <div className="section-heading">
         <div>
           <p className="eyebrow">JURNAL MR PROPERTI</p>
-          <h1>Inspirasi & panduan rumah.</h1>
-          <p>Tips properti dan cerita untuk langkah baru Anda.</p>
+          <h1>Tips Properti dan Panduan Rumah</h1>
+          <p>
+            Panduan memilih, menjual, dan menyewakan properti, merencanakan KPR,
+            serta merawat rumah.
+          </p>
         </div>
       </div>
       <BlogList posts={await getBlogPosts()} />

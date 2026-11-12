@@ -20,6 +20,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: siteUrl(), changeFrequency: "daily", priority: 1 },
     { url: `${siteUrl()}/properti`, changeFrequency: "daily", priority: 0.9 },
+    {
+      url: `${siteUrl()}/titip-properti`,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
     { url: `${siteUrl()}/layanan`, changeFrequency: "weekly", priority: 0.8 },
     {
       url: `${siteUrl()}/kemitraan`,

@@ -1,8 +1,12 @@
-import { business, businessId } from "@/lib/business";
+import { business, businessId, workAreaDescription } from "@/lib/business";
 import Link from "next/link";
 import { HomeServiceIcon } from "./home-service-icon";
 import { ArrowLeft, ArrowUpRight, Clock3, MessageCircle } from "lucide-react";
-import { type HomeService, serviceTimeGuide } from "@/lib/home-services";
+import {
+  type HomeService,
+  serviceTimeGuide,
+  homeServiceSearchTitle,
+} from "@/lib/home-services";
 import { getSettings } from "@/lib/data";
 import { siteUrl, whatsappLink } from "@/lib/format";
 import { breadcrumbs, jsonLd } from "@/lib/seo";
@@ -27,10 +31,11 @@ export async function HomeServiceDetail({ service }: { service: HomeService }) {
         <div className="home-service-introduction">
           <div className="home-service-identity">
             <HomeServiceIcon slug={service.slug} />
-            <h1>{service.name}</h1>
+            <h1>{homeServiceSearchTitle(service)}</h1>
           </div>
           <div className="home-service-copy">
             <p className="home-service-summary">{service.summary}</p>
+            <p>{workAreaDescription}</p>
             <div className="home-service-description">
               {service.description.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>

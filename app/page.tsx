@@ -186,7 +186,7 @@ async function HomeContent({
         aria-label="Properti terbaru"
       >
         <div className="home-listing-divider" aria-hidden="true" />
-        <h1 className="sr-only">Properti terbaru</h1>
+        <h1 className="sr-only">Jual Beli, Sewa, dan Over Kredit Properti</h1>
         <div className="catalog-tabs">
           {[
             ["", "Semua Properti"],
@@ -329,8 +329,9 @@ async function HomeContent({
             Biar kami bantu <span>temukan pemilik barunya.</span>
           </h2>
           <p className="consign-feature-description">
-            Titipkan rumah, tanah, atau ruang usaha Anda. Isi informasinya, tim
-            kami akan membantu langkah selanjutnya.
+            Pasang iklan rumah, tanah, apartemen, atau ruko untuk dijual,
+            disewakan, maupun over kredit. Lengkapi foto, harga, dan lokasi agar
+            calon pembeli atau penyewa mengenali properti Anda.
           </p>
           <Link className="button" href="/titip-properti">
             Pasang Iklan <ArrowUpRight size={18} />
@@ -346,9 +347,10 @@ async function HomeContent({
             dimulai dari <span>rasa percaya.</span>
           </h2>
           <p>
-            Kami percaya setiap orang berhak menemukan ruang yang tepat. MR
-            Properti hadir untuk mempertemukan kebutuhan Anda dengan properti
-            dan layanan rumah yang sesuai.
+            MR Properti adalah platform jual beli, sewa, dan over kredit
+            properti di seluruh Indonesia. Temukan rumah, tanah, apartemen, dan
+            ruko sesuai kebutuhan Anda. Kami juga membantu koordinasi renovasi
+            dan perbaikan rumah di Bekasi, Cikarang, Karawang, dan Cikampek.
           </p>
           <Link href="/titip-properti" className="text-button">
             Mari mulai percakapan <ArrowUpRight size={18} />
