@@ -114,7 +114,7 @@ async function HomeSearchContent() {
           Kalkulator KPR <ArrowUpRight size={17} />
         </Link>
         <Link href={wa || "/tentang-kami"} className="outline-button">
-          Kenali Kami <ArrowRight size={16} />
+          Bantuan Admin <ArrowRight size={16} />
         </Link>
       </div>
     </div>
@@ -230,7 +230,7 @@ async function HomeContent({
             <House />
             <h3>Ruang baru segera hadir.</h3>
             <p>Jadilah yang pertama menitipkan properti Anda.</p>
-            <Link className="button" href="/titip-properti">
+            <Link className="button advert-button" href="/titip-properti">
               Pasang Iklan
             </Link>
           </div>
@@ -333,7 +333,7 @@ async function HomeContent({
             disewakan, maupun over kredit. Lengkapi foto, harga, dan lokasi agar
             calon pembeli atau penyewa mengenali properti Anda.
           </p>
-          <Link className="button" href="/titip-properti">
+          <Link className="button advert-button" href="/titip-properti">
             Pasang Iklan <ArrowUpRight size={18} />
           </Link>
         </div>

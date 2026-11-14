@@ -38,7 +38,7 @@ test("landing starts with compact search, one listing H1 and unchanged cards", a
   );
   const actions = page.locator(".home-search-actions");
   const links = actions.getByRole("link");
-  await expect(links).toHaveText(["Kalkulator KPR", "Kenali Kami"]);
+  await expect(links).toHaveText(["Kalkulator KPR", "Bantuan Admin"]);
   const first = (await links.nth(0).boundingBox())!,
     second = (await links.nth(1).boundingBox())!;
   expect(first.y).toBe(second.y);

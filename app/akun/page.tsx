@@ -53,7 +53,7 @@ export default async function Account({
               <ArrowUpRight size={16} />
             </Link>
           )}
-          <Link href="/titip-properti" className="button">
+          <Link href="/titip-properti" className="button advert-button">
             Pasang Iklan
             <ArrowUpRight size={17} />
           </Link>
@@ -120,7 +120,7 @@ export default async function Account({
             Belum ada properti yang dititipkan. Siapkan foto dan informasi
             properti Anda.
           </p>
-          <Link href="/titip-properti" className="button">
+          <Link href="/titip-properti" className="button advert-button">
             Pasang Iklan
             <ArrowUpRight size={17} />
           </Link>

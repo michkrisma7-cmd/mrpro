@@ -5537,25 +5537,25 @@ td .text-button {
 .publication-notice a { text-decoration: underline; font-size: 13px; }
 .publication-notice form { margin-left: auto; }
 
-/* Share the header advert's colors and states without changing the reference. */
-.site-header .nav-actions .button.home-advert-button,
-.site-header:has(.home-advert-button) ~ main .button.home-advert-match {
+/* Keep every advert CTA and its matching home links in the logo's red. */
+.button.advert-button,
+.button.home-advert-match {
   background: var(--brand-red);
   border-color: var(--brand-red);
   color: #fff;
 }
-.site-header .nav-actions .button.home-advert-button:hover,
-.site-header:has(.home-advert-button) ~ main .button.home-advert-match:hover {
+.button.advert-button:hover,
+.button.home-advert-match:hover {
   background: color-mix(in srgb, var(--brand-red), black 8%);
   border-color: color-mix(in srgb, var(--brand-red), black 8%);
 }
-.site-header .nav-actions .button.home-advert-button:active,
-.site-header:has(.home-advert-button) ~ main .button.home-advert-match:active {
+.button.advert-button:active,
+.button.home-advert-match:active {
   background: color-mix(in srgb, var(--brand-red), black 16%);
   border-color: color-mix(in srgb, var(--brand-red), black 16%);
 }
-.site-header .nav-actions .button.home-advert-button:focus-visible,
-.site-header:has(.home-advert-button) ~ main .button.home-advert-match:focus-visible {
+.button.advert-button:focus-visible,
+.button.home-advert-match:focus-visible {
   outline: 2px solid var(--brand-red);
   outline-offset: 3px;
 }

@@ -49,15 +49,6 @@
   font-size: 14px;
   line-height: 1.85;
 }
-.consign-feature .button {
-  background: #e3edcf;
-  color: #213d32;
-  border-color: #e3edcf;
-}
-.consign-feature .button:hover {
-  background: white;
-  border-color: white;
-}
 @media (max-width: 600px) {
   .consign-feature {
     margin-bottom: 42px;

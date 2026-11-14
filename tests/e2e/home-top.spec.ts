@@ -29,7 +29,7 @@ test("homepage top fits phone, tablet and desktop; quick links and filters work"
   await page.goto("/");
   const about = page
     .locator(".home-search-actions")
-    .getByRole("link", { name: "Kenali Kami" });
+    .getByRole("link", { name: "Bantuan Admin" });
   await expect(about).toHaveAttribute("href", /wa.me|tentang-kami/);
   await page.goto("/");
   await page.locator('.home-search input[name="q"]:visible').fill("Bintaro");
