@@ -5559,3 +5559,32 @@ td .text-button {
   outline: 2px solid var(--brand-red);
   outline-offset: 3px;
 }
+/* Keep the player responsive; contact YouTube only after the visitor presses play. */
+.property-video-player {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #172b27;
+}
+.property-video-player iframe,
+.property-video-player button {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.property-video-player button {
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  color: white;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+.property-video-player button:focus-visible {
+  outline: 3px solid #fb3000;
+  outline-offset: -4px;
+}

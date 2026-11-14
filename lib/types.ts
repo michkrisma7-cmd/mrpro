@@ -19,6 +19,7 @@ export type Listing = {
   title: string;
   description: string;
   gallery: string[];
+  youtubeVideoId?: string | null;
   values: Values;
   whatsapp: string;
   status: string;

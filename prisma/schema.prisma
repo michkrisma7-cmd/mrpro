@@ -40,6 +40,7 @@ model Property {
   title String
   description String
   gallery String[]
+  youtubeVideoId String?
   values Json @default("{}")
   whatsapp String
   submitterName String?

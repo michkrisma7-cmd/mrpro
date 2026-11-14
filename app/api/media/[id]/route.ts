@@ -3,8 +3,9 @@ import { currentUser } from "@/lib/auth";
 import { bucket, s3 } from "@/lib/storage";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { guestUploadKey } from "@/lib/guest-listing";
+import { createShareImage } from "@/lib/share-image";
 export async function GET(
-  _: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   if (!databaseConfigured) return new Response(null, { status: 404 });
@@ -39,9 +40,15 @@ export async function GET(
       new GetObjectCommand({ Bucket: bucket, Key: media.key }),
     );
     if (!object.Body) return new Response(null, { status: 404 });
-    return new Response(object.Body.transformToWebStream(), {
+    const share = new URL(request.url).searchParams.get("variant") === "share";
+    const body = share
+      ? new Uint8Array(
+          await createShareImage(await object.Body.transformToByteArray()),
+        )
+      : object.Body.transformToWebStream();
+    return new Response(body, {
       headers: {
-        "Content-Type": "image/webp",
+        "Content-Type": share ? "image/jpeg" : "image/webp",
         "Cache-Control": isPublic
           ? "public, max-age=300, stale-while-revalidate=3600"
           : "private, no-store",

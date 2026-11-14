@@ -13,6 +13,7 @@ import {
 } from "@/lib/actions";
 import type { Field, Listing, Settings, Service } from "@/lib/types";
 import { FormMessage, SubmitButton } from "./form-status";
+import { PropertyYoutubeField } from "./property-youtube-field";
 const fieldTypes: Record<Field["type"], string> = {
   TEXT: "Teks",
   NUMBER: "Angka",
@@ -485,6 +486,7 @@ export function PropertyEditor({
             WhatsApp
             <input name="whatsapp" required defaultValue={p.whatsapp} />
           </label>
+          <PropertyYoutubeField videoId={p.youtubeVideoId} />
           {fields
             .filter((f) => !isRegionKey(f.key))
             .map((f) => (

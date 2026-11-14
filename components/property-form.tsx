@@ -7,6 +7,7 @@ import { SubmitButton, FormMessage } from "./form-status";
 import type { Field, Listing } from "@/lib/types";
 import { PropertyRegions } from "./property-regions";
 import { isRegionKey } from "@/lib/region-config";
+import { PropertyYoutubeField } from "./property-youtube-field";
 export function PropertyForm({
   fields,
   enabled,
@@ -112,6 +113,9 @@ export function PropertyForm({
             enabled={uploadEnabled}
             onReady={setPhotosReady}
           />
+        </div>
+        <div className="form-section">
+          <PropertyYoutubeField videoId={property?.youtubeVideoId} />
         </div>
         <div className="form-section">
           <div className="form-section-title">

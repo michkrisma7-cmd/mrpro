@@ -13,6 +13,7 @@ import {
   fieldSchema,
   actionError,
   phoneSchema,
+  youtubeUrlSchema,
 } from "./validation";
 import type { ActionState, Values } from "./types";
 import { parseListingValues } from "./regions";
@@ -49,6 +50,7 @@ export async function submitProperty(
         error: "Tunggu semua foto selesai diunggah atau hapus foto yang gagal.",
       };
     const input = submissionPropertySchema.parse({
+      youtubeVideoId: form.get("youtubeUrl") ?? undefined,
       submitterName: form.get("submitterName"),
       title: form.get("title"),
       description: form.get("description"),
@@ -135,6 +137,7 @@ export async function updateMemberProperty(
     if (!existing)
       return { error: "Properti tidak ditemukan atau bukan milik Anda." };
     const input = submissionPropertySchema.omit({ gallery: true }).parse({
+      youtubeVideoId: form.get("youtubeUrl") ?? undefined,
       submitterName: form.get("submitterName"),
       title: form.get("title"),
       description: form.get("description"),
@@ -398,6 +401,9 @@ export async function editProperty(
   try {
     const id = z.string().min(1).parse(form.get("id"));
     const existing = await db().property.findUniqueOrThrow({ where: { id } });
+    const youtubeVideoId = youtubeUrlSchema.parse(
+      form.get("youtubeUrl") ?? undefined,
+    );
     const input = basePropertySchema.parse({
       title: form.get("title"),
       description: form.get("description"),
@@ -416,6 +422,7 @@ export async function editProperty(
         title: input.title,
         description: input.description,
         whatsapp: input.whatsapp,
+        youtubeVideoId,
         values,
       },
     });

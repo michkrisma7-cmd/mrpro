@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Field, Values } from "./types";
+import { youtubeVideoId } from "./youtube";
 export const phoneSchema = z
   .string()
   .regex(/^\+?[0-9 ()-]{9,22}$/, "Nomor WhatsApp tidak valid.")
@@ -24,7 +25,19 @@ export const basePropertySchema = z.object({
       "Foto tidak boleh duplikat.",
     ),
 });
+export const youtubeUrlSchema = z
+  .string()
+  .transform((value, context) => {
+    try {
+      return youtubeVideoId(value);
+    } catch (error) {
+      context.addIssue({ code: "custom", message: (error as Error).message });
+      return z.NEVER;
+    }
+  })
+  .optional();
 export const submissionPropertySchema = basePropertySchema.extend({
+  youtubeVideoId: youtubeUrlSchema,
   submitterName: z
     .string()
     .trim()

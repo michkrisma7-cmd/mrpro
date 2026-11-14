@@ -179,6 +179,46 @@ test(
         mimeType: "image/png",
         buffer: photo,
       });
+      const checkPreview = async (slug: string, gallery: string[]) => {
+        const url = `${origin}/properti/${slug}`;
+        for (const agent of [
+          "WhatsApp/2.26.21.74 A",
+          "facebookexternalhit/1.1",
+          "Twitterbot",
+        ]) {
+          const response = await fetch(url, {
+            headers: { "user-agent": agent },
+          });
+          assert.equal(response.status, 200);
+          const head = (await response.text()).split("</head>")[0];
+          const image = `${origin}${gallery[0]}?variant=share`;
+          for (const [property, content] of [
+            ["og:url", url],
+            ["og:image", image],
+            ["og:image:type", "image/jpeg"],
+            ["og:image:width", "1200"],
+            ["og:image:height", "630"],
+          ])
+            assert.ok(
+              head.includes(`property="${property}" content="${content}"`),
+              `${agent}: ${property} in server head`,
+            );
+          assert.equal((head.match(/property="og:image" /g) || []).length, 1);
+          assert.match(head, /property="og:title" content="[^"]+/);
+          assert.match(head, /property="og:description" content="[^"]+/);
+        }
+        const image = await fetch(`${origin}${gallery[0]}?variant=share`, {
+          headers: { "user-agent": "WhatsApp/2.0" },
+        });
+        assert.equal(image.status, 200);
+        assert.equal(image.headers.get("content-type"), "image/jpeg");
+        assert.match(image.headers.get("cache-control")!, /^public/);
+        const bytes = Buffer.from(await image.arrayBuffer());
+        const metadata = await sharp(bytes).metadata();
+        assert.equal(metadata.width, 1200);
+        assert.equal(metadata.height, 630);
+        assert.ok(bytes.length < 300000);
+      };
       const regionValues = {
         province: "32",
         regency: "32.16",
@@ -271,7 +311,26 @@ test(
         }
         await expect(page.locator(".login-notice")).toHaveCount(0);
         await expect(page.locator('[name="title"]')).toBeEnabled();
-        const name = page.getByPlaceholder("Masukkan nama Anda", { exact: true });
+        const youtube = page.getByRole("textbox", {
+          name: "Link YouTube (opsional)",
+        });
+        await expect(youtube).toBeEnabled();
+        assert.equal(
+          await youtube.evaluate(
+            (input) =>
+              input
+                .closest(".form-section")
+                ?.previousElementSibling?.querySelector("h2")?.textContent,
+          ),
+          "Galeri properti",
+        );
+        if (width === 390)
+          await youtube.fill(
+            "https://youtube.com/shorts/dQw4w9WgXcQ?feature=share",
+          );
+        const name = page.getByPlaceholder("Masukkan nama Anda", {
+          exact: true,
+        });
         await expect(name).toHaveAttribute("placeholder", "Masukkan nama Anda");
         assert.equal(
           await name.evaluate((input: HTMLInputElement) => {
@@ -338,6 +397,12 @@ test(
         const stranger = await browser.newContext();
         assert.equal(
           (await stranger.request.get(`${origin}${gallery[0]}`)).status(),
+          404,
+        );
+        assert.equal(
+          (
+            await stranger.request.get(`${origin}${gallery[0]}?variant=share`)
+          ).status(),
           404,
         );
         const invalid = await guest.request.post(`${origin}/api/upload`, {
@@ -426,9 +491,14 @@ test(
             submitterName: string;
             gallery: string[];
             status: string;
+            youtubeVideoId: string | null;
           }>('SELECT * FROM "Property" WHERE title=$1', [title])
         ).rows[0];
         assert.equal(listing.ownerId, null);
+        assert.equal(
+          listing.youtubeVideoId,
+          width === 390 ? "dQw4w9WgXcQ" : null,
+        );
         assert.equal(listing.submitterName, `Pemilik Tamu ${width}`);
         const contact = page
           .locator(".home-property-section .property-card")
@@ -456,6 +526,11 @@ test(
           200,
         );
         await page.goto(`${origin}/properti/${listing.slug}`);
+        await checkPreview(listing.slug, listing.gallery);
+        await expect(page.locator(".property-video")).toHaveCount(
+          width === 390 ? 1 : 0,
+        );
+        await expect(page.locator(".property-video iframe")).toHaveCount(0);
         await expect(
           page.locator('a[href^="https://wa.me/6281399998888"]'),
         ).toBeVisible();
@@ -878,6 +953,7 @@ test(
         });
         const verifyPublic = async (gallery: string[]) => {
           const cover = gallery[0];
+          await checkPreview(listing.slug, gallery);
           await page.goto(`${origin}/properti`);
           await page
             .locator(".catalog-tabs")
@@ -1010,6 +1086,83 @@ test(
       assert.equal(legacy.values.provinsi, "Jabar lama");
       assert.equal(legacy.values.hidden_legacy, "tetap");
       assert.equal(legacy.values.provinsi_kode, undefined);
+      // Use the real member edit action to add, replace, reject and remove videos.
+      const videoListing = (
+        await database.query<{ id: string; slug: string; gallery: string[] }>(
+          'SELECT id,slug,gallery FROM "Property" WHERE "ownerId"=$1 AND status=\'PUBLISHED\' LIMIT 1',
+          ["team-admin"],
+        )
+      ).rows[0];
+      await page.route("https://www.youtube-nocookie.com/**", (route) =>
+        route.fulfill({
+          contentType: "text/html",
+          body: "<p>Isolated YouTube player fixture</p>",
+        }),
+      );
+      for (const width of [1440, 390]) {
+        await page.setViewportSize({ width, height: 900 });
+        for (const [url, id] of [
+          ["https://www.youtube.com/watch?v=dQw4w9WgXcQ", "dQw4w9WgXcQ"],
+          ["https://youtu.be/M7lc1UVf-VE?si=test", "M7lc1UVf-VE"],
+          ["https://youtube.com/shorts/dQw4w9WgXcQ", "dQw4w9WgXcQ"],
+          ["", null],
+        ] as const) {
+          await page.goto(`${origin}/akun/properti/${videoListing.id}/edit`);
+          const input = page.getByRole("textbox", {
+            name: "Link YouTube (opsional)",
+          });
+          await input.fill("https://youtube.com.evil.test/watch?v=dQw4w9WgXcQ");
+          await page.getByRole("button", { name: "Simpan Perubahan" }).click();
+          await expect(
+            page.locator(".property-form").getByRole("alert"),
+          ).toContainText("Link YouTube tidak valid");
+          await expect(input).toHaveValue(
+            "https://youtube.com.evil.test/watch?v=dQw4w9WgXcQ",
+          );
+          await input.fill(url);
+          await page.getByRole("button", { name: "Simpan Perubahan" }).click();
+          await expect(
+            page.getByText("Perubahan properti berhasil disimpan", {
+              exact: true,
+            }),
+          ).toBeVisible();
+          assert.equal(
+            (
+              await database.query<{ youtubeVideoId: string | null }>(
+                'SELECT "youtubeVideoId" FROM "Property" WHERE id=$1',
+                [videoListing.id],
+              )
+            ).rows[0].youtubeVideoId,
+            id,
+          );
+          await page.reload();
+          await expect(input).toHaveValue(
+            id ? `https://www.youtube.com/watch?v=${id}` : "",
+          );
+          await page.goto(`${origin}/properti/${videoListing.slug}`);
+          await expect(page.locator(".property-video")).toHaveCount(id ? 1 : 0);
+          await expect(page.locator(".property-video iframe")).toHaveCount(0);
+          if (id) {
+            await page
+              .getByRole("button", { name: /^Putar video properti:/ })
+              .click();
+            const frame = page.locator(".property-video iframe");
+            await expect(frame).toHaveAttribute(
+              "src",
+              `https://www.youtube-nocookie.com/embed/${id}?autoplay=1`,
+            );
+            const box = await frame.boundingBox();
+            assert.ok(box && Math.abs(box.width / box.height - 16 / 9) < 0.02);
+          }
+          assert.equal(
+            await page.evaluate(
+              () => document.documentElement.scrollWidth <= innerWidth,
+            ),
+            true,
+          );
+          await checkPreview(videoListing.slug, videoListing.gallery);
+        }
+      }
       await database.exec(
         `UPDATE "AppUser" SET role='ADMIN' WHERE id='team-admin'`,
       );
@@ -1020,6 +1173,9 @@ test(
       ).rows[0];
       await page.goto(`${origin}/admin?tab=properti&edit=${over.id}`);
       const editor = page.locator(".admin-edit-form");
+      await editor
+        .getByRole("textbox", { name: "Link YouTube (opsional)" })
+        .fill("https://youtu.be/M7lc1UVf-VE");
       await expect(editor.locator('[name="field_transaksi"]')).toHaveValue(
         "Over Kredit",
       );
@@ -1028,6 +1184,18 @@ test(
           .locator('[name="field_transaksi"]')
           .selectOption(transaction);
         await editor.getByRole("button", { name: "Simpan Informasi" }).click();
+        await expect(
+          editor.getByText("Informasi properti disimpan."),
+        ).toBeVisible();
+        assert.equal(
+          (
+            await database.query<{ youtubeVideoId: string | null }>(
+              'SELECT "youtubeVideoId" FROM "Property" WHERE id=$1',
+              [over.id],
+            )
+          ).rows[0].youtubeVideoId,
+          "M7lc1UVf-VE",
+        );
         await expect(
           editor.getByText("Informasi properti disimpan."),
         ).toBeVisible();

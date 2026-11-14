@@ -13,6 +13,8 @@ import {
 } from "@/lib/listing-contact";
 import { Gallery } from "@/components/gallery";
 import { listingSearchText } from "@/lib/listing-seo";
+import { listingPreviewImage } from "@/lib/listing-preview";
+import { PropertyVideo } from "@/components/property-video";
 export async function generateMetadata({
   params,
 }: {
@@ -22,12 +24,14 @@ export async function generateMetadata({
   if (!p)
     return { title: "Properti tidak ditemukan", robots: { index: false } };
   const { title, description } = listingSearchText(p);
-  return pageMetadata({
+  const image = listingPreviewImage(p.gallery, p.title);
+  const metadata = pageMetadata({
     title,
     description,
-    path: `/properti/${p.slug}`,
-    images: p.gallery.slice(0, 1),
+    path: `${siteUrl()}/properti/${p.slug}`,
+    images: [image.url],
   });
+  return { ...metadata, openGraph: { ...metadata.openGraph, images: [image] } };
 }
 export default async function PropertyDetail({
   params,
@@ -86,6 +90,12 @@ export default async function PropertyDetail({
             <h2>Tentang properti ini</h2>
             <p className="preserve-lines">{property.description}</p>
           </section>
+          {property.youtubeVideoId && (
+            <PropertyVideo
+              videoId={property.youtubeVideoId}
+              title={property.title}
+            />
+          )}
           {specifications.length > 0 && (
             <section className="detail-section">
               <h2>Spesifikasi properti</h2>
