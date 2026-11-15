@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { siteUrl } from "./format";
 export const brand = "MR Properti";
-export const homeTitle = "MR Properti | Jual Beli, Sewa & Over Kredit Properti";
+export const homeTitle =
+  "Mr Properti — Jual, Beli, Sewa & Over Kredit Properti di Bekasi, Cikarang, Karawang, dan Cikampek.";
 export const homeDescription =
-  "Jual, beli, sewa, dan over kredit properti di seluruh Indonesia. Temukan rumah, tanah, apartemen, dan ruko atau pasang iklan di MR Properti.";
+  "Cari properti di Kota dan Kabupaten Bekasi, Cikarang, Karawang, dan Cikampek. Pasang iklan jual, sewa, atau over kredit dari seluruh Indonesia.";
 export function indexingEnabled(
   env: Record<string, string | undefined> = process.env,
 ) {

@@ -7,7 +7,7 @@ import { breadcrumbs, jsonLd, pageMetadata } from "@/lib/seo";
 export const metadata = pageMetadata({
   title: "Tentang Kami",
   description:
-    "Kenali Mr Properti, platform jual beli over kredit properti di seluruh Indonesia dengan layanan pekerjaan dan perbaikan rumah tempat usaha di Bekasi, Cikarang, Karawang, dan Cikampek.",
+    "Kenali fokus pemasaran Mr Properti di Kota dan Kabupaten Bekasi, Cikarang, Karawang, dan Cikampek. Platform iklan tetap terbuka untuk seluruh Indonesia.",
   descriptionLimit: null,
   path: "/tentang-kami",
 });
@@ -81,8 +81,10 @@ export default async function AboutPage() {
         <section className="legal-clause" aria-labelledby="about-service-area">
           <h2 id="about-service-area">Wilayah Layanan</h2>
           <p>
-            Platform listing Mr Properti melayani jual, beli, sewa, dan over
-            kredit properti di seluruh Indonesia.
+            Mr Properti — Jual, Beli, Sewa & Over Kredit Properti di Bekasi,
+            Cikarang, Karawang, dan Cikampek. Fokus pemasaran mencakup Kota dan
+            Kabupaten Bekasi. Platform pemasangan iklan tetap terbuka untuk
+            properti di seluruh Indonesia.
           </p>
           <p>{workAreaDescription}</p>
         </section>

@@ -15,6 +15,26 @@ export function BlogEditor({
     <form action={action} className="admin-edit-form">
       <fieldset disabled={disabled} className="plain-fieldset">
         <input type="hidden" name="id" value={post?.id || ""} />
+        <aside className="notice" aria-label="Pedoman editorial">
+          <strong>Panduan konten properti lokal</strong>
+          <p>
+            Utamakan kebutuhan pembeli di Kota dan Kabupaten Bekasi, Cikarang,
+            Karawang, dan Cikampek: rumah subsidi, over kredit, persyaratan KPR
+            subsidi, legalitas tanah, serta panduan membeli rumah.
+          </p>
+          <p>
+            Periksa sumber resmi dan tanggal berlakunya syarat, biaya, atau
+            aturan. Bedakan harga total, biaya awal, dan angsuran. Jangan
+            mengarang proyek, harga, kondisi lingkungan, atau jaminan
+            persetujuan KPR.
+          </p>
+          <p>
+            Gunakan sudut pembahasan yang berbeda dari artikel sebelumnya,
+            berikan langkah praktis dan sumber yang dapat diperiksa. Jangan
+            hanya mengganti nama wilayah pada artikel yang sama. Tinjau fakta
+            sebelum menerbitkan; pertahankan slug artikel lama.
+          </p>
+        </aside>
         <div className="form-grid">
           <label>
             Judul

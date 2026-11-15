@@ -6,7 +6,7 @@ import type { Settings } from "./types";
 export const business = {
   name: "MR Properti",
   description:
-    "Platform listing properti di seluruh Indonesia, dengan layanan pekerjaan, perbaikan, dan penataan rumah maupun tempat usaha di Bekasi, Cikarang, Karawang, dan Cikampek.",
+    "Fokus pemasaran properti di Kota dan Kabupaten Bekasi, Cikarang, Karawang, dan Cikampek. Platform iklan menerima properti seluruh Indonesia; layanan pekerjaan tersedia di empat wilayah utama.",
   logo: "/brand/mrproperti-logo.png",
   workAreas: ["Bekasi", "Cikarang", "Karawang", "Cikampek"],
 };

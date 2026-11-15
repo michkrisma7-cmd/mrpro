@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import { runInNewContext } from "node:vm";
 import ts from "typescript";
+import { CATALOG_PAGE_SIZE } from "../lib/catalog-pagination";
 
 async function loadCachedModule(
   path: string,
@@ -96,6 +97,7 @@ test("equivalent catalog filters reuse cache; different pages get separate entri
       }),
     },
     "./demo": {},
+    "./catalog-pagination": { CATALOG_PAGE_SIZE },
     "./catalog-query": {
       catalogQueries: () => ({ list: "list", count: "count" }),
     },

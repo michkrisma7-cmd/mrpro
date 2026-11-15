@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AreaLinks } from "@/components/area-links";
 import { catalogSeo, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { getCatalog, getFields } from "@/lib/data";
@@ -12,9 +13,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const seo = catalogSeo(await searchParams);
   return pageMetadata({
-    title: `Properti Dijual, Disewa & Over Kredit di Indonesia${seo.page > 1 ? ` — Halaman ${seo.page}` : ""}`,
+    title: `Properti Bekasi, Cikarang, Karawang & Cikampek${seo.page > 1 ? ` — Halaman ${seo.page}` : ""}`,
     description:
-      "Cari rumah, tanah, apartemen, dan ruko dijual, disewa, atau over kredit di seluruh Indonesia. Bandingkan lokasi, harga, dan spesifikasi di MR Properti.",
+      "Jelajahi properti Bekasi, Cikarang, Karawang, dan Cikampek serta iklan dari seluruh Indonesia. Bandingkan lokasi, harga, dan spesifikasi properti.",
     ...seo,
   });
 }
@@ -51,10 +52,12 @@ export default async function Properties({
             : "Properti Dijual, Disewa, dan Over Kredit"}
         </h1>
         <p>
-          Temukan rumah, tanah, apartemen, dan ruko di seluruh Indonesia. Pilih
-          jenis properti, transaksi, dan kisaran harga sesuai kebutuhan.
+          Fokus pemasaran kami di Kota dan Kabupaten Bekasi, Cikarang, Karawang,
+          dan Cikampek. Katalog tetap memuat iklan dari seluruh Indonesia. Pilih
+          lokasi, jenis properti, transaksi, dan kisaran harga sesuai kebutuhan.
         </p>
       </div>
+      <AreaLinks />
       <SearchForm
         initial={params}
         compact

@@ -57,7 +57,12 @@ export default async function SubmitProperty() {
             [
               ClipboardCheck,
               "Detail yang lengkap",
-              "Cantumkan spesifikasi dan keunggulan properti secara akurat.",
+              "Isi lokasi administratif dan alamat, luas, kondisi, serta informasi legalitas yang dapat dibuktikan. Jangan unggah dokumen pribadi.",
+            ],
+            [
+              ClipboardCheck,
+              "Harga yang jelas",
+              "Harga jual adalah harga total, bukan DP, booking fee, atau cicilan. Untuk over kredit, cantumkan dana pengalihan, angsuran, dan sisa tenor di deskripsi.",
             ],
             [
               CircleCheck,

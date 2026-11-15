@@ -1,4 +1,5 @@
 import "./consign-feature.css";
+import { AreaLinks } from "@/components/area-links";
 import Link from "next/link";
 import { connection } from "next/server";
 import Image from "next/image";
@@ -185,8 +186,12 @@ async function HomeContent({
         id="properti"
         aria-label="Properti terbaru"
       >
+        <AreaLinks />
         <div className="home-listing-divider" aria-hidden="true" />
-        <h1 className="sr-only">Jual Beli, Sewa, dan Over Kredit Properti</h1>
+        <h1 className="sr-only">
+          Mr Properti — Jual, Beli, Sewa & Over Kredit Properti di Bekasi,
+          Cikarang, Karawang, dan Cikampek.
+        </h1>
         <div className="catalog-tabs">
           {[
             ["", "Semua Properti"],
@@ -347,10 +352,12 @@ async function HomeContent({
             dimulai dari <span>rasa percaya.</span>
           </h2>
           <p>
-            MR Properti adalah platform jual beli, sewa, dan over kredit
-            properti di seluruh Indonesia. Temukan rumah, tanah, apartemen, dan
-            ruko sesuai kebutuhan Anda. Kami juga membantu koordinasi renovasi
-            dan perbaikan rumah di Bekasi, Cikarang, Karawang, dan Cikampek.
+            Mr Properti — Jual, Beli, Sewa & Over Kredit Properti di Bekasi,
+            Cikarang, Karawang, dan Cikampek. Fokus pemasaran kami meliputi Kota
+            dan Kabupaten Bekasi. Platform pemasangan iklan tetap menerima
+            properti di seluruh Indonesia. Layanan pekerjaan dan perbaikan rumah
+            tersedia di empat wilayah tersebut sesuai jenis pekerjaan dan
+            kesiapan tim.
           </p>
           <Link href="/titip-properti" className="text-button">
             Mari mulai percakapan <ArrowUpRight size={18} />

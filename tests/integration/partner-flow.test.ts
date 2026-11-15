@@ -398,6 +398,27 @@ test(
         path: "work/partner-admin-mobile.png",
         fullPage: true,
       });
+      await page.goto(`${origin}/admin?tab=mitra&detail=missing-partner`);
+      await expect(
+        page.locator(".admin-panel").getByRole("alert"),
+      ).toContainText("Data mitra tidak ditemukan.");
+      await database.exec(
+        'ALTER TABLE "Partner" RENAME TO "Partner_unavailable"',
+      );
+      await page.goto(`${origin}/admin?tab=mitra`);
+      await expect(
+        page.locator(".admin-panel").getByRole("alert"),
+      ).toContainText("Data mitra belum dapat dimuat.");
+      await expect(
+        page.getByRole("button", { name: "Cari / Filter", exact: true }),
+      ).toBeVisible();
+      await database.exec(
+        'ALTER TABLE "Partner_unavailable" RENAME TO "Partner"',
+      );
+      await page.goto(`${origin}/admin?tab=mitra&detail=${id}`);
+      await expect(page.locator(".partner-detail")).toContainText(
+        "Budi Renovasi",
+      );
       await database.exec(
         `UPDATE "AppUser" SET role='USER' WHERE id='partner-admin'`,
       );

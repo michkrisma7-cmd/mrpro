@@ -1,4 +1,6 @@
 import type { MetadataRoute } from "next";
+import { getIndexableAreas } from "@/lib/area-data";
+import { areaPath } from "@/lib/areas";
 import { siteUrl } from "@/lib/format";
 import { db } from "@/lib/db";
 import { indexingEnabled } from "@/lib/seo";
@@ -6,7 +8,7 @@ import { homeServices } from "@/lib/home-services";
 export const dynamic = "force-dynamic";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!indexingEnabled()) return [];
-  const [properties, services, posts] = await Promise.all([
+  const [properties, services, posts, localAreas] = await Promise.all([
     db().property.findMany({
       where: { status: "PUBLISHED" },
       select: { slug: true, updatedAt: true, gallery: true },
@@ -16,8 +18,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       where: { published: true },
       select: { slug: true, updatedAt: true },
     }),
+    getIndexableAreas(),
   ]);
   return [
+    { url: `${siteUrl()}/wilayah`, changeFrequency: "daily", priority: 0.8 },
+    ...localAreas.map((area) => ({
+      url: `${siteUrl()}${areaPath(area)}`,
+      changeFrequency: "daily" as const,
+      priority: 0.8,
+    })),
     { url: siteUrl(), changeFrequency: "daily", priority: 1 },
     { url: `${siteUrl()}/properti`, changeFrequency: "daily", priority: 0.9 },
     {

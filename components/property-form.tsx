@@ -42,7 +42,8 @@ export function PropertyForm({
             <div>
               <h2>Ceritakan tentang properti Anda</h2>
               <p>
-                Informasi yang jelas membantu calon pembeli mengenal properti.
+                Cantumkan kondisi, spesifikasi, lokasi lengkap, dan biaya secara
+                akurat. Bedakan harga total dari DP, booking fee, dan cicilan.
               </p>
             </div>
           </div>
@@ -122,7 +123,20 @@ export function PropertyForm({
             <span>03</span>
             <div>
               <h2>Detail & spesifikasi</h2>
-              <p>Lengkapi informasi sesuai properti Anda.</p>
+              <p>
+                Lengkapi jenis transaksi, luas tanah dan bangunan, serta lokasi
+                hingga kecamatan jika tersedia. Jangan mengarang spesifikasi
+                atau klaim lingkungan.
+              </p>
+              <p>
+                Untuk transaksi dijual, harga jual adalah harga total properti.
+                DP, booking fee, dan cicilan bukan harga jual total.
+              </p>
+              <p>
+                Untuk over kredit, jelaskan dana pengalihan (mahar), angsuran
+                per bulan, dan sisa tenor dalam deskripsi. Jelaskan apa saja
+                yang termasuk dalam dana pengalihan.
+              </p>
             </div>
           </div>
           <div className="form-grid">

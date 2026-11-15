@@ -5,6 +5,7 @@ import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { createServer } from "node:net";
 import { setTimeout as delay } from "node:timers/promises";
+import { chromium } from "@playwright/test";
 import { PGlite } from "@electric-sql/pglite";
 import { PGLiteSocketServer } from "@electric-sql/pglite-socket";
 
@@ -28,11 +29,13 @@ test(
           await readFile(`prisma/migrations/${name}/migration.sql`, "utf8"),
         );
       await database.exec(`
+      INSERT INTO "PropertyField" (id,key,name,type,options,"showOnCard","showOnDetail") VALUES ('harga','harga','Harga','PRICE',ARRAY[]::text[],true,true);
       INSERT INTO "SiteSettings" (id,whatsapp,email) VALUES ('main','081234567890','kontak@example.test');
       INSERT INTO "AppUser" (id,name,email,"passwordHash") VALUES ('owner','Owner','owner@example.test','unusable');
       INSERT INTO "Property" (id,slug,title,description,gallery,whatsapp,"ownerId",status,"updatedAt") VALUES
       ('published','rumah-cikarang','Rumah Cikarang','Rumah untuk keluarga di Cikarang.',ARRAY['/api/media/test-image'],'','owner','PUBLISHED',NOW()),
       ('pending','rumah-private','Rumah Privat','Belum diterbitkan.',ARRAY[]::text[],'','owner','PENDING',NOW());
+      UPDATE "Property" SET values = '{"harga":185000000,"jenis":"Rumah","transaksi":"Dijual","kota_kabupaten":"Kabupaten Bekasi","kecamatan":"Cikarang Utara"}'::jsonb WHERE id='published';
       INSERT INTO "Service" (id,slug,type,"workerName",skills,description,"minPrice",whatsapp,active) VALUES
       ('service','renovasi-bekasi','Renovasi Rumah','Budi',ARRAY['Keramik'],'Renovasi rumah di Bekasi.',70000,'',true),
       ('inactive','layanan-private','Layanan Privat','Test',ARRAY[]::text[],'Tidak aktif.',10000,'',false);
@@ -96,9 +99,9 @@ test(
           const robots = await (await get("/robots.txt")).text();
           const home = await (await get("/")).text();
           const expectedHomeTitle =
-            "MR Properti | Jual Beli, Sewa &amp; Over Kredit Properti";
+            "Mr Properti — Jual, Beli, Sewa &amp; Over Kredit Properti di Bekasi, Cikarang, Karawang, dan Cikampek.";
           const expectedHomeDescription =
-            "Jual, beli, sewa, dan over kredit properti di seluruh Indonesia. Temukan rumah, tanah, apartemen, dan ruko atau pasang iklan di MR Properti.";
+            "Cari properti di Kota dan Kabupaten Bekasi, Cikarang, Karawang, dan Cikampek. Pasang iklan jual, sewa, atau over kredit dari seluruh Indonesia.";
           function assertDescriptions(html: string, expected: string) {
             const head = html.match(/<head>([\s\S]*?)<\/head>/)?.[1] || "";
             for (const attribute of [
@@ -174,6 +177,228 @@ test(
           ])
             assert.ok(!sitemap.includes(slug));
           assert.ok(sitemap.includes(`${canonical}/api/media/test-image`));
+          const index = await (await get("/wilayah")).text();
+          assert.ok(
+            index.includes(
+              `<title>Jelajahi Properti Berdasarkan Wilayah | MR Properti</title>`,
+            ),
+          );
+          assert.ok(
+            index.includes(`rel="canonical" href="${canonical}/wilayah"`),
+          );
+          assert.ok(index.includes('name="robots" content="index, follow"'));
+          assertDescriptions(
+            index,
+            "Temukan rumah, tanah, ruko, dan pilihan properti lainnya di Bekasi, Cikarang, Karawang, dan Cikampek.",
+          );
+          assert.ok(sitemap.includes(`${canonical}/wilayah</loc>`));
+          const schemas = (html: string) =>
+            [
+              ...html.matchAll(
+                /<script type="application\/ld\+json">([\s\S]*?)<\/script>/g,
+              ),
+            ].flatMap((match) => JSON.parse(match[1]));
+          assert.equal(
+            schemas(index).find((s) => s["@type"] === "ItemList")
+              .itemListElement.length,
+            4,
+          );
+          assert.ok(
+            schemas(index).find((s) => s["@type"] === "BreadcrumbList"),
+          );
+          const subTitles = new Set<string>();
+          const subDescriptions = new Set<string>();
+          for (const slug of ["bekasi", "cikarang", "karawang", "cikampek"]) {
+            const html = await (await get(`/wilayah/${slug}`)).text();
+            subTitles.add(html.match(/<title>(.*?)<\/title>/)![1]);
+            subDescriptions.add(
+              html.match(/<meta name="description" content="([^"]*)"/)![1],
+            );
+            assert.ok(
+              html.includes(
+                `rel="canonical" href="${canonical}/wilayah/${slug}"`,
+              ),
+            );
+            const trail = schemas(html).find(
+              (s) => s["@type"] === "BreadcrumbList",
+            );
+            assert.equal(trail.itemListElement[1].item, `${canonical}/wilayah`);
+            const list = schemas(html).find((s) => s["@type"] === "ItemList");
+            if (list)
+              assert.equal(
+                new Set(
+                  list.itemListElement.map((item: { url: string }) => item.url),
+                ).size,
+                list.itemListElement.length,
+              );
+            if (["karawang", "cikampek"].includes(slug)) {
+              assert.ok(
+                html.includes('name="robots" content="noindex, follow"'),
+              );
+              assert.ok(!sitemap.includes(`${canonical}/wilayah/${slug}`));
+              assert.ok(!list);
+            }
+          }
+          assert.equal(subTitles.size, 4);
+          assert.equal(subDescriptions.size, 4);
+          const bekasi = await (await get("/wilayah/bekasi")).text();
+          const cikarang = await (await get("/wilayah/cikarang")).text();
+          const karawang = await (await get("/wilayah/karawang")).text();
+          for (const [slug, html] of [
+            ["bekasi", bekasi],
+            ["cikarang", cikarang],
+          ]) {
+            assert.ok(
+              html.includes(
+                `rel="canonical" href="${canonical}/wilayah/${slug}"`,
+              ),
+            );
+            assert.ok(html.includes(`/properti/rumah-cikarang`));
+            assert.ok(html.includes('name="robots" content="index, follow"'));
+            assert.ok(sitemap.includes(`${canonical}/wilayah/${slug}`));
+            assert.ok(html.includes('"@type":"CollectionPage"'));
+            assert.ok(html.includes('"@type":"ItemList"'));
+            assert.ok(!html.includes("rumah-private"));
+          }
+          assert.ok(
+            karawang.includes('name="robots" content="noindex, follow"'),
+          );
+          assert.ok(!sitemap.includes(`${canonical}/wilayah/karawang`));
+          assert.ok(karawang.includes("Belum ada iklan yang sesuai saat ini"));
+          assert.ok(
+            (await (await get("/wilayah/bekasi?page=999")).text()).includes(
+              'name="robots" content="noindex, follow"',
+            ),
+          );
+          assert.match(
+            await (await get("/wilayah/bogor")).text(),
+            /name="robots" content="noindex"/,
+          );
+          const listingForm = await (await get("/titip-properti")).text();
+          assert.ok(
+            listingForm.includes("harga jual adalah harga total properti"),
+          );
+          assert.ok(listingForm.includes('name="field_harga"'));
+          assert.ok(listingForm.includes("sisa tenor"));
+          const browser = await chromium.launch({
+            headless: true,
+            ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
+              ? {
+                  executablePath:
+                    process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+                }
+              : {}),
+          });
+          try {
+            const page = await browser.newPage();
+            for (const width of [390, 1280]) {
+              await page.setViewportSize({ width, height: 900 });
+              await page.goto(`${local}/properti`);
+              await page
+                .getByRole("link", { name: "Semua wilayah", exact: true })
+                .click();
+              await page.waitForURL("**/wilayah");
+              assert.equal(await page.locator(".service-card").count(), 4);
+              const expectedCounts: Record<string, number> = {
+                bekasi: 1,
+                cikarang: 1,
+                karawang: 0,
+                cikampek: 0,
+              };
+              for (const [slug, name] of [
+                ["bekasi", "Bekasi"],
+                ["cikarang", "Cikarang"],
+                ["karawang", "Karawang"],
+                ["cikampek", "Cikampek"],
+              ]) {
+                assert.equal(await page.locator(`#area-${slug}`).count(), 1);
+                const card = page
+                  .locator(".service-card")
+                  .filter({ has: page.locator(`#area-${slug}`) });
+                assert.ok(
+                  (await card.textContent())!.includes(
+                    `${expectedCounts[slug]} listing aktif`,
+                  ),
+                );
+                await card
+                  .getByRole("link", {
+                    name: `Lihat Properti di ${name}`,
+                    exact: true,
+                  })
+                  .click();
+                await page.waitForURL(`**/wilayah/${slug}`);
+                const hrefs = await page
+                  .locator(".property-card a.card-more")
+                  .evaluateAll((links) =>
+                    links.map((link) => link.getAttribute("href")),
+                  );
+                assert.equal(new Set(hrefs).size, hrefs.length);
+                assert.equal(hrefs.length, expectedCounts[slug]);
+                assert.ok(
+                  await page.evaluate(
+                    () => document.documentElement.scrollWidth <= innerWidth,
+                  ),
+                );
+                await page
+                  .getByRole("navigation", { name: "Breadcrumb", exact: true })
+                  .getByRole("link", { name: "Wilayah", exact: true })
+                  .click();
+                await page.waitForURL("**/wilayah");
+              }
+              assert.ok(
+                await page.evaluate(
+                  () => document.documentElement.scrollWidth <= innerWidth,
+                ),
+              );
+              await page.screenshot({
+                path: `work/wilayah-index-${width}.png`,
+                fullPage: true,
+              });
+              await page.goto(`${local}/properti`);
+              await page
+                .getByRole("link", { name: "Properti Cikarang", exact: true })
+                .click();
+              await page.waitForURL("**/wilayah/cikarang");
+              await page
+                .getByRole("heading", {
+                  level: 1,
+                  name: "Rumah Dijual, Subsidi & Over Kredit di Cikarang",
+                })
+                .waitFor();
+              assert.equal(
+                await page.locator(".property-card a.card-more").count(),
+                1,
+              );
+              assert.equal(
+                await page
+                  .locator('link[rel="canonical"]')
+                  .getAttribute("href"),
+                `${canonical}/wilayah/cikarang`,
+              );
+              await page.goto(`${local}/titip-properti`);
+              await page.locator('input[name="field_harga"]').fill("200000000");
+              assert.equal(
+                await page.locator('input[name="field_harga"]').inputValue(),
+                "200000000",
+              );
+              assert.equal(
+                await page
+                  .locator('input[name="field_harga"]')
+                  .getAttribute("min"),
+                "0",
+              );
+              assert.ok(
+                await page
+                  .getByText(
+                    "Untuk transaksi dijual, harga jual adalah harga total properti.",
+                    { exact: false },
+                  )
+                  .isVisible(),
+              );
+            }
+          } finally {
+            await browser.close();
+          }
           const about = await (await get("/tentang-kami")).text();
           const services = await (await get("/layanan")).text();
           const localAreaDescription =
@@ -194,7 +419,7 @@ test(
           }
           assertDescriptions(
             about,
-            "Kenali Mr Properti, platform jual beli over kredit properti di seluruh Indonesia dengan layanan pekerjaan dan perbaikan rumah tempat usaha di Bekasi, Cikarang, Karawang, dan Cikampek.",
+            "Kenali fokus pemasaran Mr Properti di Kota dan Kabupaten Bekasi, Cikarang, Karawang, dan Cikampek. Platform iklan tetap terbuka untuk seluruh Indonesia.",
           );
           const partnership = await (await get("/kemitraan")).text();
           assertDescriptions(
@@ -308,11 +533,13 @@ test(
           assert.deepEqual(publisher, { "@id": `${canonical}/#organization` });
           const property = await (await get("/properti/rumah-cikarang")).text();
           assert.ok(
-            property.includes("<title>Rumah Cikarang | MR Properti</title>"),
+            property.includes(
+              "<title>Rumah Cikarang di Cikarang Utara, Kabupaten Bekasi | MR Properti</title>",
+            ),
           );
           for (const [html, title] of [
             [article, "Tips Rumah Bekasi"],
-            [property, "Rumah Cikarang"],
+            [property, "Rumah Cikarang di Cikarang Utara, Kabupaten Bekasi"],
           ])
             for (const attribute of [
               'property="og:title"',

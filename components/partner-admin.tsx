@@ -3,7 +3,7 @@ import { requireAdmin } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { partnerAreas, partnerSkills } from "@/lib/partner-validation";
 import { PartnerDetail } from "./partner-detail";
-import type { Prisma } from "@prisma/client";
+import type { Partner, Prisma } from "@prisma/client";
 export type PartnerSearch = {
   q?: string;
   wilayah?: string;
@@ -33,9 +33,9 @@ export async function PartnerAdmin({ params }: { params: PartnerSearch }) {
     ...(area ? { areas: { has: area } } : {}),
     ...(skill ? { skills: { has: skill } } : {}),
   };
-  let content;
+  let result: [Partner[], number, Partner | null] | undefined;
   try {
-    const [partners, count, selected] = await Promise.all([
+    result = await Promise.all([
       db().partner.findMany({
         where,
         orderBy: [{ createdAt: "desc" }, { id: "asc" }],
@@ -47,94 +47,96 @@ export async function PartnerAdmin({ params }: { params: PartnerSearch }) {
         ? db().partner.findUnique({ where: { id: params.detail } })
         : null,
     ]);
-    const href = (values: Record<string, string>) =>
-      `/admin?${new URLSearchParams({ tab: "mitra", q, ...(area ? { wilayah: area } : {}), ...(skill ? { bidang: skill } : {}), ...values })}`;
-    content = (
-      <>
-        <p>{count} pendaftaran ditemukan.</p>
-        <div className="data-table-wrap">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Nama / usaha</th>
-                <th>WhatsApp</th>
-                <th>Domisili</th>
-                <th>Wilayah layanan</th>
-                <th>Bidang</th>
-                <th>Pengalaman</th>
-                <th>Tanggal daftar (WIB)</th>
-                <th>Kelola</th>
-              </tr>
-            </thead>
-            <tbody>
-              {partners.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.name}</td>
-                  <td>{p.whatsapp}</td>
-                  <td>{p.domicile}</td>
-                  <td>{p.areas.join(", ")}</td>
-                  <td>{p.skills.join(", ")}</td>
-                  <td>{p.experience}</td>
-                  <td>
-                    {p.createdAt.toLocaleDateString("id-ID", {
-                      timeZone: "Asia/Jakarta",
-                    })}
-                  </td>
-                  <td>
-                    <Link
-                      className="text-button"
-                      href={href({ detail: p.id, halaman: String(page) })}
-                    >
-                      Detail / Edit
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {!partners.length && <p>Belum ada mitra yang sesuai pencarian.</p>}
-        <div className="partner-form-actions">
-          {page > 1 && (
-            <Link
-              className="outline-button"
-              href={href({ halaman: String(page - 1) })}
-            >
-              Sebelumnya
-            </Link>
-          )}
-          {page * 30 < count && (
-            <Link
-              className="outline-button"
-              href={href({ halaman: String(page + 1) })}
-            >
-              Berikutnya
-            </Link>
-          )}
-        </div>
-        {selected && (
-          <PartnerDetail
-            key={selected.id}
-            partner={{
-              ...selected,
-              createdAt: selected.createdAt.toISOString(),
-              updatedAt: selected.updatedAt.toISOString(),
-            }}
-          />
-        )}
-        {params.detail && !selected && (
-          <p role="alert">Data mitra tidak ditemukan.</p>
-        )}
-      </>
-    );
   } catch {
-    content = (
-      <p role="alert">
-        Data mitra belum dapat dimuat. Periksa koneksi database dan penerapan
-        migrasi Partner.
-      </p>
-    );
+    // Handle data-loading failures here; rendering belongs outside try/catch.
+    result = undefined;
   }
+  const [partners, count, selected] = result ?? [[], 0, null];
+  const href = (values: Record<string, string>) =>
+    `/admin?${new URLSearchParams({ tab: "mitra", q, ...(area ? { wilayah: area } : {}), ...(skill ? { bidang: skill } : {}), ...values })}`;
+  const content = result ? (
+    <>
+      <p>{count} pendaftaran ditemukan.</p>
+      <div className="data-table-wrap">
+        <table className="data-table">
+          <thead>
+            <tr>
+              <th>Nama / usaha</th>
+              <th>WhatsApp</th>
+              <th>Domisili</th>
+              <th>Wilayah layanan</th>
+              <th>Bidang</th>
+              <th>Pengalaman</th>
+              <th>Tanggal daftar (WIB)</th>
+              <th>Kelola</th>
+            </tr>
+          </thead>
+          <tbody>
+            {partners.map((p) => (
+              <tr key={p.id}>
+                <td>{p.name}</td>
+                <td>{p.whatsapp}</td>
+                <td>{p.domicile}</td>
+                <td>{p.areas.join(", ")}</td>
+                <td>{p.skills.join(", ")}</td>
+                <td>{p.experience}</td>
+                <td>
+                  {p.createdAt.toLocaleDateString("id-ID", {
+                    timeZone: "Asia/Jakarta",
+                  })}
+                </td>
+                <td>
+                  <Link
+                    className="text-button"
+                    href={href({ detail: p.id, halaman: String(page) })}
+                  >
+                    Detail / Edit
+                  </Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {!partners.length && <p>Belum ada mitra yang sesuai pencarian.</p>}
+      <div className="partner-form-actions">
+        {page > 1 && (
+          <Link
+            className="outline-button"
+            href={href({ halaman: String(page - 1) })}
+          >
+            Sebelumnya
+          </Link>
+        )}
+        {page * 30 < count && (
+          <Link
+            className="outline-button"
+            href={href({ halaman: String(page + 1) })}
+          >
+            Berikutnya
+          </Link>
+        )}
+      </div>
+      {selected && (
+        <PartnerDetail
+          key={selected.id}
+          partner={{
+            ...selected,
+            createdAt: selected.createdAt.toISOString(),
+            updatedAt: selected.updatedAt.toISOString(),
+          }}
+        />
+      )}
+      {params.detail && !selected && (
+        <p role="alert">Data mitra tidak ditemukan.</p>
+      )}
+    </>
+  ) : (
+    <p role="alert">
+      Data mitra belum dapat dimuat. Periksa koneksi database dan penerapan
+      migrasi Partner.
+    </p>
+  );
   return (
     <div className="admin-panel">
       <div className="panel-heading">
