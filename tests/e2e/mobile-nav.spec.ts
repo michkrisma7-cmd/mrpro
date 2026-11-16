@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 for (const width of [360, 390, 430]) {
-  test(`mobile navigation follows advert edge at ${width}px`, async ({
+  test(`mobile navigation opens on the right at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 900 });
@@ -18,8 +18,8 @@ for (const width of [360, 390, 430]) {
     };
     await page.getByRole("button", { name: "Buka menu" }).click();
     const panel = (await nav.boundingBox())!;
-    expect(panel.x).toBe(0);
-    expect(panel.x + panel.width).toBeCloseTo(before.advert!.x, 0);
+    expect(panel.x).toBeGreaterThan(0);
+    expect(panel.x + panel.width).toBeCloseTo(width, 0);
     expect(panel.y).toBeCloseTo(before.header!.y + before.header!.height, 0);
     expect(await header.boundingBox()).toEqual(before.header);
     expect(await gallery.boundingBox()).toEqual(before.gallery);
@@ -37,12 +37,12 @@ for (const width of [360, 390, 430]) {
         () => document.documentElement.scrollWidth <= innerWidth,
       ),
     ).toBe(true);
-    const outsideX = before.advert!.x + 10;
+    const outsideX = 10;
     const outsideY = before.gallery!.y + 60;
     expect(
       await page.evaluate(
         ({ x, y }) =>
-          !!document.elementFromPoint(x, y)?.closest(".detail-gallery"),
+          !!document.elementFromPoint(x, y)?.closest(".menu-backdrop"),
         { x: outsideX, y: outsideY },
       ),
     ).toBe(true);
@@ -58,14 +58,16 @@ for (const width of [360, 390, 430]) {
     await page.goto("/");
     await page.getByRole("button", { name: "Buka menu" }).click();
     expect((await nav.boundingBox())!.width).toBeCloseTo(
-      (await advert.boundingBox())!.x,
+      Math.min(width * 0.86, 360),
       0,
     );
     await page.setViewportSize({ width: width + 15, height: 300 });
     await expect
       .poll(async () =>
         Math.abs(
-          (await nav.boundingBox())!.width - (await advert.boundingBox())!.x,
+          (await nav.boundingBox())!.x +
+            (await nav.boundingBox())!.width -
+            (width + 15),
         ),
       )
       .toBeLessThan(1);

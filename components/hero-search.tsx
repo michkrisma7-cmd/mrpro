@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { SearchForm } from "./search-form";
 
 export function HeroSearch({ types }: { types: string[] }) {
@@ -11,9 +11,9 @@ export function HeroSearch({ types }: { types: string[] }) {
   const router = useRouter();
   function selectTransaction(value: string) {
     setTransaction(value);
-    const form = Array.from(panel.current?.querySelectorAll("form") || []).find(
-      (form) => form.getClientRects().length > 0,
-    );
+    const form = Array.from(panel.current?.querySelectorAll("form") || [])
+      .reverse()
+      .find((form) => form.getClientRects().length > 0);
     const query = new URLSearchParams();
     if (form)
       for (const [key, entry] of new FormData(form))
@@ -43,29 +43,25 @@ export function HeroSearch({ types }: { types: string[] }) {
           </button>
         ))}
       </div>
-      <div className="hero-search-desktop">
-        <SearchForm types={types} initial={{ transaksi: transaction }} />
-      </div>
       <form
         action="/properti"
-        className="hero-search-mobile"
-        aria-label="Pencarian lokasi atau nama properti"
+        className="quick-property-search"
+        aria-label="Pencarian properti"
       >
-        <MapPin size={18} aria-hidden="true" />
+        <Search size={20} aria-hidden="true" />
         <input
           name="q"
-          placeholder="Lokasi atau nama properti"
-          aria-label="Lokasi atau nama properti"
+          placeholder="Cari rumah, ruko, tanah…"
+          aria-label="Kata kunci properti"
         />
-        <input type="hidden" name="transaksi" value={transaction} />
-        <button
-          type="submit"
-          className="button home-neutral-button"
-          aria-label="Cari Properti"
-        >
-          <Search size={19} aria-hidden="true" />
+        <button type="submit" className="button">
+          Cari
         </button>
       </form>
+      <details className="home-search-filters">
+        <summary>Filter pencarian</summary>
+        <SearchForm types={types} initial={{ transaksi: transaction }} />
+      </details>
     </div>
   );
 }

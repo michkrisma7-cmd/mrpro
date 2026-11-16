@@ -1,8 +1,15 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { ArrowUpRight, Menu, X, UserRound, Heart } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState, Fragment } from "react";
+import {
+  ArrowUpRight,
+  Menu,
+  X,
+  UserRound,
+  Heart,
+  ChevronDown,
+} from "lucide-react";
 import { BrandLogo } from "./brand-logo";
 export function Header() {
   const path = usePathname();
@@ -64,6 +71,14 @@ export function Header() {
         <Link className="brand" href="/" aria-label="MR Properti beranda">
           <BrandLogo preload />
         </Link>
+        {open && (
+          <button
+            type="button"
+            className="menu-backdrop"
+            aria-label="Tutup navigasi"
+            onClick={() => setOpen(false)}
+          />
+        )}
         <nav
           ref={navRef}
           id="header-navigation"
@@ -80,14 +95,36 @@ export function Header() {
             ["/syarat-dan-ketentuan", "Syarat dan Ketentuan"],
             ["/tentang-kami", "Tentang Kami"],
           ].map(([href, label]) => (
-            <Link
-              onClick={() => setOpen(false)}
-              className={path === href ? "active" : ""}
-              key={href}
-              href={href}
-            >
-              {label}
-            </Link>
+            <Fragment key={href}>
+              <Link
+                onClick={() => setOpen(false)}
+                className={path === href ? "active" : ""}
+                key={href}
+                href={href}
+              >
+                {label}
+              </Link>
+              {href === "/properti" && (
+                <details className="location-nav">
+                  <summary>
+                    Lokasi <ChevronDown size={16} aria-hidden="true" />
+                  </summary>
+                  <div className="location-submenu">
+                    {["Bekasi", "Cikarang", "Karawang", "Cikampek"].map(
+                      (name) => (
+                        <a
+                          key={name}
+                          href={`/wilayah/${name.toLowerCase()}`}
+                          onClick={() => setOpen(false)}
+                        >
+                          {name}
+                        </a>
+                      ),
+                    )}
+                  </div>
+                </details>
+              )}
+            </Fragment>
           ))}
         </nav>
         <div className="nav-actions">

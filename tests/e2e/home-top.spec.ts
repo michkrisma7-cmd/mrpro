@@ -7,7 +7,7 @@ test("homepage top fits phone, tablet and desktop; quick links and filters work"
   for (const width of [320, 390, 560, 561, 768, 820, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
     await page.evaluate(() => scrollTo(0, 0));
-    const actions = page.locator(".home-search-actions a");
+    const actions = page.locator(".home-utility-actions a");
     const a = (await actions.nth(0).boundingBox())!,
       b = (await actions.nth(1).boundingBox())!;
     expect(a.y).toBe(b.y);
@@ -21,18 +21,19 @@ test("homepage top fits phone, tablet and desktop; quick links and filters work"
     await page.screenshot({ path: `work/home-top-${width}.png` });
   }
   await page
-    .locator(".home-search-actions")
+    .locator(".home-utility-actions")
     .getByRole("link", { name: "Kalkulator KPR" })
     .click();
   await expect(page).toHaveURL(/\/kalkulator-kpr$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("KPR");
   await page.goto("/");
   const about = page
-    .locator(".home-search-actions")
+    .locator(".home-utility-actions")
     .getByRole("link", { name: "Bantuan Admin" });
   await expect(about).toHaveAttribute("href", /wa.me|tentang-kami/);
   await page.goto("/");
-  await page.locator('.home-search input[name="q"]:visible').fill("Bintaro");
+  await page.locator(".home-search-filters summary").click();
+  await page.locator('.home-search-filters input[name="q"]').fill("Bintaro");
   await page.locator('.home-search select[name="jenis"]').selectOption("Rumah");
   await page
     .locator('.home-search select[name="harga"]')

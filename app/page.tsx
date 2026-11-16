@@ -1,5 +1,4 @@
 import "./consign-feature.css";
-import { AreaLinks } from "@/components/area-links";
 import Link from "next/link";
 import { connection } from "next/server";
 import Image from "next/image";
@@ -7,6 +6,8 @@ import { Suspense } from "react";
 import Loading from "./loading";
 import { PublicationNotice } from "@/components/publication-notice";
 import {
+  Calculator,
+  Headset,
   ArrowUpRight,
   ArrowRight,
   ShieldCheck,
@@ -96,11 +97,7 @@ export default function Home({
 
 async function HomeSearchContent() {
   await connection();
-  const [fields, settings] = await Promise.all([getFields(), getSettings()]);
-  const wa = whatsappLink(
-    settings.whatsapp,
-    "Halo MR Properti, saya ingin konsultasi properti.",
-  );
+  const fields = await getFields();
   return (
     <div className="container home-search-content">
       <HeroSearch
@@ -110,14 +107,6 @@ async function HomeSearchContent() {
           )?.options || []
         }
       />
-      <div className="home-search-actions">
-        <Link href="/kalkulator-kpr" className="button home-neutral-button">
-          Kalkulator KPR <ArrowUpRight size={17} />
-        </Link>
-        <Link href={wa || "/tentang-kami"} className="outline-button">
-          Bantuan Admin <ArrowRight size={16} />
-        </Link>
-      </div>
     </div>
   );
 }
@@ -186,8 +175,6 @@ async function HomeContent({
         id="properti"
         aria-label="Properti terbaru"
       >
-        <AreaLinks />
-        <div className="home-listing-divider" aria-hidden="true" />
         <h1 className="sr-only">
           Mr Properti — Jual, Beli, Sewa & Over Kredit Properti di Bekasi,
           Cikarang, Karawang, dan Cikampek.
@@ -219,11 +206,31 @@ async function HomeContent({
               {label}
             </Link>
           ))}
+          <div className="home-utility-actions">
+            <Link href="/kalkulator-kpr">
+              <Calculator size={18} /> Kalkulator KPR
+            </Link>
+            <Link href={wa || "/tentang-kami"}>
+              <Headset size={18} /> Bantuan Admin
+            </Link>
+          </div>
           <span className="listing-note">
             {!databaseConfigured
               ? "Koleksi inspirasi · data contoh"
               : "Pilihan properti terbaru"}
           </span>
+        </div>
+        <div className="home-listing-heading">
+          <h2>Pilihan Properti</h2>
+          <Link
+            href={
+              category
+                ? `/properti?${new URLSearchParams({ jenis: category })}`
+                : "/properti"
+            }
+          >
+            Lihat semua <ArrowRight size={16} />
+          </Link>
         </div>
         <div className="property-grid">
           {properties.map((p) => (

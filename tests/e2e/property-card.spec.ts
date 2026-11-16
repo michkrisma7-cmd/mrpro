@@ -101,10 +101,11 @@ test("card fits long names, titles and valid or empty contacts on narrow screens
           Math.abs(
             phone.getBoundingClientRect().y - wa.getBoundingClientRect().y,
           ) < 1,
-        specsOneRow:
-          Math.max(...specs.map((s) => s.getBoundingClientRect().y)) -
-            Math.min(...specs.map((s) => s.getBoundingClientRect().y)) <
-          1,
+        specsFit: specs.every((spec) => {
+          const rect = spec.getBoundingClientRect();
+          const parent = spec.parentElement!.getBoundingClientRect();
+          return rect.left >= parent.left && rect.right <= parent.right + 1;
+        }),
         ellipsis: getComputedStyle(owner).textOverflow,
         border: [style.borderLeftWidth, style.borderRightWidth],
         objectFit: getComputedStyle(element.querySelector("img")!).objectFit,
@@ -123,9 +124,9 @@ test("card fits long names, titles and valid or empty contacts on narrow screens
       overflow: false,
       contactOverflow: false,
       sameRow: true,
-      specsOneRow: true,
+      specsFit: true,
       ellipsis: "ellipsis",
-      border: ["1px", "1px"],
+      border: ["0px", "0px"],
       objectFit: "cover",
     });
   }

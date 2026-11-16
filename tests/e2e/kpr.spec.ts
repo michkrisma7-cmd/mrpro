@@ -6,14 +6,14 @@ test("home and footer open the KPR calculator with both bank choices", async ({
   await page.goto("/");
   await expect(
     page
-      .locator(".home-search-actions")
+      .locator(".home-utility-actions")
       .getByRole("link", { name: "Kalkulator KPR" }),
   ).toHaveAttribute("href", "/kalkulator-kpr");
   await expect(
     page.locator("footer").getByRole("link", { name: "Kalkulator KPR" }),
   ).toHaveAttribute("href", "/kalkulator-kpr");
   await page
-    .locator(".home-search-actions")
+    .locator(".home-utility-actions")
     .getByRole("link", { name: "Kalkulator KPR" })
     .click();
   await expect(page).toHaveTitle(/Kalkulator KPR.*BTN & BSI/);
@@ -49,8 +49,12 @@ test("BTN and BSI recompute amounts, tenors and validation without mixing their 
     .getByLabel("Harga properti (Rp)", { exact: false })
     .fill("1000000000");
   await page.getByLabel("Uang muka (%)", { exact: false }).fill("25");
-  await expect(page.locator(".kpr-breakdown")).toContainText(/Rp\s*250\.000\.000/);
-  await expect(page.locator(".kpr-breakdown")).toContainText(/Rp\s*750\.000\.000/);
+  await expect(page.locator(".kpr-breakdown")).toContainText(
+    /Rp\s*250\.000\.000/,
+  );
+  await expect(page.locator(".kpr-breakdown")).toContainText(
+    /Rp\s*750\.000\.000/,
+  );
   await expect(page.locator("tbody tr")).toHaveCount(21);
   await page.getByLabel("Tenor (tahun)", { exact: false }).selectOption("25");
   await expect(page.locator(".kpr-breakdown")).toContainText(
