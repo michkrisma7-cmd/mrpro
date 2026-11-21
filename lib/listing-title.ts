@@ -2,11 +2,39 @@
 // Judul HURUF BESAR semua atau huruf kecil semua diubah ke Title Case;
 // judul yang sudah campuran dibiarkan karena kemungkinan sudah ditulis rapi.
 const ACRONYMS = new Set([
-  "AJB", "BCM", "BSD", "BTN", "DP", "GSR", "HGB", "IMB", "KM", "KPR", "KT",
-  "LB", "LT", "PBG", "PLN", "PPJB", "RT", "RW", "SHGB", "SHM", "PDAM",
+  "AJB",
+  "BCM",
+  "BSD",
+  "BTN",
+  "DP",
+  "GSR",
+  "HGB",
+  "IMB",
+  "KM",
+  "KPR",
+  "KT",
+  "LB",
+  "LT",
+  "PBG",
+  "PLN",
+  "PPJB",
+  "RT",
+  "RW",
+  "SHGB",
+  "SHM",
+  "PDAM",
 ]);
 const SMALL = new Set([
-  "di", "dan", "ke", "dari", "yang", "untuk", "dengan", "atau", "per", "&",
+  "di",
+  "dan",
+  "ke",
+  "dari",
+  "yang",
+  "untuk",
+  "dengan",
+  "atau",
+  "per",
+  "&",
 ]);
 
 function needsNormalizing(title: string) {

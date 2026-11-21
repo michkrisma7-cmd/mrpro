@@ -11,7 +11,10 @@ test("judul huruf besar/kecil semua dirapikan ke Title Case, singkatan dipertaha
     displayTitle("dijual rumah  over kredit di bekasi utara"),
     "Dijual Rumah Over Kredit di Bekasi Utara",
   );
-  assert.equal(displayTitle("RUMAH SHM 2LT DEKAT TOL"), "Rumah SHM 2LT Dekat Tol");
+  assert.equal(
+    displayTitle("RUMAH SHM 2LT DEKAT TOL"),
+    "Rumah SHM 2LT Dekat Tol",
+  );
   assert.equal(displayTitle("CLUSTER GRAND-WISATA"), "Cluster Grand-Wisata");
 });
 
