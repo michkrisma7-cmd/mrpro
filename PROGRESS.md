@@ -49,6 +49,21 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
 - Rollback chatbot: nonaktifkan `UI0HBaX7pESdq629`, aktifkan `inj1Io85s1qSdDNZ` (API n8n, key di `.keys`)
   — tapi workflow lama memang rusak (403).
 
+## Selesai 22-11-2026 dini hari — blog ke Groq
+- Workflow blog lama `cpGzooOPgTWuBXQc` ternyata GAGAL di semua jadwal sejak ±30-10-2026 (artikel terakhir
+  30-10): model OpenRouter `nvidia/nemotron-3-super-120b-a12b:free` sudah hilang + key Gemini cadangan tidak valid.
+- Baru: `MRP-MR Properti Blog — Next.js-groq` (`Zm0ZBgFDJW0P1u7H`) AKTIF, jadwal sama (07/11/15/19 WIB).
+  Penulis = HTTP Groq mode JSON `gpt-oss-120b`, cadangan `gpt-oss-20b`; node "Ambil Teks" → validasi lama tak diubah.
+  Lama `cpGzooOPgTWuBXQc` + uji `rmYEivQNRvlMdrNq` DINONAKTIFKAN (tidak dihapus).
+- Pratinjau (dryRun) lulus validasi: 448 kata, 42 detik. Catatan: model sempat menulis angka "10–30%" (prompt melarang angka).
+- Pembangun: `workflows/n8n/build-mrp-blog-groq.py <ekspor lama> uji|prod` (jalankan di VPS; ekspor berisi API key blog).
+- Cadangan n8n sebelum perubahan: `/root/n8n-backup/20261122-000150/`.
+- **Belum terverifikasi**: terbit sungguhan pertama dijadwalkan 07:00 WIB 22-11. Cek: `GET /api/v1/executions?workflowId=Zm0ZBgFDJW0P1u7H`
+  dan artikel baru di `/blog`.
+- Temuan keamanan: API key blog tertulis langsung di node "Jadwal dan Topik" (juga di workflow lama). Usul: pindah ke
+  credential Header Auth n8n.
+- 22-11 00:0x: n8n sempat "Database connection timed out" (SQLite) ±sesaat → webhook 502, pulih sendiri.
+
 ## Lokasi backup
 | Apa | Lokasi |
 | --- | --- |
@@ -67,7 +82,7 @@ Restore DB: `sudo -u postgres pg_restore --clean --no-owner -d appdb /root/backu
 5. Upgrade keamanan Next.js yang direkomendasikan saat build — diputuskan terpisah.
 
 ## Langkah berikutnya
-0. Langkah 1 dan 2 di bawah SUDAH SELESAI (lihat bagian "Selesai 21-11-2026 malam"). Berikutnya mulai dari 3.
+0. Langkah 1, 2, dan 3 di bawah SUDAH SELESAI (3 = blog Groq, tunggu verifikasi terbit 07:00 WIB 22-11) (lihat bagian "Selesai 21-11-2026 malam"). Berikutnya mulai dari 4.
 1. Deploy (setelah disetujui), dari `~/mr-properti`:
    ```bash
    git checkout main && git merge --ff-only perbaikan/profesional && git push origin main
