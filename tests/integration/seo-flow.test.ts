@@ -99,7 +99,7 @@ test(
           const robots = await (await get("/robots.txt")).text();
           const home = await (await get("/")).text();
           const expectedHomeTitle =
-            "Mr Properti — Jual, Beli, Sewa &amp; Over Kredit Properti di Bekasi, Cikarang, Karawang, dan Cikampek.";
+            "MR Properti — Jual, Sewa &amp; Over Kredit Rumah Bekasi–Cikampek";
           const expectedHomeDescription =
             "Cari properti di Kota dan Kabupaten Bekasi, Cikarang, Karawang, dan Cikampek. Pasang iklan jual, sewa, atau over kredit dari seluruh Indonesia.";
           function assertDescriptions(html: string, expected: string) {

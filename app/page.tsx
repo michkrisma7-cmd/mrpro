@@ -75,7 +75,16 @@ export default function Home({
       <Suspense fallback={null}>
         <PublicationNotice />
       </Suspense>
-      <section className="home-search" aria-label="Pencarian properti">
+      <section className="home-search" aria-labelledby="home-title">
+        <div className="container home-heading">
+          <h1 id="home-title">
+            Cari Rumah di Bekasi, Cikarang, Karawang &amp; Cikampek
+          </h1>
+          <p>
+            Jual, sewa, dan over kredit properti, plus layanan tukang &amp;
+            renovasi.
+          </p>
+        </div>
         <Suspense
           fallback={
             <div
@@ -175,10 +184,7 @@ async function HomeContent({
         id="properti"
         aria-label="Properti terbaru"
       >
-        <h1 className="sr-only">
-          Mr Properti — Jual, Beli, Sewa & Over Kredit Properti di Bekasi,
-          Cikarang, Karawang, dan Cikampek.
-        </h1>
+        <h2 className="sr-only">Pilihan properti</h2>
         <div className="catalog-tabs">
           {[
             ["", "Semua Properti"],

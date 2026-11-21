@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { siteUrl } from "./format";
 export const brand = "MR Properti";
 export const homeTitle =
-  "Mr Properti — Jual, Beli, Sewa & Over Kredit Properti di Bekasi, Cikarang, Karawang, dan Cikampek.";
+  "MR Properti — Jual, Sewa & Over Kredit Rumah Bekasi–Cikampek";
 export const homeDescription =
   "Cari properti di Kota dan Kabupaten Bekasi, Cikarang, Karawang, dan Cikampek. Pasang iklan jual, sewa, atau over kredit dari seluruh Indonesia.";
 export function indexingEnabled(
