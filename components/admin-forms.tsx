@@ -486,6 +486,14 @@ export function PropertyEditor({
             WhatsApp
             <input name="whatsapp" required defaultValue={p.whatsapp} />
           </label>
+          <label>
+            Pengiklan
+            <select name="advertiserType" defaultValue={p.advertiserType ?? ""}>
+              <option value="">Belum diisi</option>
+              <option value="PEMILIK">Pemilik</option>
+              <option value="AGEN">Agen</option>
+            </select>
+          </label>
           <PropertyYoutubeField videoId={p.youtubeVideoId} />
           {fields
             .filter((f) => !isRegionKey(f.key))

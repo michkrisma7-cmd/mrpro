@@ -70,6 +70,28 @@ export function PropertyForm({
               placeholder="Ceritakan kondisi, keunggulan, dan lingkungan properti Anda…"
             />
           </label>
+          <fieldset className="advertiser-type-field">
+            <legend>
+              Anda sebagai <span className="required">*</span>
+            </legend>
+            {(
+              [
+                ["PEMILIK", "Pemilik properti"],
+                ["AGEN", "Agen / perantara"],
+              ] as const
+            ).map(([value, label]) => (
+              <label className="radio-label" key={value}>
+                <input
+                  type="radio"
+                  name="advertiserType"
+                  value={value}
+                  required
+                  defaultChecked={property?.advertiserType === value}
+                />
+                {label}
+              </label>
+            ))}
+          </fieldset>
           <label>
             Nama <span className="required">*</span>
             <input

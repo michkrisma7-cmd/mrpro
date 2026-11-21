@@ -12,6 +12,7 @@ export type Field = {
   cardLabel: string;
   position: number;
 };
+export type AdvertiserType = "PEMILIK" | "AGEN";
 export type Values = Record<string, string | number | string[]>;
 export type Listing = {
   id: string;
@@ -27,6 +28,7 @@ export type Listing = {
   ownerId: string | null;
   ownerName?: string;
   submitterName?: string | null;
+  advertiserType?: AdvertiserType | null;
   createdAt: Date | string;
   updatedAt: Date | string;
 };

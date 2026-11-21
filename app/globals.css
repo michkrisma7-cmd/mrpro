@@ -6120,3 +6120,32 @@ body {
 .similar-listings {
   margin-top: 32px;
 }
+
+/* Pilihan pemilik/agen di formulir pasang iklan dan label di panel kontak detail. */
+.advertiser-type-field {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+}
+.advertiser-type-field legend {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+.advertiser-type-field .radio-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 400;
+}
+.advertiser-type {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  background: var(--soft);
+  color: var(--ink);
+}

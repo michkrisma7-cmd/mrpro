@@ -356,6 +356,7 @@ test(
         await page
           .locator('[name="submitterName"]')
           .fill(`Pemilik Tamu ${width}`);
+        await page.locator('[name="advertiserType"][value="PEMILIK"]').check();
         await page.locator('[name="whatsapp"]').fill("081399998888");
         await page.locator('[name="field_harga"]').fill("1200000000");
         await page.locator('[name="field_lokasi"]').fill("Bekasi");
@@ -433,6 +434,7 @@ test(
         await page
           .locator('[name="submitterName"]')
           .fill(`Pemilik Tamu ${width}`);
+        await page.locator('[name="advertiserType"][value="PEMILIK"]').check();
         await page.locator('[name="whatsapp"]').fill("081399998888");
         if (width === 1440) {
           await database.exec(

@@ -14,6 +14,7 @@ import {
   actionError,
   phoneSchema,
   youtubeUrlSchema,
+  optionalAdvertiserTypeSchema,
 } from "./validation";
 import type { ActionState, Values } from "./types";
 import { parseListingValues } from "./regions";
@@ -51,6 +52,7 @@ export async function submitProperty(
       };
     const input = submissionPropertySchema.parse({
       youtubeVideoId: form.get("youtubeUrl") ?? undefined,
+      advertiserType: form.get("advertiserType"),
       submitterName: form.get("submitterName"),
       title: form.get("title"),
       description: form.get("description"),
@@ -138,6 +140,7 @@ export async function updateMemberProperty(
       return { error: "Properti tidak ditemukan atau bukan milik Anda." };
     const input = submissionPropertySchema.omit({ gallery: true }).parse({
       youtubeVideoId: form.get("youtubeUrl") ?? undefined,
+      advertiserType: form.get("advertiserType"),
       submitterName: form.get("submitterName"),
       title: form.get("title"),
       description: form.get("description"),
@@ -404,6 +407,9 @@ export async function editProperty(
     const youtubeVideoId = youtubeUrlSchema.parse(
       form.get("youtubeUrl") ?? undefined,
     );
+    const advertiserType = optionalAdvertiserTypeSchema.parse(
+      form.get("advertiserType"),
+    );
     const input = basePropertySchema.parse({
       title: form.get("title"),
       description: form.get("description"),
@@ -423,6 +429,7 @@ export async function editProperty(
         description: input.description,
         whatsapp: input.whatsapp,
         youtubeVideoId,
+        advertiserType,
         values,
       },
     });

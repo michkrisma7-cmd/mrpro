@@ -37,3 +37,12 @@ export function siteUrl() {
     return "http://localhost:3000";
   }
 }
+
+/** Label pengiklan di kartu dan detail; listing lama tanpa pilihan memakai label netral. */
+export function advertiserLabel(type?: string | null) {
+  return type === "AGEN"
+    ? "Agen"
+    : type === "PEMILIK"
+      ? "Pemilik"
+      : "Pengiklan";
+}

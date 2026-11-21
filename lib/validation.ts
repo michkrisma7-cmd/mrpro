@@ -36,6 +36,14 @@ export const youtubeUrlSchema = z
     }
   })
   .optional();
+export const advertiserTypeSchema = z.enum(["PEMILIK", "AGEN"], {
+  message: "Pilih apakah Anda pemilik atau agen.",
+});
+// Admin may leave older listings unset; an empty choice clears the label.
+export const optionalAdvertiserTypeSchema = z
+  .union([advertiserTypeSchema, z.literal("")])
+  .nullish()
+  .transform((value) => value || null);
 export const submissionPropertySchema = basePropertySchema.extend({
   youtubeVideoId: youtubeUrlSchema,
   submitterName: z
@@ -43,6 +51,7 @@ export const submissionPropertySchema = basePropertySchema.extend({
     .trim()
     .min(1, "Nama wajib diisi.")
     .max(150, "Nama maksimal 150 karakter."),
+  advertiserType: advertiserTypeSchema,
 });
 export function parseValues(fields: Field[], form: FormData): Values {
   const values: Values = {};

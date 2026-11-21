@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { displayTitle } from "@/lib/listing-title";
 import type { Field, Listing } from "@/lib/types";
-import { displayValue, filled, siteUrl } from "@/lib/format";
+import { advertiserLabel, displayValue, filled, siteUrl } from "@/lib/format";
 import { listingDetailPath } from "@/lib/listing-share";
 import { PropertyShareButton } from "./property-share-button";
 import {
@@ -65,6 +65,7 @@ export function PropertyCard({
   const { ids, toggle: toggleFavorite } = useFavorites();
   const saved = ids.includes(p.id);
   const ownerName = p.submitterName?.trim() || p.ownerName;
+  const role = advertiserLabel(p.advertiserType);
   const origin = useSyncExternalStore(subscribeOrigin, browserOrigin, siteUrl);
   const detailPath = listingDetailPath(p.slug);
   const number = listingContactNumber(p.whatsapp);
@@ -230,13 +231,16 @@ export function PropertyCard({
             title={ownerName || undefined}
           >
             <UserRound size={16} aria-hidden="true" />
-            <span>Pemilik{ownerName ? `: ${ownerName}` : " listing"}</span>
+            <span>
+              {role}
+              {ownerName ? `: ${ownerName}` : " listing"}
+            </span>
           </span>
           {number && (
             <a
               href={`tel:+${number}`}
               className="property-contact-phone"
-              aria-label={`Telepon ${ownerName || "pemilik listing"}`}
+              aria-label={`Telepon ${ownerName || `${role.toLowerCase()} listing`}`}
             >
               <Phone size={18} aria-hidden="true" />
             </a>
@@ -247,7 +251,7 @@ export function PropertyCard({
               className="property-contact-whatsapp"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label={`WhatsApp ${ownerName || "pemilik listing"}`}
+              aria-label={`WhatsApp ${ownerName || `${role.toLowerCase()} listing`}`}
             >
               <WhatsappIcon /> WhatsApp
             </a>

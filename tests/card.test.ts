@@ -40,7 +40,7 @@ test("card respects visibility and labels for every configured field, including 
   assert.match(html, /Nilai 5/);
   assert.match(html, /Field 0/);
   assert.doesNotMatch(html, /DATA-PRIVATE-DO-NOT-SHOW/);
-  assert.match(html, /Pemilik: Budi Santoso/);
+  assert.match(html, /Pengiklan: Budi Santoso/);
   assert.match(html, /Harga/);
   assert.match(html, /Lokasi/);
 });
@@ -118,11 +118,27 @@ test("card prefers persisted submitter name, escapes markup and preserves legacy
         fields: defaultFields,
       }),
     );
-  assert.match(render("Nama Pemasang", "Nama Akun"), /Pemilik: Nama Pemasang/);
-  assert.match(render(null, "Nama Akun"), /Pemilik: Nama Akun/);
-  assert.match(render(null), /Pemilik listing/);
-  assert.match(render("   "), /Pemilik listing/);
+  assert.match(
+    render("Nama Pemasang", "Nama Akun"),
+    /Pengiklan: Nama Pemasang/,
+  );
+  assert.match(render(null, "Nama Akun"), /Pengiklan: Nama Akun/);
+  assert.match(render(null), /Pengiklan listing/);
+  assert.match(render("   "), /Pengiklan listing/);
   const html = render('<script>alert("x")</script>');
   assert.doesNotMatch(html, /<script>/);
   assert.match(html, /&lt;script&gt;/);
+});
+
+test("card names the advertiser as owner or agent when the listing says so", () => {
+  const render = (advertiserType: "PEMILIK" | "AGEN" | null) =>
+    renderToStaticMarkup(
+      createElement(PropertyCard, {
+        property: { ...demoListings[0], submitterName: "Sari", advertiserType },
+        fields: defaultFields,
+      }),
+    );
+  assert.match(render("PEMILIK"), /Pemilik: Sari/);
+  assert.match(render("AGEN"), /Agen: Sari/);
+  assert.match(render(null), /Pengiklan: Sari/);
 });

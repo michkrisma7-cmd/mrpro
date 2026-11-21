@@ -178,6 +178,13 @@ export default async function PropertyDetail({
               <strong>{displayValue(price, property.values[price.key])}</strong>
             </>
           )}
+          {property.advertiserType && (
+            <p className="advertiser-type">
+              {property.advertiserType === "AGEN"
+                ? "Diiklankan oleh agen / perantara"
+                : "Diiklankan langsung oleh pemilik"}
+            </p>
+          )}
           <h3>Tertarik dengan properti ini?</h3>
           <p>
             Tanyakan informasi lebih lanjut atau jadwalkan kunjungan melalui

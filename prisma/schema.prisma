@@ -11,6 +11,10 @@ enum Role {
   USER
   ADMIN
 }
+enum AdvertiserType {
+  PEMILIK
+  AGEN
+}
 enum ListingStatus {
   PENDING
   PUBLISHED
@@ -44,6 +48,7 @@ model Property {
   values Json @default("{}")
   whatsapp String
   submitterName String?
+  advertiserType AdvertiserType?
   status ListingStatus @default(PENDING)
   featured Boolean @default(false)
   ownerId String?

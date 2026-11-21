@@ -153,6 +153,16 @@ test(
         /Nama wajib diisi/,
       );
       form.set("submitterName", "  Nama Pemasang  ");
+      assert.match(
+        (await exports.submitProperty({}, form)).error!,
+        /pemilik atau agen/,
+      );
+      form.set("advertiserType", "BUKAN");
+      assert.match(
+        (await exports.submitProperty({}, form)).error!,
+        /pemilik atau agen/,
+      );
+      form.set("advertiserType", "AGEN");
 
       assert.match(
         (await exports.submitProperty({}, form)).error!,
@@ -185,6 +195,7 @@ test(
       assert.deepEqual(flashed, [listing.id]);
       assert.equal(listing.status, "PUBLISHED");
       assert.equal(listing.submitterName, "Nama Pemasang");
+      assert.equal(listing.advertiserType, "AGEN");
       assert.equal(listing.ownerId, user.id);
       assert.equal(listing.featured, false);
       await prisma.media.create({
