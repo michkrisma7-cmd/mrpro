@@ -91,6 +91,9 @@ export async function POST(request: Request) {
   if (
     /\b(admin|manusia|orang langsung|whatsapp|wa|pesan jasa|booking|jadwalkan survei)\b/i.test(
       message,
+    ) ||
+    /\b(?:mau|ingin|pengen|minta|bisa|jadwal\w*)\s+(?:survei|survey|lihat\s+(?:rumah|lokasi|unit))\b|\bnego(?:siasi)?\b/i.test(
+      message,
     )
   )
     return fallback();
@@ -127,7 +130,9 @@ export async function POST(request: Request) {
     const response = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json", "x-mr-token": key },
-      body: JSON.stringify({ message, history }),
+      // Sources go along so the model answers from exactly the set the
+      // website will accept in groundedAnswer.
+      body: JSON.stringify({ message, history, sources: knowledge.sources }),
       cache: "no-store",
       redirect: "error",
       signal: AbortSignal.timeout(45000),
