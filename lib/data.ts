@@ -2,6 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { catalogQueries } from "./catalog-query";
+import { rotationDirection } from "./listing-rotation";
 import { CATALOG_PAGE_SIZE } from "./catalog-pagination";
 import { db, databaseConfigured } from "./db";
 import {
@@ -102,11 +103,13 @@ export async function getPublishedByIds(ids: string[]): Promise<Listing[]> {
 }
 // Canonical arguments prevent duplicate entries for equivalent filter orders.
 export function getCatalog(params: Record<string, string>) {
-  const normalized = Object.fromEntries(
+  const normalized: Record<string, string> = Object.fromEntries(
     ["q", "jenis", "transaksi", "harga", "urut", "page"]
       .filter((key) => Boolean(params[key]))
       .map((key) => [key, params[key]]),
   );
+  // Arah rotasi masuk ke kunci cache, jadi urutan berganti tepat 00:00 WIB.
+  if (!normalized.urut) normalized.arah = rotationDirection();
   return getCachedCatalog(normalized);
 }
 const getCachedCatalog = unstable_cache(
@@ -132,6 +135,7 @@ const getCachedCatalog = unstable_cache(
         all = all.sort(
           (a, b) => Number(a.values.harga || 0) - Number(b.values.harga || 0),
         );
+      else if (!params.urut && params.arah === "asc") all = [...all].reverse();
       return {
         listings: all.slice((page - 1) * size, page * size),
         total: all.length,

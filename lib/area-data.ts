@@ -5,14 +5,19 @@ import { db, databaseConfigured } from "./db";
 import { getFields } from "./data";
 import { areas, findArea } from "./areas";
 import { areaQueries } from "./area-query";
+import { rotationDirection, type RotationDirection } from "./listing-rotation";
 import type { Listing } from "./types";
-export const getAreaCatalog = cache(
+// Arah rotasi harian ikut jadi argumen (= kunci cache) agar berganti 00:00 WIB.
+export const getAreaCatalog = cache((slug: string, page = 1) =>
+  getCachedAreaCatalog(slug, page, rotationDirection()),
+);
+const getCachedAreaCatalog = cache(
   unstable_cache(
-    async (slug: string, page = 1) => {
+    async (slug: string, page: number, arah: RotationDirection) => {
       const area = findArea(slug);
       if (!area || !databaseConfigured)
         return { listings: [] as Listing[], total: 0 };
-      const query = areaQueries(area, page);
+      const query = areaQueries(area, page, arah);
       const [rows, counts, fields] = await Promise.all([
         db().$queryRaw<Listing[]>(query.list),
         db().$queryRaw<{ count: bigint }[]>(query.count),

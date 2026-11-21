@@ -52,10 +52,16 @@ export function catalogQueries(
     );
   }
   const where = Prisma.join(conditions, " AND ");
+  // Urutan default memakai rotasi harian (params.arah dari lib/listing-rotation);
+  // "terbaru" dan tanpa arah tetap baru→lama seperti sebelumnya.
   const order =
     params.urut === "termurah" && visible.has("harga")
       ? Prisma.sql`${price} ASC NULLS LAST, "createdAt" DESC, "id" ASC`
-      : Prisma.sql`"createdAt" DESC, "id" ASC`;
+      : !params.urut && params.arah === "asc"
+        ? Prisma.sql`"createdAt" ASC, "id" ASC`
+        : !params.urut && params.arah === "desc"
+          ? Prisma.sql`"createdAt" DESC, "id" DESC`
+          : Prisma.sql`"createdAt" DESC, "id" ASC`;
   return {
     page,
     size,

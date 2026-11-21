@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import type { Area } from "./areas";
+import type { RotationDirection } from "./listing-rotation";
 // Administrative codes/labels win over marketing copy. Never infer location from description/title.
 export function areaCondition(area: Area) {
   const cityCode = Prisma.sql`COALESCE("values"->>'kota_kabupaten_kode', '')`;
@@ -23,10 +24,16 @@ export function areaCondition(area: Area) {
   // OR conditions keep each Property row/count unique even when several conditions match.
   return Prisma.sql`(${cityMatches} OR (${cityCode} = '' AND ${city} = '' AND (${address} ~ ${legacyPattern} OR CASE WHEN ${district} <> '' THEN ${district} ~ ${childPattern} ELSE ${address} ~ ${childAddressPattern} END)))`;
 }
-export function areaQueries(area: Area, page = 1) {
+export function areaQueries(area: Area, page = 1, arah?: RotationDirection) {
   const where = Prisma.sql`"status" = 'PUBLISHED'::"ListingStatus" AND ${areaCondition(area)}`;
+  const order =
+    arah === "asc"
+      ? Prisma.sql`"createdAt" ASC, "id" ASC`
+      : arah === "desc"
+        ? Prisma.sql`"createdAt" DESC, "id" DESC`
+        : Prisma.sql`"createdAt" DESC, "id" ASC`;
   return {
-    list: Prisma.sql`SELECT "Property".*, (SELECT "name" FROM "AppUser" WHERE "AppUser"."id" = "Property"."ownerId") AS "ownerName" FROM "Property" WHERE ${where} ORDER BY "createdAt" DESC, "id" ASC LIMIT 18 OFFSET ${(page - 1) * 18}`,
+    list: Prisma.sql`SELECT "Property".*, (SELECT "name" FROM "AppUser" WHERE "AppUser"."id" = "Property"."ownerId") AS "ownerName" FROM "Property" WHERE ${where} ORDER BY ${order} LIMIT 18 OFFSET ${(page - 1) * 18}`,
     count: Prisma.sql`SELECT COUNT(*) AS count FROM "Property" WHERE ${where}`,
   };
 }

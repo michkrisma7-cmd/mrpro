@@ -103,7 +103,8 @@ export default async function Properties({
           <label className="sort-label">
             Urutkan
             <select name="urut" defaultValue={params.urut || ""}>
-              <option value="">Terbaru</option>
+              <option value="">Pilihan hari ini</option>
+              <option value="terbaru">Terbaru</option>
               <option value="termurah">Harga terendah</option>
             </select>
           </label>
