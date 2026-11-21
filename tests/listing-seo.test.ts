@@ -23,7 +23,27 @@ test("structured location and transaction lead metadata ahead of landmark copy",
       "Ruko Disewa di Cikarang Utara, Kabupaten Bekasi.",
     ),
   );
-  assert.ok(result.description.includes("Dekat Bank BSI"));
+  assert.ok(result.description.endsWith("hubungi pemilik di MR Properti."));
+});
+
+test("deskripsi meta memakai templat KT, LT, dan harga dari data terstruktur", () => {
+  const result = listingSearchText({
+    title: "RUMAH SUBSIDI GSR",
+    description: "PROMO DAHSYAT!!! #rumahmurah",
+    values: {
+      jenis: "Rumah",
+      transaksi: "Dijual",
+      kecamatan: "Cikarang Utara",
+      kamar_tidur: 2,
+      luas_tanah: 60,
+      harga: 165000000,
+    },
+  });
+  assert.equal(result.title, "Rumah Subsidi GSR Dijual di Cikarang Utara");
+  assert.equal(
+    result.description.replace(/\u00a0/g, " "),
+    "Rumah Dijual di Cikarang Utara, 2 KT, LT 60 m², harga Rp 165.000.000. Lihat foto & hubungi pemilik di MR Properti.",
+  );
 });
 
 test("missing fields do not invent a transaction, city, or property type", () => {
