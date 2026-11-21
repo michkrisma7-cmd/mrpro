@@ -73,7 +73,18 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
   skrip `lapor.py`). 8 perlu dicek (foto <3, guesthouse KT 19/KM 20), 10 di luar area, 6 nomor WA dipakai ≥3 listing.
 - **Poin 9 PRATINJAU, belum diterapkan**: `2026-11-22/pratinjau-deskripsi.json` (skrip `rapikan2.py`). 5 listing:
   2 hanya ganti nomor HP, Rawamangun + Puri Awan via Groq (perlu koreksi kecil), guesthouse Jogja TIDAK aman
-  (Groq membuang "19 KT 20 KM"). Menunggu persetujuan pemilik.
+  (Groq membuang "19 KT 20 KM").
+- **Poin 9 DITERAPKAN (disetujui pemilik, 4 listing)**: 2 ganti nomor HP, Rawamangun, Puri Awan (+koreksi
+  Pak Prabowo/terhuni/depan gerbang). Guesthouse Jogja tidak disentuh. Balik: `2026-11-22/BALIKKAN-deskripsi.sql`.
+- **Poin 11**: pemilik memilih "biarkan dulu" (10 listing luar area tetap tayang, hanya tercatat di laporan).
+- **Poin 12 SELESAI**: label Pemilik/Agen (`4f13839`, migrasi `202611220001_property_advertiser_type`, Actions
+  44931041520 hijau). Kolom `Property.advertiserType` (PEMILIK/AGEN, null = data lama → kartu "Pengiklan: nama").
+  Formulir pasang iklan & edit member: pilihan wajib. Admin: dropdown "Pengiklan" di form edit listing.
+  Detail: badge "Diiklankan langsung oleh pemilik" / "oleh agen / perantara". 41 listing lama masih kosong →
+  admin isi (lihat bagian D laporan untuk nomor yang kemungkinan agen).
+  Cadangan: `2026-11-22/appdb-pra-label-agen.dump`, image `mrpro:pra-label-agen-2026-11-22`.
+- Build lokal 22-11 berhenti dengan `SecurityFatalError` Next.js 16.4.2 (rekomendasi upgrade); ulang build lulus,
+  CI lulus. Upgrade Next.js tetap keputusan terpisah pemilik.
 
 ## Lokasi backup
 | Apa | Lokasi |
