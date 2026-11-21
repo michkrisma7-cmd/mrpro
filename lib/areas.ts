@@ -69,3 +69,22 @@ export function findArea(slug: string) {
 export function areaPath(area: Area) {
   return `/wilayah/${area.slug}`;
 }
+// Wilayah utama untuk breadcrumb; kecamatan lebih spesifik daripada kota/kabupaten.
+export function listingArea(values: Record<string, unknown>): Area | undefined {
+  const text = (key: string) =>
+    typeof values[key] === "string" ? values[key].trim().toLowerCase() : "";
+  const district = text("kecamatan");
+  const code = text("kota_kabupaten_kode");
+  const city = text("kota_kabupaten");
+  for (const area of areas)
+    if ("district" in area && district.startsWith(area.district)) return area;
+  if (code)
+    return areas.find(
+      (area) =>
+        !("district" in area) &&
+        (area.regencyCodes as readonly string[]).includes(code),
+    );
+  if (/(^|\s)bekasi$/.test(city)) return findArea("bekasi");
+  if (/(^|\s)karawang$/.test(city)) return findArea("karawang");
+  return undefined;
+}

@@ -3,6 +3,7 @@ import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { catalogQueries } from "./catalog-query";
 import { rotationDirection } from "./listing-rotation";
+import { listingArea } from "./areas";
 import { CATALOG_PAGE_SIZE } from "./catalog-pagination";
 import { db, databaseConfigured } from "./db";
 import {
@@ -162,4 +163,64 @@ const getCachedCatalog = unstable_cache(
   },
   ["property-catalog"],
   { revalidate: 60, tags: ["properties", "content"] },
+);
+// "Properti serupa": jenis & transaksi sama; wilayah sama didahulukan, lalu harga terdekat.
+export function rankSimilar(
+  base: Pick<Listing, "id" | "values">,
+  candidates: Listing[],
+  limit = 3,
+) {
+  const area = listingArea(base.values)?.slug;
+  const price = Number(base.values.harga) || 0;
+  return candidates
+    .filter((c) => c.id !== base.id)
+    .map((c) => ({
+      c,
+      sameArea: area && listingArea(c.values)?.slug === area ? 0 : 1,
+      gap: Math.abs((Number(c.values.harga) || 0) - price),
+    }))
+    .sort((a, b) => a.sameArea - b.sameArea || a.gap - b.gap)
+    .slice(0, limit)
+    .map(({ c }) => c);
+}
+export const getSimilarListings = unstable_cache(
+  async (
+    id: string,
+    jenis: string,
+    transaksi: string,
+    values: Values,
+  ): Promise<Listing[]> => {
+    const base = { id, values };
+    if (!databaseConfigured)
+      return rankSimilar(
+        base,
+        demoListings.filter(
+          (p) =>
+            (!jenis || p.values.jenis === jenis) &&
+            (!transaksi || p.values.transaksi === transaksi),
+        ),
+      );
+    const fields = await getFields();
+    const rows = await db().property.findMany({
+      include: { owner: { select: { name: true } } },
+      where: {
+        status: "PUBLISHED",
+        id: { not: id },
+        AND: [
+          ...(jenis ? [{ values: { path: ["jenis"], equals: jenis } }] : []),
+          ...(transaksi
+            ? [{ values: { path: ["transaksi"], equals: transaksi } }]
+            : []),
+        ],
+      },
+      orderBy: { createdAt: "desc" },
+      take: 40,
+    });
+    return rankSimilar(
+      base,
+      rows.map((p) => publicListing(p, fields)),
+    );
+  },
+  ["property-similar"],
+  { revalidate: 300, tags: ["properties", "content"] },
 );

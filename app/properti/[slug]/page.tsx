@@ -5,7 +5,10 @@ import { pageMetadata, breadcrumbs, jsonLd } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, ArrowUpRight, ShieldCheck, MessageCircle } from "lucide-react";
-import { getFields, getListing } from "@/lib/data";
+import { getFields, getListing, getSimilarListings } from "@/lib/data";
+import { listingArea, areaPath } from "@/lib/areas";
+import { displayTitle } from "@/lib/listing-title";
+import { PropertyCard } from "@/components/property-card";
 import { displayValue, filled, siteUrl } from "@/lib/format";
 import {
   listingContactNumber,
@@ -49,6 +52,26 @@ export default async function PropertyDetail({
   const specifications = visible.filter(
     (f) => f.key !== "lokasi" && !isRegionKey(f.key),
   );
+  const title = displayTitle(property.title);
+  const area = listingArea(property.values);
+  const text = (key: string) =>
+    typeof property.values[key] === "string"
+      ? (property.values[key] as string)
+      : "";
+  const kind = [text("jenis"), text("transaksi")].filter(Boolean).join(" · ");
+  const similar = await getSimilarListings(
+    property.id,
+    text("jenis"),
+    text("transaksi"),
+    property.values,
+  );
+  const harga = Number(property.values.harga);
+  const crumbs = [
+    { name: "Beranda", path: "/" },
+    { name: "Properti", path: "/properti" },
+    ...(area ? [{ name: area.name, path: areaPath(area) }] : []),
+    { name: title, path: `/properti/${property.slug}` },
+  ];
   const phone = listingContactNumber(property.whatsapp);
   const wa = phone
     ? listingWhatsappLink(
@@ -60,26 +83,39 @@ export default async function PropertyDetail({
   const schema = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
-    name: property.title,
+    name: title,
     description: property.description,
     image: property.gallery.map((src) => new URL(src, siteUrl()).href),
     url: `${siteUrl()}/properti/${property.slug}`,
     datePosted: new Date(property.createdAt).toISOString(),
+    ...(Number.isFinite(harga) && harga > 0
+      ? {
+          offers: {
+            "@type": "Offer",
+            price: harga,
+            priceCurrency: "IDR",
+            availability: "https://schema.org/InStock",
+            url: `${siteUrl()}/properti/${property.slug}`,
+          },
+        }
+      : {}),
   };
   return (
     <article className="container page-wrap">
-      <div className="breadcrumb">
-        <Link href="/">Beranda</Link>
-        <span>/</span>
-        <Link href="/properti">Properti</Link>
-        <span>/</span>
-        {property.title}
-      </div>
-      <Gallery images={property.gallery} title={property.title} />
+      <nav className="breadcrumb" aria-label="Breadcrumb">
+        {crumbs.slice(0, -1).map((c) => (
+          <span key={c.path}>
+            <Link href={c.path}>{c.name}</Link>
+            <span aria-hidden="true"> › </span>
+          </span>
+        ))}
+        <span aria-current="page">{title}</span>
+      </nav>
+      <Gallery images={property.gallery} title={title} />
       <div className="detail-layout">
         <div>
-          <p className="eyebrow">RUANG UNTUK CERITA BARU</p>
-          <h1 className="detail-title">{property.title}</h1>
+          {kind && <p className="eyebrow">{kind}</p>}
+          <h1 className="detail-title">{title}</h1>
           {location && (
             <p className="property-location">
               <MapPin size={17} />
@@ -90,6 +126,28 @@ export default async function PropertyDetail({
             <h2>Tentang properti ini</h2>
             <p className="preserve-lines">{property.description}</p>
           </section>
+          {location && (
+            <section className="detail-section">
+              <h2>Lokasi</h2>
+              <iframe
+                className="detail-map"
+                title={`Peta lokasi ${title}`}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(location)}&z=14&output=embed`}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+              <p className="detail-map-note">
+                Peta perkiraan berdasarkan alamat di iklan.{" "}
+                <a
+                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Buka di Google Maps
+                </a>
+              </p>
+            </section>
+          )}
           {property.youtubeVideoId && (
             <PropertyVideo
               videoId={property.youtubeVideoId}
@@ -155,17 +213,20 @@ export default async function PropertyDetail({
           </div>
         </aside>
       </div>
+      {similar.length > 0 && (
+        <section className="detail-section similar-listings">
+          <h2>Properti serupa</h2>
+          <div className="property-grid">
+            {similar.map((p) => (
+              <PropertyCard key={p.id} property={p} fields={fields} />
+            ))}
+          </div>
+        </section>
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: jsonLd([
-            schema,
-            breadcrumbs([
-              { name: "Beranda", path: "/" },
-              { name: "Properti", path: "/properti" },
-              { name: property.title, path: `/properti/${property.slug}` },
-            ]),
-          ]),
+          __html: jsonLd([schema, breadcrumbs(crumbs)]),
         }}
       />
     </article>

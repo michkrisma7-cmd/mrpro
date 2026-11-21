@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import dataset from "../data/regions/indonesia.json";
 import provenance from "../data/regions/provenance.json";
 import { getRegions, parseListingValues } from "../lib/regions";
+import { listingArea } from "../lib/areas";
 import {
   defaultRegionFields,
   regionKeys,
@@ -214,4 +215,20 @@ test("region field migration preserves admin definitions and every legacy listin
   } finally {
     await db.close();
   }
+});
+
+test("listingArea memilih wilayah breadcrumb dari kecamatan lalu kota", () => {
+  assert.equal(listingArea({ kecamatan: "Cikarang Utara" })?.slug, "cikarang");
+  assert.equal(listingArea({ kota_kabupaten_kode: "32.75" })?.slug, "bekasi");
+  assert.equal(
+    listingArea({ kota_kabupaten: "Kabupaten Karawang" })?.slug,
+    "karawang",
+  );
+  assert.equal(
+    listingArea({ kecamatan: "Cikampek", kota_kabupaten: "Kabupaten Karawang" })
+      ?.slug,
+    "cikampek",
+  );
+  assert.equal(listingArea({ kota_kabupaten: "Kota Yogyakarta" }), undefined);
+  assert.equal(listingArea({}), undefined);
 });
