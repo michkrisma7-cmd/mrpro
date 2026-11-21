@@ -83,8 +83,23 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
   Detail: badge "Diiklankan langsung oleh pemilik" / "oleh agen / perantara". 41 listing lama masih kosong →
   admin isi (lihat bagian D laporan untuk nomor yang kemungkinan agen).
   Cadangan: `2026-11-22/appdb-pra-label-agen.dump`, image `mrpro:pra-label-agen-2026-11-22`.
-- Build lokal 22-11 berhenti dengan `SecurityFatalError` Next.js 16.4.2 (rekomendasi upgrade); ulang build lulus,
-  CI lulus. Upgrade Next.js tetap keputusan terpisah pemilik.
+- Build lokal 22-11 berhenti dengan `SecurityFatalError` Next.js 16.4.2 (rekomendasi upgrade) → diselesaikan di bawah.
+
+## 22-11-2026 — Upgrade Next.js 16.4.2 → 16.4.6 (SELESAI, diminta pemilik)
+- Alasan: 7 advisory npm tingkat sedang untuk next ≤16.4.4 (use cache bocor/poisoning, bypass SVG image
+  optimizer, cookie HttpOnly di Edge, response injection self-hosted). 16.4.6 = patch terbaru jalur 16.4.
+- Ubah: `next` + `eslint-config-next` 16.4.6 (`package.json`, `bun.lock`), commit `092b7ea`, branch `perbaikan/next-16.4.6`.
+- Sebelum deploy: 104/104 tes, lint, typecheck, build produksi 39 rute tanpa peringatan keamanan, uji `next start`
+  lokal (/, /properti, /titip-properti, /blog = 200).
+- Cadangan: DB `2026-11-22/appdb-pra-next.dump`, compose `2026-11-22/docker-compose-pra-next.yml`,
+  image `ghcr.io/michkrisma7-cmd/mrpro:pra-next-2026-11-22`.
+- Deploy Actions 44932860309 hijau; kontainer melapor next 16.4.6. Pemeriksaan pasca-deploy LULUS (9 halaman 200,
+  gambar `/_next/image` 200, chat POST 200 berisi jawaban, Lavile 200, kontainer Up, log tanpa error).
+  Rollback otomatis TIDAK diperlukan.
+- Cek ulang setelah 3+ menit: tetap lulus. Memori `mrproweb` 147/768 MB (sebelumnya tercatat ±720 MB, kemungkinan
+  karena baru dijalankan ulang; pantau), n8n 386/640 MB.
+- Rollback manual bila nanti perlu: `git revert 092b7ea && git push origin main` (CI deploy ulang 16.4.2),
+  atau cepat di VPS: tag `mrpro:pra-next-2026-11-22` → `mrpro:latest` lalu `docker compose up -d` di `/root/web-me`.
 
 ## Lokasi backup
 | Apa | Lokasi |
@@ -101,7 +116,7 @@ Restore DB: `sudo -u postgres pg_restore --clean --no-owner -d appdb /root/backu
 1. ~~Deploy, n8n API key, Groq API key~~ — selesai 21-11-2026 (key di `/root/backup-mrproperti/.keys`, chmod 600).
 4. Tahap 6 (video): VPS tidak cukup RAM (tersedia ±334 MB) → pilih render di laptop atau layanan
    berbayar (Creatomate/Shotstack — perlu persetujuan biaya).
-5. Upgrade keamanan Next.js yang direkomendasikan saat build — diputuskan terpisah.
+5. ~~Upgrade keamanan Next.js~~ — selesai 22-11-2026 (16.4.6).
 
 ## Langkah berikutnya
 0. Langkah 1, 2, dan 3 di bawah SUDAH SELESAI (3 = blog Groq, tunggu verifikasi terbit 07:00 WIB 22-11) (lihat bagian "Selesai 21-11-2026 malam"). Berikutnya mulai dari 4.
