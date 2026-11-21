@@ -59,8 +59,8 @@ export function ListingGrid({
     );
   return items.length ? (
     <div className="property-grid">
-      {items.map((p) => (
-        <PropertyCard key={p.id} property={p} fields={fields} />
+      {items.map((p, i) => (
+        <PropertyCard key={p.id} property={p} fields={fields} index={i} />
       ))}
     </div>
   ) : (

@@ -55,9 +55,12 @@ function WhatsappIcon() {
 export function PropertyCard({
   property: p,
   fields,
+  index = 99,
 }: {
   property: Listing;
   fields: Field[];
+  /** Posisi di grid: kartu teratas dimuat langsung karena jadi elemen LCP. */
+  index?: number;
 }) {
   const { ids, toggle: toggleFavorite } = useFavorites();
   const saved = ids.includes(p.id);
@@ -92,6 +95,8 @@ export function PropertyCard({
             fill
             sizes="(max-width: 640px) 92vw, (max-width: 900px) 46vw, 30vw"
             className="cover"
+            loading={index < 3 ? "eager" : "lazy"}
+            fetchPriority={index === 0 ? "high" : undefined}
           />
         </Link>
         <span className="property-badge">
