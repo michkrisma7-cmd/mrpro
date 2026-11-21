@@ -14,7 +14,9 @@ import {
   Scan,
   ArrowUpRight,
   Phone,
+  Camera,
 } from "lucide-react";
+import { displayTitle } from "@/lib/listing-title";
 import type { Field, Listing } from "@/lib/types";
 import { displayValue, filled, siteUrl } from "@/lib/format";
 import { listingDetailPath } from "@/lib/listing-share";
@@ -27,6 +29,12 @@ import {
 const subscribeOrigin = () => () => {};
 const browserOrigin = () => window.location.origin;
 const specKeys = ["kamar_tidur", "kamar_mandi", "luas_tanah", "luas_bangunan"];
+const postedDate = new Intl.DateTimeFormat("id-ID", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+  timeZone: "Asia/Jakarta",
+});
 
 function WhatsappIcon() {
   return (
@@ -67,6 +75,8 @@ export function PropertyCard({
   const price = visible.find((f) => f.type === "PRICE");
   const locationField = visible.find((f) => f.key === "lokasi");
   const location = propertyLocation(p.values, fields, "showOnCard");
+  const title = displayTitle(p.title);
+  const posted = new Date(p.createdAt);
   return (
     <article className="property-card">
       <div className="property-image">
@@ -78,7 +88,7 @@ export function PropertyCard({
         >
           <Image
             src={p.gallery[0] || "/images/hero.webp"}
-            alt={p.title}
+            alt={title}
             fill
             sizes="(max-width: 640px) 92vw, (max-width: 900px) 46vw, 30vw"
             className="cover"
@@ -99,6 +109,13 @@ export function PropertyCard({
           <Heart size={18} fill={saved ? "currentColor" : "none"} />
         </button>
         {p.featured && <span className="featured-badge">Pilihan MR</span>}
+        {p.gallery.length > 1 && (
+          <span className="photo-count-badge">
+            <Camera size={13} aria-hidden="true" />
+            {p.gallery.length}
+            <span className="sr-only"> foto</span>
+          </span>
+        )}
       </div>
       <div className="property-body">
         <div className="property-specs">
@@ -124,8 +141,9 @@ export function PropertyCard({
                 <span key={f.key}>
                   <Icon size={15} aria-hidden="true" />
                   <span>
-                    {displayValue(f, p.values[f.key])} {label}
-                    {f.key.startsWith("luas_") ? " m²" : ""}
+                    {f.key.startsWith("luas_")
+                      ? `${label} ${displayValue(f, p.values[f.key])} m²`
+                      : `${displayValue(f, p.values[f.key])} ${label}`}
                   </span>
                 </span>
               );
@@ -143,7 +161,7 @@ export function PropertyCard({
           <PropertyShareButton
             listing={{
               slug: p.slug,
-              title: p.title,
+              title,
               price: price
                 ? `${displayValue(price, p.values[price.key])}${p.values.transaksi === "Disewa" ? " / tahun" : ""}`
                 : undefined,
@@ -153,7 +171,7 @@ export function PropertyCard({
           />
         </div>
         <Link href={detailPath} prefetch={false}>
-          <h3>{p.title}</h3>
+          <h3>{title}</h3>
         </Link>
         {location && (
           <p className="property-location">
@@ -189,6 +207,14 @@ export function PropertyCard({
                 </span>
               ))}
           </div>
+        )}
+        {!Number.isNaN(posted.getTime()) && (
+          <p className="property-posted">
+            Tayang{" "}
+            <time dateTime={posted.toISOString()}>
+              {postedDate.format(posted)}
+            </time>
+          </p>
         )}
         <Link href={detailPath} prefetch={false} className="card-more">
           Lihat properti <ArrowUpRight size={16} aria-hidden="true" />
