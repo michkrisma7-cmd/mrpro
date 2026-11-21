@@ -5219,6 +5219,36 @@ td .text-button {
 }
 .page-loading {
   min-height: 100svh;
+  padding-top: 24px;
+}
+.skeleton-card {
+  display: grid;
+  gap: 12px;
+}
+.skeleton-block {
+  border-radius: 12px;
+  background: linear-gradient(90deg, #eef1ec 25%, #f6f8f4 50%, #eef1ec 75%);
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.skeleton-image {
+  aspect-ratio: 4 / 3;
+}
+.skeleton-line {
+  height: 16px;
+}
+.skeleton-line.short {
+  width: 60%;
+}
+@keyframes skeleton-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block {
+    animation: none;
+  }
 }
 
 .property-photos {

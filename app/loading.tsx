@@ -1,5 +1,4 @@
-import { LoaderCircle } from "lucide-react";
-
+// Kerangka kartu saat konten dimuat; teks status hanya untuk pembaca layar.
 export default function Loading() {
   return (
     <div
@@ -7,8 +6,16 @@ export default function Loading() {
       role="status"
       aria-live="polite"
     >
-      <LoaderCircle className="spin" size={24} aria-hidden="true" />
-      <p>Menyiapkan halaman…</p>
+      <span className="sr-only">Memuat konten…</span>
+      <div className="property-grid" aria-hidden="true">
+        {Array.from({ length: 6 }, (_, i) => (
+          <div key={i} className="skeleton-card">
+            <div className="skeleton-block skeleton-image" />
+            <div className="skeleton-block skeleton-line" />
+            <div className="skeleton-block skeleton-line short" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
