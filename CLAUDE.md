@@ -20,9 +20,16 @@ dalam Bahasa Indonesia yang sederhana. Disusun 21-11-2026 dari catatan Lavile + 
 | `/srv/lavilecikarang/` (situs statis via Caddy) | LAVILE | Jangan disentuh |
 | Workflow `Chatbot Lavile - Groq` (ID `LavileChatGroq01`) | LAVILE | Jangan diubah; boleh disalin jadi `MRP-...` |
 
-- RAM 2 GB + swap 1 GB, sisa ±490 MB (20-11-2026): hemat memori; render video jangan di VPS ini.
-- Akses: `ssh root@116.212.73.143` dengan `~/.ssh/id_ed25519` (perlu izin pemilik di sesi Claude).
+| PostgreSQL di host (`appdb`, dari container lewat `172.18.0.1:5432`) | MRP | Satu-satunya DB aplikasi |
+| Media listing | MRP | S3 eksternal (Neon), bukan di VPS |
+
+- Dicek 21-11-2026: RAM 1,9 GB (tersedia ±334 MB), swap 1 GB (terpakai ±481 MB), disk sisa 17 GB/30 GB,
+  2 vCPU. `mrproweb` 720/768 MB (hampir batas), n8n 415/640 MB. Render video jangan di VPS ini.
+- Akses: `ssh root@116.212.73.143` dengan `~/.ssh/id_ed25519` (berfungsi dari sesi Claude sejak 21-11-2026).
 - Cek Lavile sebelum & sesudah setiap perubahan: `curl -sI https://lavilecikarang.com | head -1` → 200.
+- Backup DB: `pg_dump` lewat TCP ditolak `pg_hba.conf`; pakai socket lokal:
+  `sudo -u postgres pg_dump --no-owner -Fc appdb > <folder>/appdb.dump`.
+- Folder backup & log MRP di VPS: `/root/backup-mrproperti/<tanggal>/` dan `/root/backup-mrproperti/LOG.md`.
 
 ## n8n
 - Backup dulu (skill `backup-n8n`, hasil di `/root/n8n-backup/<tanggal>/`).
@@ -32,6 +39,16 @@ dalam Bahasa Indonesia yang sederhana. Disusun 21-11-2026 dari catatan Lavile + 
 - Groq gpt-oss-120b dibatasi ±8000 TPM; beri jeda ±25 detik antar-tes. Tes webhook pakai User-Agent browser.
 - Chat MRP: website `POST /api/chat` → webhook `mr-konsultasi` (header `x-mr-token`) → knowledge dari
   `GET /api/chat/knowledge`. Ekspor di `workflows/n8n/` (lihat `CHAT.md`); keadaan live bisa berbeda.
+- Workflow aktif (21-11-2026): `Chatbot Lavile - Groq` (LAVILE), `MR Properti — Chat Next v2.js`
+  (`inj1Io85s1qSdDNZ`, MRP), `MR Properti Blog — Next.js` (`cpGzooOPgTWuBXQc`, MRP).
+- Chat MRP rusak: credential `Header Auth account` (`HFM0ZWUl3WznfZ1H`) memeriksa header `Authorization`,
+  bukan `x-mr-token` → semua chat 403. Perbaikan menunggu n8n API key + Groq key (lihat `PROGRESS.md`).
+- Bandingkan credential tanpa membuka nilainya: `bash /root/backup-mrproperti/cek-cred.sh <credentialId>`.
+
+## Status & langkah berikutnya
+Lihat `PROGRESS.md` (selesai, lokasi backup, yang menunggu pemilik, langkah berikutnya). Ringkas:
+- Branch `perbaikan/profesional` (rotasi listing + Tahap 5 + dokumen) siap deploy, belum di-push.
+- Menunggu: persetujuan deploy, n8n API key, Groq API key (`MRP Groq`), keputusan tempat render video.
 
 ## Kode penting
 - Urutan listing: `lib/catalog-query.ts` (beranda + `/properti`), `lib/area-query.ts` (`/wilayah/*`).
