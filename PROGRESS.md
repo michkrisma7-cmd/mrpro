@@ -64,6 +64,17 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
   credential Header Auth n8n.
 - 22-11 00:0x: n8n sempat "Database connection timed out" (SQLite) ±sesaat → webhook 502, pulih sendiri.
 
+## 22-11-2026 — Tahap 5 data (poin 8–12)
+- Cadangan DB sebelum ubah: VPS `/root/backup-mrproperti/2026-11-22/appdb-pra-rapikan.dump`.
+- **Poin 8 SELESAI** (`2026-11-22/perbaiki-typo.sql`): master fasilitas Keamnanan→Keamanan 24 Jam, One Get→One Gate
+  System, Bathtup→Bathtub (+ di values 31/15/4 listing); lokasi "Resinde"→"Residence"; judul "kwalitas"→"kualitas"
+  (slug `rumah-subsidi-kwalitas-komersil-97d2fee7` SENGAJA tidak diubah).
+- **Poin 10–12 laporan**: `catatan-kerja/laporan-listing-2026-11-22.md` (VPS: `2026-11-22/laporan-listing.md`,
+  skrip `lapor.py`). 8 perlu dicek (foto <3, guesthouse KT 19/KM 20), 10 di luar area, 6 nomor WA dipakai ≥3 listing.
+- **Poin 9 PRATINJAU, belum diterapkan**: `2026-11-22/pratinjau-deskripsi.json` (skrip `rapikan2.py`). 5 listing:
+  2 hanya ganti nomor HP, Rawamangun + Puri Awan via Groq (perlu koreksi kecil), guesthouse Jogja TIDAK aman
+  (Groq membuang "19 KT 20 KM"). Menunggu persetujuan pemilik.
+
 ## Lokasi backup
 | Apa | Lokasi |
 | --- | --- |
