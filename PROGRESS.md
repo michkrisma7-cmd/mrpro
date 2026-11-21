@@ -1,6 +1,6 @@
 # PROGRESS — MR Properti
 
-Terakhir diperbarui: 21-11-2026 (sesi Claude Code dari laptop `mich-mr`, SSH ke VPS sudah bisa).
+Terakhir diperbarui: 21-11-2026 malam (deploy + chatbot Groq selesai).
 
 ## Selesai
 
@@ -31,6 +31,24 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
 `MR Properti — Chat Next v2.js` (`inj1Io85s1qSdDNZ`) memeriksa header `Authorization` dengan nilai lain
 → n8n balas 403. Log `mrproweb` 72 jam: hanya `[chat] webhook_http_403`.
 
+## Selesai 21-11-2026 malam
+- **Deploy 1** `perbaikan/profesional` → main (`88357a7`, Actions 44922464240 hijau). Semua halaman 200, Lavile 200.
+  Lighthouse mobile SESUDAH: beranda 39 (LCP 4,9 s, TBT 7,1 s; sebelum 30–34); detail 29–35 (sebelum 49),
+  beban dari chunk inti React (TBT 7,8–19 s, diukur dari laptop yang sibuk → angka bervariasi). Perlu diselidiki.
+- **Chatbot**: credential baru `MRP Chat Webhook` (`rRIUlBypysmaC69N`, header `x-mr-token`) dan `MRP Groq`
+  (`LOany4qg8SAJpkVj`). Workflow baru `MRP-Chat-groq` (`UI0HBaX7pESdq629`) aktif di path `mr-konsultasi`;
+  `MR Properti — Chat Next v2.js` (`inj1Io85s1qSdDNZ`) DINONAKTIFKAN (tidak dihapus).
+  Model `openai/gpt-oss-120b`, cadangan `openai/gpt-oss-20b` (llama-3.3 tidak tersedia di key ini).
+  Sumber JSON workflow: `workflows/n8n/build-mrp-chat-groq.py` → `mrp-chat-groq.json`.
+- **Deploy 2** `perbaikan/chatbot-groq` → main: pencarian listing berfilter (harga, wilayah, KT, transaksi,
+  jenis; alternatif terdekat bila kosong), website mengirim `sources` ke n8n (ID pasti cocok), survei/nego
+  langsung dioper ke admin. 103/103 tes lulus.
+- Tes 5 pertanyaan ke workflow: 4/4 dijawab dari data + no. 5 dioper ke admin (target tercapai).
+- Cadangan: n8n `/root/n8n-backup/20261121-231247/`; pra-deploy `/root/backup-mrproperti/2026-11-21-pra-deploy/`;
+  image rollback `ghcr.io/michkrisma7-cmd/mrpro:pra-deploy-2026-11-21` dan `:pra-deploy-chat-2026-11-21`.
+- Rollback chatbot: nonaktifkan `UI0HBaX7pESdq629`, aktifkan `inj1Io85s1qSdDNZ` (API n8n, key di `.keys`)
+  — tapi workflow lama memang rusak (403).
+
 ## Lokasi backup
 | Apa | Lokasi |
 | --- | --- |
@@ -43,16 +61,13 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
 Restore DB: `sudo -u postgres pg_restore --clean --no-owner -d appdb /root/backup-mrproperti/2026-11-21/appdb.dump`
 
 ## Menunggu keputusan / aksi pemilik
-1. **Deploy** `perbaikan/profesional` ke produksi (push ke `main` = deploy VPS + Vercel beta).
-2. **n8n API key** (Settings → n8n API) — untuk membuat & mengaktifkan workflow tanpa restart dan
-   tanpa menulis ke SQLite n8n.
-3. **Groq API key** untuk credential baru `MRP Groq` (jangan pakai Groq milik Lavile: limit ±8000 TPM bersama).
-   Simpan kedua key langsung di server: `/root/backup-mrproperti/.keys` (chmod 600), jangan ditempel di chat.
+1. ~~Deploy, n8n API key, Groq API key~~ — selesai 21-11-2026 (key di `/root/backup-mrproperti/.keys`, chmod 600).
 4. Tahap 6 (video): VPS tidak cukup RAM (tersedia ±334 MB) → pilih render di laptop atau layanan
    berbayar (Creatomate/Shotstack — perlu persetujuan biaya).
 5. Upgrade keamanan Next.js yang direkomendasikan saat build — diputuskan terpisah.
 
 ## Langkah berikutnya
+0. Langkah 1 dan 2 di bawah SUDAH SELESAI (lihat bagian "Selesai 21-11-2026 malam"). Berikutnya mulai dari 3.
 1. Deploy (setelah disetujui), dari `~/mr-properti`:
    ```bash
    git checkout main && git merge --ff-only perbaikan/profesional && git push origin main
