@@ -20,6 +20,7 @@ import {
   listingWhatsappLink,
 } from "@/lib/listing-contact";
 import { Gallery } from "@/components/gallery";
+import { MapEmbed } from "@/components/map-embed";
 import { listingSearchText } from "@/lib/listing-seo";
 import { listingPreviewImage } from "@/lib/listing-preview";
 import { PropertyVideo } from "@/components/property-video";
@@ -148,13 +149,7 @@ export default async function PropertyDetail({
           {location && (
             <section className="detail-section">
               <h2>Lokasi</h2>
-              <iframe
-                className="detail-map"
-                title={`Peta lokasi ${title}`}
-                src={`https://maps.google.com/maps?q=${encodeURIComponent(location)}&z=14&output=embed`}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-              />
+              <MapEmbed title={`Peta lokasi ${title}`} query={location} />
               <p className="detail-map-note">
                 Peta perkiraan berdasarkan alamat di iklan.{" "}
                 <a

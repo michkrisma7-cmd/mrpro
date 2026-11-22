@@ -6149,3 +6149,21 @@ body {
   background: var(--soft);
   color: var(--ink);
 }
+
+.detail-map-facade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--soft);
+  border: 1px solid var(--line);
+}
+.detail-map-facade:hover,
+.detail-map-facade:focus-visible {
+  background: var(--cream);
+}
