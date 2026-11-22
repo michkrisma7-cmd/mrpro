@@ -62,6 +62,19 @@ test("deskripsi meta memakai templat KT, LT, dan harga dari data terstruktur", (
     "Rumah Subsidi GSR Dijual di Cikarang Utara – Rp 165 juta",
   );
   assert.ok(long.title.endsWith("– Rp 1,25 miliar"), long.title);
+  const dangling = listingSearchText({
+    title: "Rumah tropis modern di Bintaro",
+    description: "x",
+    values: {
+      jenis: "Rumah",
+      transaksi: "Dijual",
+      kecamatan: "Pesanggrahan",
+      kota_kabupaten: "Kota Administrasi Jakarta Selatan",
+      harga: 1850000000,
+    },
+  });
+  assert.doesNotMatch(dangling.title, /\s(di|dan)\s–/, dangling.title);
+  assert.ok(dangling.title.length <= 65, dangling.title);
 });
 
 test("missing fields do not invent a transaction, city, or property type", () => {

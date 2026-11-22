@@ -12,7 +12,11 @@ function clip(text: string, max: number) {
   if (text.length <= max) return text;
   const cut = text.slice(0, max + 1);
   const space = cut.lastIndexOf(" ");
-  return cut.slice(0, space > max * 0.6 ? space : max).replace(/[\s,–-]+$/, "");
+  // Jangan berakhir dengan tanda baca atau kata sambung menggantung ("… Dijual di").
+  return cut
+    .slice(0, space > max * 0.6 ? space : max)
+    .replace(/(?:[\s,–-]+|\s(?:di|dan|&|,)\s*)+$/i, "")
+    .replace(/\s(?:di|dan|&)$/i, "");
 }
 
 // Use only supplied listing data; never assign a city or transaction by default.
