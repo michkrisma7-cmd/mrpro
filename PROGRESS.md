@@ -140,6 +140,33 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
 - Laporan akhir Bagian 8: VPS `/root/backup-mrproperti/LAPORAN-AKHIR.md` (bukti 35/37 workflow lama identik,
   Lavile sha256 sama; daftar rollback; keputusan yang menunggu pemilik).
 
+## 22-11-2026 sore — Tahap 1 RAM `mrproweb` (dikerjakan PEMILIK sendiri)
+- Pemilik mengedit `/root/web-me/docker-compose.yml`: env `MALLOC_ARENA_MAX=2` dan
+  `NODE_OPTIONS=--max-old-space-size=384` untuk `mrproweb`, lalu container dijalankan ulang.
+- Dicek Claude (hanya baca): kedua env terbaca di container; `mem_limit: 768m` tidak berubah.
+  Memori ±16:00 WIB: `mrproweb` 221/768 MB, `n8n-n8n-1` 308/640 MB, caddy 23/96 MB; RAM tersedia ±828 MB, swap 195 MB.
+- Catatan: compose ini bukan dari git; bila image/compose dibuat ulang dari CI, pastikan kedua env tetap ada.
+
+## Tahap 2 — chatbot keluar dari n8n (RENCANA, menunggu persetujuan pemilik)
+- Laporan rencana disampaikan di sesi 22-11-2026 sore; belum ada kode/perubahan server.
+- Ringkas: service Go kecil, satu container per website (Lavile & MRP terpisah), URL tetap lewat route Caddy,
+  uji berdampingan → alihkan → nonaktifkan workflow n8n. n8n tetap hidup untuk blog.
+- DISETUJUI pemilik (pindah 1:1 dulu; MRP dulu, Lavile setelah MRP stabil 1–3 hari; port 5678 dikerjakan terpisah
+  sesudahnya; diff `BERSAMA.caddy` wajib ditunjukkan & disetujui sebelum reload; workflow n8n tetap aktif).
+- 22-11 sore: `services/chatbot-mrp/` (Go, image scratch 9,9 MB) jalan di VPS `/root/chatbot-mrp`, container
+  `chatbot-mrp`, port `127.0.0.1:8081` saja, BELUM disambung ke Caddy. RAM 1,5–5,4 MB / 64 MB.
+  `go test` 1:1 vs kode node n8n live lulus. Uji banding `uji-banding.py`: 12/12 kasus status & bentuk sama.
+- **22-11-2026 16:41 WIB — DIALIHKAN** (disetujui pemilik, snapshot server dibuat pemilik): `BERSAMA.caddy` mendapat
+  `handle /webhook/mr-konsultasi { reverse_proxy chatbot-mrp:8080 }` + `handle { reverse_proxy n8n:5678 }`;
+  validate + reload (tanpa restart). Cadangan: VPS `/root/backup-mrproperti/2026-11-22/BERSAMA.caddy.pra-chatbot-mrp-164146`.
+  Cek 5 titik (`/root/chatbot-mrp/cek-5-titik.sh`) sebelum & sesudah: semua LULUS; chat MRP terbukti dilayani Go.
+  Workflow `MRP-Chat-groq` di n8n TETAP AKTIF (cadangan) sampai pemilik setujui dimatikan.
+  Rollback: `cp <cadangan> /root/caddy/sites/BERSAMA.caddy && docker exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile`.
+- Berikutnya: pantau 1–3 hari (`docker logs chatbot-mrp`, `docker stats`), lalu minta izin matikan workflow n8n,
+  baru mulai Lavile. Setelah chatbot selesai: port 5678 → 127.0.0.1 (terpisah).
+- Lavile: angka cicilan di prompt "Rp1,6–1,9 jutaan" — hitungan 4,25%/25 th: 299 jt→1,62 jt, 359 jt→1,94 jt,
+  449 jt→2,43 jt. Menunggu konfirmasi brosur; JANGAN diubah dulu.
+
 ## Status 22-11-2026: SELESAI
 Pemilik menyatakan pekerjaan selesai. Yang ditunda (jangan dikerjakan tanpa permintaan baru):
 - Kalender 12 judul blog (usulan di VPS `seo/LAPORAN-SEO.md`) — DITUNDA.

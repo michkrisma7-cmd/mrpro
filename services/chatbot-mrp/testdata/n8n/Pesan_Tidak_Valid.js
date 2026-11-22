@@ -1,0 +1,1 @@
+return [{ json: { reply: 'Pesan tidak valid atau terlalu panjang. Tulis pertanyaan maksimal 1.200 karakter.', handoff: false, source_ids: [] } }];
