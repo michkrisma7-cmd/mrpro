@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PGlite } from "@electric-sql/pglite";
 import { areaQueries } from "../lib/area-query";
-import { findArea } from "../lib/areas";
+import { findArea, findCategory } from "../lib/areas";
 
 test("regional queries honor administrative locations, legacy addresses and publication status", async () => {
   const database = new PGlite();
@@ -86,6 +86,10 @@ test("regional queries honor administrative locations, legacy addresses and publ
       cikarang: ["district", "district-only", "legacy-cikarang"],
       karawang: ["karawang", "cikampek", "legacy-cikampek"],
       cikampek: ["cikampek", "legacy-cikampek"],
+      "cikarang-utara": ["district"],
+      "cikarang-selatan": ["district-only"],
+      klari: ["karawang"],
+      tambun: [],
     })) {
       const q = areaQueries(findArea(slug)!);
       const rows = await database.query<{ id: string }>(
@@ -109,6 +113,31 @@ test("regional queries honor administrative locations, legacy addresses and publ
       0,
     );
     assert.equal(findArea("bogor"), undefined);
+    await database.query(
+      `UPDATE "Property" SET values = values || '{"jenis":"Rumah","transaksi":"Over Kredit"}' WHERE id = 'district'`,
+    );
+    const over = areaQueries(
+      findArea("cikarang")!,
+      1,
+      undefined,
+      findCategory("over-kredit"),
+    );
+    assert.deepEqual(
+      (
+        await database.query<{ id: string }>(over.list.text, over.list.values)
+      ).rows.map((r) => r.id),
+      ["district"],
+    );
+    const dijual = areaQueries(
+      findArea("cikarang")!,
+      1,
+      undefined,
+      findCategory("rumah-dijual"),
+    );
+    assert.equal(
+      (await database.query(dijual.list.text, dijual.list.values)).rows.length,
+      0,
+    );
   } finally {
     await database.close();
   }

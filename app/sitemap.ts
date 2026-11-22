@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { getIndexableAreas } from "@/lib/area-data";
+import { getIndexablePages } from "@/lib/area-data";
 import { areaPath } from "@/lib/areas";
 import { siteUrl } from "@/lib/format";
 import { db } from "@/lib/db";
@@ -18,14 +18,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       where: { published: true },
       select: { slug: true, updatedAt: true },
     }),
-    getIndexableAreas(),
+    getIndexablePages(),
   ]);
   return [
     { url: `${siteUrl()}/wilayah`, changeFrequency: "daily", priority: 0.8 },
-    ...localAreas.map((area) => ({
-      url: `${siteUrl()}${areaPath(area)}`,
+    // Landing wilayah & wilayah+kategori dengan ≥3 listing aktif. Tanpa lastmod:
+    // rolling hanya mengubah urutan, bukan isi halaman.
+    ...localAreas.map(({ area, category }) => ({
+      url: `${siteUrl()}${areaPath(area)}${category ? `/${category.slug}` : ""}`,
       changeFrequency: "daily" as const,
-      priority: 0.8,
+      priority: category ? 0.85 : 0.8,
     })),
     { url: siteUrl(), changeFrequency: "daily", priority: 1 },
     { url: `${siteUrl()}/properti`, changeFrequency: "daily", priority: 0.9 },

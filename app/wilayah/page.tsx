@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { MapPin, ArrowUpRight } from "lucide-react";
-import { areaPath } from "@/lib/areas";
+import { areaPath, areaCategories } from "@/lib/areas";
 import { getAreaCounts } from "@/lib/area-data";
 import { breadcrumbs, jsonLd, pageMetadata } from "@/lib/seo";
 import { siteUrl } from "@/lib/format";
 export const dynamic = "force-dynamic";
-const title = "Jelajahi Properti Berdasarkan Wilayah";
+const title = "Rumah Dijual & Over Kredit per Wilayah dan Kecamatan";
 const description =
-  "Temukan rumah, tanah, ruko, dan pilihan properti lainnya di Bekasi, Cikarang, Karawang, dan Cikampek.";
+  "Cari rumah dijual, over kredit, sewa, ruko, dan tanah per wilayah: Bekasi, Cikarang, Karawang, Cikampek, serta kecamatan Tambun, Cibitung, Setu, Babelan, dan lainnya.";
 const summaries: Record<string, string> = {
   bekasi:
     "Pilihan properti di Kota dan Kabupaten Bekasi. Cocokkan kecamatan, alamat, dan kebutuhan hunian atau usaha Anda.",
@@ -20,7 +20,15 @@ const summaries: Record<string, string> = {
 };
 export const metadata = pageMetadata({ title, description, path: "/wilayah" });
 export default async function AreasPage() {
-  const counts = await getAreaCounts();
+  const all = await getAreaCounts();
+  const counts = all.filter(
+    ({ area }) =>
+      !area.parent || area.slug === "cikarang" || area.slug === "cikampek",
+  );
+  const districts = all.filter(
+    ({ area }) =>
+      area.parent && area.slug !== "cikarang" && area.slug !== "cikampek",
+  );
   return (
     <article className="container page-wrap">
       <nav className="breadcrumb" aria-label="Breadcrumb">
@@ -42,7 +50,7 @@ export default async function AreasPage() {
           total properti unik.
         </p>
         <div className="service-grid">
-          {counts.map(({ area, total }) => (
+          {counts.map(({ area, total, categories }) => (
             <article
               className="service-card"
               key={area.slug}
@@ -56,6 +64,18 @@ export default async function AreasPage() {
               <h3 id={`area-${area.slug}`}>{area.name}</h3>
               <p>{summaries[area.slug]}</p>
               <p>{total} listing aktif</p>
+              <p>
+                {categories
+                  .filter((c) => c.total > 0)
+                  .map((c, i) => (
+                    <span key={c.category.slug}>
+                      {i > 0 && " · "}
+                      <Link href={`${areaPath(area)}/${c.category.slug}`}>
+                        {c.category.label} ({c.total})
+                      </Link>
+                    </span>
+                  ))}
+              </p>
               <Link
                 className="button"
                 href={areaPath(area)}
@@ -66,6 +86,28 @@ export default async function AreasPage() {
             </article>
           ))}
         </div>
+      </section>
+      <section aria-labelledby="area-districts">
+        <h2 id="area-districts">Rumah dijual per kecamatan</h2>
+        <nav className="catalog-tabs" aria-label="Kecamatan">
+          {districts.map(({ area, total }) => (
+            <Link key={area.slug} href={areaPath(area)}>
+              Rumah di {area.name} ({total})
+            </Link>
+          ))}
+        </nav>
+        <p>
+          Cari juga per kategori:{" "}
+          {areaCategories.map((c, i) => (
+            <span key={c.slug}>
+              {i > 0 && " · "}
+              <Link href={`/wilayah/cikarang/${c.slug}`}>
+                {c.label} Cikarang
+              </Link>
+            </span>
+          ))}
+          .
+        </p>
       </section>
       <section aria-labelledby="area-search-guide">
         <h2 id="area-search-guide">Pilih wilayah, lalu periksa detail objek</h2>
@@ -108,7 +150,7 @@ export default async function AreasPage() {
             {
               "@context": "https://schema.org",
               "@type": "ItemList",
-              itemListElement: counts.map(({ area }, i) => ({
+              itemListElement: all.map(({ area }, i) => ({
                 "@type": "ListItem",
                 position: i + 1,
                 name: area.name,
