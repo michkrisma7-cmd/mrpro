@@ -26,7 +26,7 @@ dalam Bahasa Indonesia yang sederhana. Disusun 21-11-2026 dari catatan Lavile + 
 ## Server bersama (jangan ganggu Lavile)
 | Komponen | Pemilik | Catatan |
 | --- | --- | --- |
-| `caddy` (80/443), config host `/root/caddy/Caddyfile` | BERSAMA | Jangan restart; reload hanya setelah validasi |
+| `caddy` (80/443). Host `/root/caddy/Caddyfile` (= `/etc/caddy/Caddyfile` di container, hanya `import sites/*.caddy`); blok MRP di host `/root/caddy/sites/MRP.caddy` (= `/etc/caddy/sites/MRP.caddy`) | BERSAMA (LVL.caddy, BERSAMA.caddy jangan diubah) | Jangan restart; reload hanya setelah validasi |
 | `n8n-n8n-1` (n8n 2.31.5, SQLite, batas 640 MB) | BERSAMA | https://n8n.mrproperti.com, jangan restart |
 | `mrproweb` + `/root/web-me` (compose project `web-me`) | MRP | Bukan checkout git; image dari GHCR |
 | `/srv/lavilecikarang/` (situs statis via Caddy) | LAVILE | Jangan disentuh |
