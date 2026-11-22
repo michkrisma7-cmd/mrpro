@@ -1,3 +1,8 @@
+## ATURAN WAJIB – BATAS PROYEK
+- Sesi ini HANYA untuk mrproperti.com.
+- DILARANG membaca-ubah, menghapus, deploy, atau menjalankan perintah apa pun pada file, folder, database, atau server lavilecikarang.com.
+- Jika sebuah tugas menyentuh lavilecikarang.com, BERHENTI dan tanya saya dulu.
+
 # MR Properti — mrproperti.com
 
 Baca juga `AGENTS.md` (aturan Next.js 16, larangan CI/CD, target produksi). Jawab dan tulis catatan
