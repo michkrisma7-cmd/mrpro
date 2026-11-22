@@ -19,6 +19,7 @@ async function loadCachedModule(
     getBlogPosts: () => Promise<{ createdAt: Date }[]>;
     getBlogPost: (slug: string) => Promise<{ updatedAt: Date }>;
     getCatalog: (params: Record<string, string>) => Promise<{ page: number }>;
+    getRetiredListingTarget: (slug: string) => Promise<string | undefined>;
   };
   runInNewContext(code, {
     exports,
@@ -110,4 +111,40 @@ test("equivalent catalog filters reuse cache; different pages get separate entri
   const second = await api.getCatalog({ q: "rumah", page: "2" });
   assert.equal(second.page, 2);
   assert.equal(queries, 4);
+});
+
+test("listing diarsipkan dialihkan ke wilayahnya; tidak ada/ditolak/tayang tidak dialihkan", async () => {
+  const rows: Record<string, { status: string; values: object }> = {
+    arsip: { status: "ARCHIVED", values: { kecamatan: "Tambun Selatan" } },
+    "arsip-luar": {
+      status: "ARCHIVED",
+      values: { kota_kabupaten: "Kota Medan" },
+    },
+    ditolak: { status: "REJECTED", values: { kecamatan: "Tambun Selatan" } },
+    tayang: { status: "PUBLISHED", values: {} },
+  };
+  const api = await loadCachedModule("lib/data.ts", {
+    "./db": {
+      databaseConfigured: true,
+      db: () => ({
+        property: {
+          findUnique: async ({ where }: { where: { slug: string } }) =>
+            rows[where.slug] ?? null,
+        },
+      }),
+    },
+    "./demo": {},
+    "./catalog-pagination": { CATALOG_PAGE_SIZE },
+    "./catalog-query": {},
+    "./listing-rotation": { rotationRound: () => 0 },
+    "./areas": {
+      listingArea: (v: Record<string, unknown>) =>
+        v.kecamatan ? { slug: "tambun" } : undefined,
+    },
+  });
+  assert.equal(await api.getRetiredListingTarget("arsip"), "/wilayah/tambun");
+  assert.equal(await api.getRetiredListingTarget("arsip-luar"), "/properti");
+  assert.equal(await api.getRetiredListingTarget("ditolak"), undefined);
+  assert.equal(await api.getRetiredListingTarget("tayang"), undefined);
+  assert.equal(await api.getRetiredListingTarget("tidak-ada"), undefined);
 });

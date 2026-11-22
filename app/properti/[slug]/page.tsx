@@ -3,9 +3,14 @@ import { isRegionKey } from "@/lib/region-config";
 import type { Metadata } from "next";
 import { pageMetadata, breadcrumbs, jsonLd } from "@/lib/seo";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { MapPin, ArrowUpRight, ShieldCheck, MessageCircle } from "lucide-react";
-import { getFields, getListing, getSimilarListings } from "@/lib/data";
+import {
+  getFields,
+  getListing,
+  getRetiredListingTarget,
+  getSimilarListings,
+} from "@/lib/data";
 import { listingArea, areaPath, areaTrail } from "@/lib/areas";
 import { displayTitle } from "@/lib/listing-title";
 import { PropertyCard } from "@/components/property-card";
@@ -23,9 +28,13 @@ export async function generateMetadata({
 }: {
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
-  const p = await getListing((await params).slug);
-  if (!p)
+  const slug = (await params).slug;
+  const p = await getListing(slug);
+  if (!p) {
+    const target = await getRetiredListingTarget(slug);
+    if (target) permanentRedirect(target);
     return { title: "Properti tidak ditemukan", robots: { index: false } };
+  }
   const { documentTitle: title, description } = listingSearchText(p);
   const image = listingPreviewImage(p.gallery, p.title);
   const metadata = pageMetadata({
@@ -42,8 +51,13 @@ export default async function PropertyDetail({
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  const property = await getListing((await params).slug);
-  if (!property) notFound();
+  const slug = (await params).slug;
+  const property = await getListing(slug);
+  if (!property) {
+    const target = await getRetiredListingTarget(slug);
+    if (target) permanentRedirect(target);
+    notFound();
+  }
   const fields = await getFields();
   const visible = fields.filter(
     (f) => f.showOnDetail && filled(property.values[f.key]),

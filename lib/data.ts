@@ -77,6 +77,24 @@ export const getListing = cache(
     { revalidate: 60, tags: ["properties", "content"] },
   ),
 );
+// Listing yang pernah tayang lalu diarsipkan (terjual/tidak tersedia): URL lama dialihkan
+// permanen ke halaman wilayahnya, bukan 404, agar sinyal SEO tidak hilang.
+export const getRetiredListingTarget = cache(
+  unstable_cache(
+    async (slug: string): Promise<string | undefined> => {
+      if (!databaseConfigured) return undefined;
+      const p = await db().property.findUnique({
+        where: { slug },
+        select: { status: true, values: true },
+      });
+      if (!p || p.status !== "ARCHIVED") return undefined;
+      const area = listingArea((p.values ?? {}) as Record<string, unknown>);
+      return area ? `/wilayah/${area.slug}` : "/properti";
+    },
+    ["retired-listing"],
+    { revalidate: 300, tags: ["properties", "content"] },
+  ),
+);
 export const getServices = cache(
   unstable_cache(
     async (): Promise<Service[]> =>
