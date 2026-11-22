@@ -1,3 +1,10 @@
+## ATURAN TETAP – KODE PROYEK
+- Proyek ini = MRP. Hanya boleh mengubah folder proyek ini dan /etc/caddy/sites/MRP.caddy.
+- Dilarang mengubah file milik kode proyek lain (LVL).
+- Caddyfile utama hanya boleh diubah kalau benar-benar perlu, selalu dengan backup → validate → reload → cek keempat domain (mrproperti.com, www.mrproperti.com, lavilecikarang.com, www.lavilecikarang.com) → rollback kalau gagal.
+- Setiap laporan diawali kode proyek, contoh: "[MRP] selesai …"
+- Backup, log, dan file sementara diberi awalan kode proyek, contoh: MRP-Caddyfile.bak-20261122-1220
+
 ## ATURAN WAJIB – BATAS PROYEK
 - Sesi ini HANYA untuk mrproperti.com.
 - DILARANG membaca-ubah, menghapus, deploy, atau menjalankan perintah apa pun pada file, folder, database, atau server lavilecikarang.com.
