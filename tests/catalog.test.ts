@@ -12,6 +12,9 @@ test("catalog SQL filters, sorts and paginates published properties without expo
         "utf8",
       ),
     );
+    await db.exec(
+      'ALTER TABLE "Property" ADD COLUMN "publishedAt" TIMESTAMP(3)',
+    );
     await db.query(
       'INSERT INTO "AppUser" (id,"authId",name,email) VALUES ($1,$2,$3,$4)',
       ["u", "n", "User", "user@test.id"],

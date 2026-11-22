@@ -1,115 +1,145 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { PGlite } from "@electric-sql/pglite";
-import { readFile } from "node:fs/promises";
-import { rotationDayNumber, rotationDirection } from "../lib/listing-rotation";
+import { readFile, readdir } from "node:fs/promises";
+import {
+  rotationDayNumber,
+  rotationRound,
+  roundReversed,
+  rotateIds,
+} from "../lib/listing-rotation";
 import { catalogQueries } from "../lib/catalog-query";
 import { areaQueries } from "../lib/area-query";
 import { findArea } from "../lib/areas";
 
-test("rotasi harian bergantian ASC/DESC berdasarkan tanggal WIB", () => {
-  // 2026-01-01 00:00 WIB = hari ke-0 (genap → ASC)
+test("putaran = hari sejak 2026-01-01 × 4 + slot 00/06/12/18 WIB", () => {
   assert.equal(rotationDayNumber(new Date("2025-12-31T17:00:00Z")), 0);
-  assert.equal(rotationDirection(new Date("2025-12-31T17:00:00Z")), "asc");
-  // Masih 31 Des di WIB satu detik sebelumnya
   assert.equal(rotationDayNumber(new Date("2025-12-31T16:59:59Z")), -1);
-  // 21 Nov 2026 WIB = hari ke-324 (genap), 22 Nov = 325 (ganjil)
-  assert.equal(rotationDayNumber(new Date("2026-11-21T05:00:00+07:00")), 324);
-  assert.equal(rotationDirection(new Date("2026-11-21T23:59:59+07:00")), "asc");
-  assert.equal(
-    rotationDirection(new Date("2026-11-22T00:00:00+07:00")),
-    "desc",
-  );
-  assert.equal(rotationDirection(new Date("2026-11-23T00:00:00+07:00")), "asc");
+  assert.equal(rotationRound(new Date("2026-01-01T00:00:00+07:00")), 0);
+  assert.equal(rotationRound(new Date("2026-01-01T05:59:59+07:00")), 0);
+  assert.equal(rotationRound(new Date("2026-01-01T06:00:00+07:00")), 1);
+  assert.equal(rotationRound(new Date("2026-01-01T12:00:00+07:00")), 2);
+  assert.equal(rotationRound(new Date("2026-01-01T23:59:59+07:00")), 3);
+  // 22 Nov 2026 = hari ke-325 (ganjil → tidak dibalik)
+  assert.equal(rotationRound(new Date("2026-11-22T18:30:00+07:00")), 1303);
+  assert.equal(roundReversed(1303), false);
+  assert.equal(roundReversed(1296), true); // 21 Nov (hari 324, genap)
 });
 
-test("LISTING_ROTATION_FORCE memaksa arah untuk uji simulasi", () => {
-  const prev = process.env.LISTING_ROTATION_FORCE;
+test("LISTING_ROTATION_ROUND memaksa putaran untuk simulasi", () => {
+  const prev = process.env.LISTING_ROTATION_ROUND;
   try {
-    process.env.LISTING_ROTATION_FORCE = "desc";
-    assert.equal(
-      rotationDirection(new Date("2026-11-21T12:00:00+07:00")),
-      "desc",
-    );
-    process.env.LISTING_ROTATION_FORCE = "salah";
-    assert.equal(
-      rotationDirection(new Date("2026-11-21T12:00:00+07:00")),
-      "asc",
-    );
+    process.env.LISTING_ROTATION_ROUND = "7";
+    assert.equal(rotationRound(new Date("2026-11-21T12:00:00+07:00")), 7);
   } finally {
-    if (prev === undefined) delete process.env.LISTING_ROTATION_FORCE;
-    else process.env.LISTING_ROTATION_FORCE = prev;
+    if (prev === undefined) delete process.env.LISTING_ROTATION_ROUND;
+    else process.env.LISTING_ROTATION_ROUND = prev;
   }
 });
 
-test("SQL katalog & wilayah membalik urutan sesuai arah, pilihan pengguna tetap dihormati", async () => {
+test("rotateIds: hari genap dibalik, tiap putaran bergeser melingkar", () => {
+  const ids = ["a", "b", "c", "d", "e"];
+  assert.deepEqual(rotateIds(ids, 0, 2), ["e", "d", "c", "b", "a"]);
+  assert.deepEqual(rotateIds(ids, 1, 2), ["c", "b", "a", "e", "d"]);
+  assert.deepEqual(rotateIds(ids, 4, 2), ["d", "e", "a", "b", "c"]); // hari 1: maju, offset 8 mod 5 = 3
+});
+
+async function setup() {
   const db = new PGlite();
-  try {
+  const dirs = (await readdir("prisma/migrations"))
+    .filter((d) => /^\d/.test(d))
+    .sort();
+  for (const d of dirs)
     await db.exec(
-      await readFile(
-        "prisma/migrations/202610170001_initial/migration.sql",
-        "utf8",
-      ),
+      await readFile(`prisma/migrations/${d}/migration.sql`, "utf8"),
     );
-    await db.query(
-      'INSERT INTO "AppUser" (id,"authId",name,email) VALUES ($1,$2,$3,$4)',
-      ["u", "n", "User", "user@test.id"],
+  return db;
+}
+
+async function insert(
+  db: PGlite,
+  id: string,
+  published: Date | null,
+  created: Date,
+  status = "PUBLISHED",
+) {
+  await db.query(
+    `INSERT INTO "Property" (id,slug,title,description,gallery,whatsapp,"updatedAt","createdAt","publishedAt",status,"values") VALUES ($1,$2,'Rumah','D',$3,'628',NOW(),$4,$5,$6::"ListingStatus",$7)`,
+    [
+      id,
+      `r-${id}`,
+      ["f"],
+      created,
+      published,
+      status,
+      JSON.stringify({
+        harga: 100,
+        kota_kabupaten: "Kabupaten Bekasi",
+        kecamatan: "Cikarang Utara",
+      }),
+    ],
+  );
+}
+
+const visible = new Set(["harga", "kota_kabupaten", "kecamatan"]);
+
+test("SQL rolling: listing baru di atas, sisanya sesuai rotateIds, tanpa duplikat antar halaman", async () => {
+  const db = await setup();
+  try {
+    const old = Array.from(
+      { length: 23 },
+      (_, i) => `o${String(i).padStart(2, "0")}`,
     );
-    for (let i = 0; i < 4; i++)
-      await db.query(
-        `INSERT INTO "Property" (id,slug,title,description,gallery,whatsapp,"ownerId","updatedAt","createdAt",status,"values") VALUES ($1,$2,'Rumah','D',$3,'628','u',NOW(),$4,'PUBLISHED',$5)`,
-        [
-          `p${i}`,
-          `r-${i}`,
-          ["f"],
-          new Date(Date.UTC(2026, 0, 1 + i)),
-          JSON.stringify({
-            harga: 400 - i * 100,
-            kota_kabupaten: "Kabupaten Bekasi",
-            kecamatan: "Cikarang Utara",
-          }),
-        ],
-      );
-    const visible = new Set(["harga", "kota_kabupaten", "kecamatan"]);
+    for (const [i, id] of old.entries())
+      await insert(db, id, null, new Date(Date.UTC(2026, 0, 1 + i)));
+    const day = 86_400_000;
+    // Baru: 1 hari & 3 hari lalu; tepat 8 hari lalu = bukan baru lagi.
+    await insert(
+      db,
+      "n1",
+      new Date(Date.now() - day),
+      new Date(Date.UTC(2025, 0, 1)),
+    );
+    await insert(
+      db,
+      "n3",
+      new Date(Date.now() - 3 * day),
+      new Date(Date.now() - 3 * day),
+    );
+    await insert(
+      db,
+      "x8",
+      new Date(Date.now() - 8 * day),
+      new Date(Date.now() - 8 * day),
+    );
+    await insert(db, "arsip", new Date(), new Date(), "ARCHIVED");
+    const baseOld = [...old, "x8"];
     const ids = async (q: { text: string; values: unknown[] }) =>
       (await db.query<{ id: string }>(q.text, q.values)).rows.map((r) => r.id);
 
-    assert.deepEqual(await ids(catalogQueries({ arah: "asc" }, visible).list), [
-      "p0",
-      "p1",
-      "p2",
-      "p3",
-    ]);
-    assert.deepEqual(
-      await ids(catalogQueries({ arah: "desc" }, visible).list),
-      ["p3", "p2", "p1", "p0"],
-    );
-    // Pilihan eksplisit tidak ikut rotasi
-    assert.deepEqual(
-      await ids(catalogQueries({ urut: "terbaru", arah: "asc" }, visible).list),
-      ["p3", "p2", "p1", "p0"],
-    );
-    assert.deepEqual(
-      await ids(
-        catalogQueries({ urut: "termurah", arah: "desc" }, visible).list,
-      ),
-      ["p3", "p2", "p1", "p0"],
-    );
+    const seenTop = new Set<string>();
+    for (let round = 1296; round < 1304; round++) {
+      const p1 = await ids(
+        catalogQueries({ putaran: String(round) }, visible).list,
+      );
+      const p2 = await ids(
+        catalogQueries({ putaran: String(round), page: "2" }, visible).list,
+      );
+      const all = [...p1, ...p2];
+      assert.deepEqual(all, ["n1", "n3", ...rotateIds(baseOld, round, 18)]);
+      assert.equal(new Set(all).size, all.length);
+      seenTop.add(all.slice(2, 7).join());
+      const area = findArea("cikarang");
+      assert.ok(area);
+      assert.deepEqual(await ids(areaQueries(area, 1, round).list), p1);
+    }
+    assert.equal(seenTop.size, 8, "setiap putaran 5 teratas berbeda");
 
-    const area = findArea("bekasi");
-    assert.ok(area);
-    assert.deepEqual(await ids(areaQueries(area, 1, "asc").list), [
-      "p0",
-      "p1",
-      "p2",
-      "p3",
-    ]);
-    assert.deepEqual(await ids(areaQueries(area, 1, "desc").list), [
-      "p3",
-      "p2",
-      "p1",
-      "p0",
-    ]);
+    // Pilihan pengguna tidak ikut rotasi.
+    const terbaru = await ids(
+      catalogQueries({ urut: "terbaru", putaran: "1300" }, visible).list,
+    );
+    assert.equal(terbaru[0], "n1");
   } finally {
     await db.close();
   }

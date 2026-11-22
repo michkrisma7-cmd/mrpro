@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { CATALOG_PAGE_SIZE } from "./catalog-pagination";
+import { rotationOrderSql } from "./listing-rotation";
 export function catalogQueries(
   params: Record<string, string>,
   visible: Set<string>,
@@ -52,16 +53,15 @@ export function catalogQueries(
     );
   }
   const where = Prisma.join(conditions, " AND ");
-  // Urutan default memakai rotasi harian (params.arah dari lib/listing-rotation);
-  // "terbaru" dan tanpa arah tetap baru→lama seperti sebelumnya.
+  // Urutan default = rolling 4x sehari (params.putaran dari lib/listing-rotation);
+  // "terbaru" dan "termurah" adalah pilihan pengguna, tidak ikut rotasi.
+  const round = Number.parseInt(params.putaran || "", 10);
   const order =
     params.urut === "termurah" && visible.has("harga")
       ? Prisma.sql`${price} ASC NULLS LAST, "createdAt" DESC, "id" ASC`
-      : !params.urut && params.arah === "asc"
-        ? Prisma.sql`"createdAt" ASC, "id" ASC`
-        : !params.urut && params.arah === "desc"
-          ? Prisma.sql`"createdAt" DESC, "id" DESC`
-          : Prisma.sql`"createdAt" DESC, "id" ASC`;
+      : !params.urut && Number.isFinite(round)
+        ? rotationOrderSql(round)
+        : Prisma.sql`COALESCE("publishedAt", "createdAt") DESC, "id" ASC`;
   return {
     page,
     size,

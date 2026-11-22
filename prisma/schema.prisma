@@ -54,6 +54,7 @@ model Property {
   ownerId String?
   owner AppUser? @relation(fields: [ownerId], references: [id], onDelete: Restrict)
   createdAt DateTime @default(now())
+  publishedAt DateTime?
   updatedAt DateTime @updatedAt
   @@index([status, createdAt])
   @@index([ownerId])

@@ -101,7 +101,7 @@ test("equivalent catalog filters reuse cache; different pages get separate entri
     "./catalog-query": {
       catalogQueries: () => ({ list: "list", count: "count" }),
     },
-    "./listing-rotation": { rotationDirection: () => "asc" },
+    "./listing-rotation": { rotationRound: () => 1300 },
     "./areas": { listingArea: () => undefined },
   });
   await api.getCatalog({ q: "rumah", page: "1" });

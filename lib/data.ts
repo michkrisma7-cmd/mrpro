@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
 import { catalogQueries } from "./catalog-query";
-import { rotationDirection } from "./listing-rotation";
+import { rotationRound } from "./listing-rotation";
 import { listingArea } from "./areas";
 import { CATALOG_PAGE_SIZE } from "./catalog-pagination";
 import { db, databaseConfigured } from "./db";
@@ -109,8 +109,8 @@ export function getCatalog(params: Record<string, string>) {
       .filter((key) => Boolean(params[key]))
       .map((key) => [key, params[key]]),
   );
-  // Arah rotasi masuk ke kunci cache, jadi urutan berganti tepat 00:00 WIB.
-  if (!normalized.urut) normalized.arah = rotationDirection();
+  // Putaran rolling masuk ke kunci cache, jadi urutan berganti tepat 00/06/12/18 WIB.
+  if (!normalized.urut) normalized.putaran = String(rotationRound());
   return getCachedCatalog(normalized);
 }
 const getCachedCatalog = unstable_cache(
@@ -136,7 +136,8 @@ const getCachedCatalog = unstable_cache(
         all = all.sort(
           (a, b) => Number(a.values.harga || 0) - Number(b.values.harga || 0),
         );
-      else if (!params.urut && params.arah === "asc") all = [...all].reverse();
+      else if (!params.urut && Number(params.putaran) % 8 < 4)
+        all = [...all].reverse();
       return {
         listings: all.slice((page - 1) * size, page * size),
         total: all.length,

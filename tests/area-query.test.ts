@@ -8,7 +8,7 @@ test("regional queries honor administrative locations, legacy addresses and publ
   const database = new PGlite();
   try {
     await database.exec(`CREATE TYPE "ListingStatus" AS ENUM ('PUBLISHED','PENDING');
-      CREATE TABLE "Property" (id text, "ownerId" text, "createdAt" timestamp DEFAULT NOW(), status "ListingStatus", values jsonb);
+      CREATE TABLE "Property" (id text, "ownerId" text, "createdAt" timestamp DEFAULT NOW(), "publishedAt" timestamp, status "ListingStatus", values jsonb);
       CREATE TABLE "AppUser" (id text, name text);`);
     const fixtures = [
       [

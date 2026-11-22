@@ -86,6 +86,7 @@ export async function submitProperty(
         slug,
         ownerId: user?.id ?? null,
         status: "PUBLISHED",
+        publishedAt: new Date(),
       },
     });
     refresh();
@@ -290,7 +291,13 @@ export async function moderateProperty(
       // Only the request that changes a non-published status can send a webhook.
       const changed = await db().property.updateMany({
         where: { id, status: { not: "PUBLISHED" } },
-        data: { status, featured: form.has("featured") },
+        // Tayang pertama kali = listing baru (naik ke atas). Tayang ulang setelah
+        // diarsipkan memakai tanggal lama; edit biasa tidak mengubah publishedAt.
+        data: {
+          status,
+          featured: form.has("featured"),
+          ...(listing.publishedAt ? {} : { publishedAt: new Date() }),
+        },
       });
       if (changed.count === 1)
         facebookResult = await sendFacebookWebhook(listing, fields);
