@@ -1,5 +1,5 @@
 // Kerangka kartu saat konten dimuat; teks status hanya untuk pembaca layar.
-export default function Loading() {
+export function PageSkeleton() {
   return (
     <div
       className="container page-wrap page-loading"

@@ -1,5 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { House, ArrowLeft } from "lucide-react";
+// Hanya satu meta robots: noindex (menimpa "index, follow" dari layout).
+export const metadata: Metadata = {
+  title: "Halaman tidak ditemukan",
+  robots: { index: false, follow: true },
+};
 export default function NotFound() {
   return (
     <div className="container page-wrap">

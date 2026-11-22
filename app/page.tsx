@@ -3,7 +3,7 @@ import Link from "next/link";
 import { connection } from "next/server";
 import Image from "next/image";
 import { Suspense } from "react";
-import Loading from "./loading";
+import { PageSkeleton as Loading } from "@/components/page-skeleton";
 import { PublicationNotice } from "@/components/publication-notice";
 import {
   Calculator,

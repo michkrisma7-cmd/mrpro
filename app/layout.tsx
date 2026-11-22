@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import Loading from "./loading";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Header } from "@/components/header";
@@ -84,10 +83,11 @@ export default function RootLayout({
           Langsung ke konten
         </a>
         <Header />
+        {/* Konten halaman sengaja TIDAK dibungkus Suspense/loading.tsx: streaming yang mulai
+            lebih awal mengunci status 200, sehingga notFound() menjadi soft-404.
+            Kerangka loading dipasang di dalam halaman (mis. beranda), di bawah pemeriksaan 404. */}
         <main id="konten">
-          <Suspense fallback={<Loading />}>
-            <RequestContent>{children}</RequestContent>
-          </Suspense>
+          <RequestContent>{children}</RequestContent>
         </main>
         <Suspense>{auth}</Suspense>
         <Suspense>
