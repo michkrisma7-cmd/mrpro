@@ -39,19 +39,24 @@ dalam Bahasa Indonesia yang sederhana. Disusun 21-11-2026 dari catatan Lavile + 
 - Groq gpt-oss-120b dibatasi ±8000 TPM; beri jeda ±25 detik antar-tes. Tes webhook pakai User-Agent browser.
 - Chat MRP: website `POST /api/chat` → webhook `mr-konsultasi` (header `x-mr-token`) → knowledge dari
   `GET /api/chat/knowledge`. Ekspor di `workflows/n8n/` (lihat `CHAT.md`); keadaan live bisa berbeda.
-- Workflow aktif (21-11-2026): `Chatbot Lavile - Groq` (LAVILE), `MR Properti — Chat Next v2.js`
-  (`inj1Io85s1qSdDNZ`, MRP), `MR Properti Blog — Next.js` (`cpGzooOPgTWuBXQc`, MRP).
-- Chat MRP rusak: credential `Header Auth account` (`HFM0ZWUl3WznfZ1H`) memeriksa header `Authorization`,
-  bukan `x-mr-token` → semua chat 403. Perbaikan menunggu n8n API key + Groq key (lihat `PROGRESS.md`).
+- Workflow aktif (22-11-2026): `Chatbot Lavile - Groq` (LAVILE), `MRP-Chat-groq` (`UI0HBaX7pESdq629`, MRP),
+  `MRP-MR Properti Blog — Next.js-groq` (`Zm0ZBgFDJW0P1u7H`, MRP). Lama dinonaktifkan, tidak dihapus.
+- n8n API key + Groq key: VPS `/root/backup-mrproperti/.keys` (chmod 600, jangan dicetak). Ubah workflow lewat
+  API `http://localhost:5678/api/v1/...` (berlaku tanpa restart).
 - Bandingkan credential tanpa membuka nilainya: `bash /root/backup-mrproperti/cek-cred.sh <credentialId>`.
 
 ## Status & langkah berikutnya
 Lihat `PROGRESS.md` (selesai, lokasi backup, yang menunggu pemilik, langkah berikutnya). Ringkas:
-- Branch `perbaikan/profesional` (rotasi listing + Tahap 5 + dokumen) siap deploy, belum di-push.
-- Menunggu: persetujuan deploy, n8n API key, Groq API key (`MRP Groq`), keputusan tempat render video.
+- Tayang s.d. `fb571ca` (22-11-2026): Tahap 5, chatbot & blog Groq, label Pemilik/Agen, Next 16.4.6,
+  rolling 4x sehari, landing SEO wilayah/kecamatan/kategori.
+- Menunggu pemilik: tempat render video, judul kalender blog, data footer (alamat/NIB), GSC & Business Profile.
 
 ## Kode penting
-- Urutan listing: `lib/catalog-query.ts` (beranda + `/properti`), `lib/area-query.ts` (`/wilayah/*`).
+- Urutan listing (rolling 4x sehari + listing baru di atas): `lib/listing-rotation.ts`, dipakai
+  `lib/catalog-query.ts` (beranda + `/properti`) dan `lib/area-query.ts` (`/wilayah/*`). Env: `NEW_LISTING_DAYS`,
+  `LISTING_SHIFT_PER_ROUND`, simulasi `LISTING_ROTATION_ROUND`.
+- Landing SEO: wilayah/kecamatan/kategori di `lib/areas.ts`, teks data di `lib/area-content.ts`, tampilan
+  `components/area-landing.tsx`. Halaman <3 listing = noindex (`MIN_INDEXABLE_LISTINGS`).
 - Data/caching: `lib/data.ts`, `lib/area-data.ts` (`unstable_cache` 60 detik, kunci = argumen).
 - Chat: `app/api/chat/route.ts` (gerbang handoff di sisi website), `lib/chat-knowledge.ts`, `lib/chat.ts`.
 

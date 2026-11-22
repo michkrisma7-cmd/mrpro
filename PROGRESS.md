@@ -1,6 +1,6 @@
 # PROGRESS — MR Properti
 
-Terakhir diperbarui: 21-11-2026 malam (deploy + chatbot Groq selesai).
+Terakhir diperbarui: 22-11-2026 siang (rolling 4x sehari + SEO keyword tayang).
 
 ## Selesai
 
@@ -101,6 +101,21 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
 - Rollback manual bila nanti perlu: `git revert 092b7ea && git push origin main` (CI deploy ulang 16.4.2),
   atau cepat di VPS: tag `mrpro:pra-next-2026-11-22` → `mrpro:latest` lalu `docker compose up -d` di `/root/web-me`.
 
+## 22-11-2026 siang — Rolling 4x sehari + SEO keyword (SELESAI, tayang `fb571ca`)
+- **Rolling** (Bagian 3): dihitung di query (`lib/listing-rotation.ts`), bukan n8n/kolom rank — tidak bisa macet,
+  tidak membebani n8n. Putaran = hari sejak 2026-01-01 × 4 + slot (00/06/12/18 WIB); hari genap dibalik;
+  offset = putaran × `LISTING_SHIFT_PER_ROUND` (18) mod N. Listing baru (`NEW_LISTING_DAYS`=7, kolom baru
+  `publishedAt`) selalu di atas. Berlaku di beranda, `/properti`, `/wilayah/*`. Terverifikasi live (putaran 1301).
+  Untuk video harian: listing teratas = hitung ulang dengan `rotateIds()` atau ambil halaman 1 `/properti`.
+- **SEO** (Bagian 2): landing `/wilayah/<area>` dan `/wilayah/<area>/<kategori>` (15 wilayah incl. 11 kecamatan
+  × 5 kategori), noindex bila <3 listing; 14 halaman layak indeks di sitemap. Beranda title/H1 berkeyword +
+  blok link wilayah. Detail: title "<judul> di <kecamatan>, <kota> – Rp …" ≤65, meta KT/KM/LT/LB/harga.
+- Laporan & peta keyword (VPS): `/root/backup-mrproperti/seo/` (`LAPORAN-SEO.md`, `peta-keyword.csv`,
+  `baseline-2026-11-22.csv`). Kalender 12 judul blog ada di laporan — menunggu persetujuan pemilik.
+- Lighthouse mobile sesudah: beranda P52 (sebelum 30–34), SEO 100; landing P35; detail P31 (TBT ±9,6 s).
+- Cadangan: DB `2026-11-22/appdb-pra-rolling-seo.dump`, image `mrpro:pra-rolling-seo-2026-11-22`.
+- Tindak lanjut teknis: soft-404 (halaman tak ada → 200 + noindex, pola lama seluruh situs); TBT tinggi di detail/landing.
+
 ## Lokasi backup
 | Apa | Lokasi |
 | --- | --- |
@@ -140,4 +155,6 @@ Restore DB: `sudo -u postgres pg_restore --clean --no-owner -d appdb /root/backu
 4. Tahap 5 sisa (butuh DB): poin 8–12 (typo fasilitas, rapikan deskripsi — tampilkan contoh dulu,
    laporan listing perlu dicek, listing luar area, label Agen/Pemilik), 13 (data footer), 14, 19,
    badge "Terverifikasi" (kolom baru). Selidiki TBT ±9,5 s di beranda.
-5. Tahap 4.5 `daily_featured` + Tahap 6 video setelah tempat render diputuskan. Tahap 7 laporan akhir.
+5. ~~Tahap 4.5 rolling~~ selesai 22-11. Tahap 6 video setelah tempat render diputuskan. Tahap 7 laporan akhir.
+6. SEO lanjutan: tulis 12 artikel blog (setelah judul disetujui), halaman layanan per kota (2.4.4),
+   Google Search Console + Business Profile (ditunda, menunggu pemilik). Tambah listing di kategori noindex.
