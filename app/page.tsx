@@ -64,6 +64,22 @@ const homeFaq = [
   ],
 ] as const;
 
+// Link internal ke halaman landing keyword utama.
+const homeAreaLinks = [
+  ["/wilayah/cikarang/rumah-dijual", "Rumah dijual Cikarang"],
+  ["/wilayah/bekasi/rumah-dijual", "Rumah dijual Bekasi"],
+  ["/wilayah/karawang/rumah-dijual", "Rumah dijual Karawang"],
+  ["/wilayah/cikampek/rumah-dijual", "Rumah dijual Cikampek"],
+  ["/wilayah/bekasi/over-kredit", "Over kredit rumah Bekasi"],
+  ["/wilayah/cikarang/over-kredit", "Over kredit rumah Cikarang"],
+  ["/wilayah/cikarang/rumah-disewa", "Rumah disewakan Cikarang"],
+  ["/wilayah/cikarang-utara", "Rumah Cikarang Utara"],
+  ["/wilayah/tambun", "Rumah Tambun"],
+  ["/wilayah/cibitung", "Rumah Cibitung"],
+  ["/wilayah/babelan", "Rumah Babelan"],
+  ["/wilayah/setu", "Rumah Setu"],
+] as const;
+
 type HomeSearchParams = Promise<{ jenis?: string | string[] }>;
 export default function Home({
   searchParams,
@@ -78,7 +94,8 @@ export default function Home({
       <section className="home-search" aria-labelledby="home-title">
         <div className="container home-heading">
           <h1 id="home-title">
-            Cari Rumah di Bekasi, Cikarang, Karawang &amp; Cikampek
+            Rumah Dijual &amp; Over Kredit di Cikarang, Bekasi, Karawang &amp;
+            Cikampek
           </h1>
           <p>
             Jual, sewa, dan over kredit properti, plus layanan tukang &amp;
@@ -100,6 +117,19 @@ export default function Home({
       <Suspense fallback={<Loading />}>
         <HomeContent searchParams={searchParams} />
       </Suspense>
+      <section className="container" aria-labelledby="home-areas">
+        <h2 id="home-areas">Cari rumah per wilayah</h2>
+        <nav
+          className="catalog-tabs"
+          aria-label="Pencarian populer per wilayah"
+        >
+          {homeAreaLinks.map(([href, label]) => (
+            <Link key={href} href={href}>
+              {label}
+            </Link>
+          ))}
+        </nav>
+      </section>
     </>
   );
 }
