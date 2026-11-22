@@ -421,3 +421,21 @@ test("knowledge endpoint authenticates n8n, rejects invalid search, and never re
   failing = true;
   assert.equal((await get("test-secret")).status, 503);
 });
+
+test("pertanyaan harga cuci/service AC dioper ke admin (harga belum tercantum)", () => {
+  for (const m of [
+    "Berapa harga cuci AC?",
+    "cuci ac berapaan kak",
+    "biaya service AC 1 PK",
+    "Servis AC rumah tarifnya?",
+    "harga bersihin AC 2 unit",
+  ])
+    assert.equal(chat.asksUnpricedAcService(m), true, m);
+  for (const m of [
+    "Harga pasang AC berapa?",
+    "Ada jasa cuci AC?",
+    "Rumah dengan AC di Cikarang harga 300 juta",
+  ])
+    assert.equal(chat.asksUnpricedAcService(m), false, m);
+  assert.match(chat.acPriceReply, /08811063079/);
+});

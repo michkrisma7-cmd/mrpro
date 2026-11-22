@@ -175,7 +175,7 @@ export function ChatWidget({
                 Halo! Lagi cari tempat untuk pulang, atau butuh bantuan untuk
                 rumah?
               </p>
-              <p>Ceritakan kebutuhan kamu. Kita cari informasinya bareng.</p>
+              <p>Ceritakan kebutuhan Kakak. Kita cari informasinya bareng.</p>
             </div>
             {!messages.length && (
               <div
@@ -265,7 +265,7 @@ export function ChatWidget({
                 rows={1}
                 maxLength={1200}
                 value={draft}
-                placeholder="Tulis kebutuhan kamu…"
+                placeholder="Tulis kebutuhan Kakak…"
                 onChange={(event) => setDraft(event.target.value)}
                 onKeyDown={(event) => {
                   if (
