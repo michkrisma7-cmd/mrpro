@@ -6,7 +6,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MapPin, ArrowUpRight, ShieldCheck, MessageCircle } from "lucide-react";
 import { getFields, getListing, getSimilarListings } from "@/lib/data";
-import { listingArea, areaPath } from "@/lib/areas";
+import { listingArea, areaPath, areaTrail } from "@/lib/areas";
 import { displayTitle } from "@/lib/listing-title";
 import { PropertyCard } from "@/components/property-card";
 import { displayValue, filled, siteUrl } from "@/lib/format";
@@ -26,10 +26,11 @@ export async function generateMetadata({
   const p = await getListing((await params).slug);
   if (!p)
     return { title: "Properti tidak ditemukan", robots: { index: false } };
-  const { title, description } = listingSearchText(p);
+  const { documentTitle: title, description } = listingSearchText(p);
   const image = listingPreviewImage(p.gallery, p.title);
   const metadata = pageMetadata({
     title,
+    absoluteTitle: true,
     description,
     path: `${siteUrl()}/properti/${p.slug}`,
     images: [image.url],
@@ -68,8 +69,12 @@ export default async function PropertyDetail({
   const harga = Number(property.values.harga);
   const crumbs = [
     { name: "Beranda", path: "/" },
-    { name: "Properti", path: "/properti" },
-    ...(area ? [{ name: area.name, path: areaPath(area) }] : []),
+    ...(area
+      ? [
+          { name: "Wilayah", path: "/wilayah" },
+          ...areaTrail(area).map((a) => ({ name: a.name, path: areaPath(a) })),
+        ]
+      : [{ name: "Properti", path: "/properti" }]),
     { name: title, path: `/properti/${property.slug}` },
   ];
   const phone = listingContactNumber(property.whatsapp);

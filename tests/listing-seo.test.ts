@@ -16,12 +16,10 @@ test("structured location and transaction lead metadata ahead of landmark copy",
   });
   assert.equal(
     result.title,
-    "Grand Amarta Ruko Disewa di Cikarang Utara, Kabupaten Bekasi",
+    "Grand Amarta Ruko Disewa di Cikarang Utara, Bekasi",
   );
   assert.ok(
-    result.description.startsWith(
-      "Ruko Disewa di Cikarang Utara, Kabupaten Bekasi.",
-    ),
+    result.description.startsWith("Ruko Disewa di Cikarang Utara, Bekasi."),
   );
   assert.ok(result.description.endsWith("hubungi pemilik di MR Properti."));
 });
@@ -39,11 +37,31 @@ test("deskripsi meta memakai templat KT, LT, dan harga dari data terstruktur", (
       harga: 165000000,
     },
   });
-  assert.equal(result.title, "Rumah Subsidi GSR Dijual di Cikarang Utara");
+  assert.equal(
+    result.title,
+    "Rumah Subsidi GSR Dijual di Cikarang Utara – Rp 165 juta",
+  );
   assert.equal(
     result.description.replace(/\u00a0/g, " "),
-    "Rumah Dijual di Cikarang Utara, 2 KT, LT 60 m², harga Rp 165.000.000. Lihat foto & hubungi pemilik di MR Properti.",
+    "Rumah Dijual di Cikarang Utara, 2 KT, LT 60 m². Harga Rp 165.000.000. Lihat foto & hubungi pemilik di MR Properti.",
   );
+  const long = listingSearchText({
+    title: "Rumah cluster baru siap huni dekat stasiun dan tol",
+    description: "x",
+    values: {
+      jenis: "Rumah",
+      transaksi: "Dijual",
+      kecamatan: "Tambun Selatan",
+      kota_kabupaten: "Kabupaten Bekasi",
+      harga: 1250000000,
+    },
+  });
+  assert.ok(long.documentTitle.length <= 65, long.documentTitle);
+  assert.equal(
+    result.documentTitle,
+    "Rumah Subsidi GSR Dijual di Cikarang Utara – Rp 165 juta",
+  );
+  assert.ok(long.title.endsWith("– Rp 1,25 miliar"), long.title);
 });
 
 test("missing fields do not invent a transaction, city, or property type", () => {
@@ -56,6 +74,7 @@ test("missing fields do not invent a transaction, city, or property type", () =>
     {
       title: "Tanah pilihan",
       description: "Informasi pemilik.",
+      documentTitle: "Tanah pilihan | MR Properti",
     },
   );
 });
