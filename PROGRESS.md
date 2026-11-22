@@ -263,6 +263,56 @@ mrproperti.com & lavilecikarang.com HTTP 200.
 4. Isi harga AC → deploy website.
 5. Bagian C setelah izin lokasi kerja Lavile.
 
+## 22–23-11-2026 tengah malam — lanjutan setelah snapshot pemilik (SELESAI)
+Keputusan pemilik: harga cuci/service AC JANGAN diisi (oper ke admin WA); Facebook DIBATALKAN sementara (workflow FB
+tetap nonaktif, tidak diubah); listing Rp50 jt BENAR (jangan diubah); Bagian C (Lavile) TIDAK di sesi MRP.
+
+1. **Prompt chatbot-mrp live** 23:3x WIB: image `chatbot-mrp:20261123-d` (Kakak, singkat, tanpa id, tanpa sodoran WA,
+   harga cuci/service AC → handoff, pengetahuan tetap over kredit). Cadangan image `chatbot-mrp:pra-prompt-20261122`.
+   Uji live: over kredit kini benar (oper sisa KPR + uang over + alih debitur, 49 kata); harga cuci AC & service AC →
+   handoff; "Ada jasa cuci AC?" → cakupan + estimasi tanpa harga; "Halo" → sapaan Kak.
+2. **n8n dibuat ulang 23:43:30–23:44:02 WIB (±32 s mati)**, image sama (`cda6baf…`, 2.31.5). `/root/n8n/compose.yml`:
+   port `127.0.0.1:5678:5678`; `memswap_limit` 1152m → **768m** (swap n8n maks 128 MB); env
+   `NODE_OPTIONS=--max-old-space-size=320`, `MALLOC_ARENA_MAX=2`, `N8N_RUNNERS_MAX_OLD_SPACE_SIZE=160`;
+   `mem_limit` 640m tetap. Pembersihan riwayat eksekusi TIDAK dipakai: hanya 167 eksekusi / 5,7 MB data (bawaan
+   n8n sudah memangkas), tidak berpengaruh ke RAM. Cadangan: `2026-11-22/MRP-n8n-compose.yml.bak-20261122-2343`.
+   Balik: `cp <cadangan> /root/n8n/compose.yml && cd /root/n8n && docker compose up -d`.
+   Sesudahnya: 2 workflow aktif tetap (Lavile chat, blog tulisulang); 5678 hanya `127.0.0.1`; port 5678 & 3000 tidak
+   terjangkau dari luar; cek 5 titik LULUS.
+   Swap: **492 MB → 116 MB** (n8n 406+238s → 484+0s; mrproweb 132+128s → 112+0s). n8n setelah start: anon 400 MB
+   (proses utama 390, runner 88), file 41, kernel 41 → sisa ±150 MB ke batas 640m. PANTAU: kalau anon terus naik
+   mendekati 600 MB, naikkan `mem_limit` ke 704m atau longgarkan heap (`--max-old-space-size=384`).
+3. **Website dideploy** `3a28688` (branch `rilis/chat-harga-ac` dari `origin/main`, hanya 6 file chat; Actions
+   45046156202 sukses). Cadangan image sebelum deploy: `mrproweb-cadangan:pra-chat-harga-20261123` (`89340750…`);
+   balik: `git revert 3a28688 && git push origin main`. Isi: daftar harga layanan (`priceGroups`) masuk knowledge chat;
+   pertanyaan harga cuci/service AC dijawab tetap "…lewat WhatsApp 08811063079…" + tombol wa.me/628811063079 tanpa
+   memanggil model (`asksUnpricedAcService`); teks widget "kamu" → "Kakak". Sebelum deploy: lint, typecheck,
+   107 tes, build lulus. Dicek produksi: "Berapa harga cuci AC?" → balasan admin WA; "Harga pasang AC 1 PK?" →
+   "Rp300.000 – Rp450.000 per unit" dari sumber "Daftar harga AC". 4 domain (+www) HTTP 200.
+4. Facebook: tidak disentuh. 5. Listing Rp50 jt: tidak disentuh.
+
+**Server 22-11-2026 23:55:31 WIB**
+```
+free -h:  Mem 1.9Gi total, 1.2Gi used, 277Mi free, 689Mi buff/cache, 777Mi available; Swap 116Mi/1.0Gi
+docker stats --no-stream:
+mrproweb 112.2MiB/768MiB · n8n-n8n-1 466MiB/640MiB (0.9% CPU) · chatbot-mrp 5.1MiB/64MiB
+chatbot-mrp-uji2 4.1MiB/64MiB · chatbot-mrp-uji 6.4MiB/64MiB · caddy 13.9MiB/96MiB
+```
+
+**Menunggu pemilik**
+- Hapus 2 container uji (hook Claude memblokir): `docker rm -f chatbot-mrp-uji chatbot-mrp-uji2`.
+- Harga cuci/service AC (kalau sudah ada) → isi `lib/home-services.json` kategori `ac` lalu hapus gerbang
+  `asksUnpricedAcService` + aturan AC di `services/chatbot-mrp/prompt.txt`.
+- Facebook: ditunda pemilik. Bagian C (Lavile ke Go): sesi/folder Lavile.
+
+**Langkah berikutnya**
+1. 23-11 07:00 WIB: cek eksekusi blog `hcy4FGRL9PI5Ywlk` (terbit? tulis ulang terpakai?).
+2. 23–25-11: baca `/root/backup-mrproperti/MRP-pantau-swap.log` (per jam). Perhatikan anon n8n dan swap; kalau swap
+   naik lagi, laporkan penyebab + usulan (swappiness 20, atau batas n8n).
+3. Pantau `docker logs chatbot-mrp` untuk chat konsumen nyata (hasil, ms) setelah prompt baru.
+4. Usulan kecil: sapaan "Kak" belum selalu muncul (over kredit tanpa "Kak"); API key blog di node `Jadwal dan Topik`
+   sebaiknya pindah ke credential.
+
 ## Status 22-11-2026: SELESAI
 Pemilik menyatakan pekerjaan selesai. Yang ditunda (jangan dikerjakan tanpa permintaan baru):
 - Kalender 12 judul blog (usulan di VPS `seo/LAPORAN-SEO.md`) — DITUNDA.

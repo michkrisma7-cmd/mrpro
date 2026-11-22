@@ -40,6 +40,9 @@ dalam Bahasa Indonesia yang sederhana. Disusun 21-11-2026 dari catatan Lavile + 
 - 22-11-2026 (diubah pemilik sendiri): `/root/web-me/docker-compose.yml` service `mrproweb` mendapat env
   `MALLOC_ARENA_MAX=2` dan `NODE_OPTIONS=--max-old-space-size=384` (mem_limit tetap 768m). Terverifikasi aktif di
   container. Dicek 22-11 ±16:00: `mrproweb` 221/768 MB, n8n 308/640 MB, RAM tersedia ±828 MB, swap 195 MB.
+- 22-11-2026 23:44 n8n dibuat ulang (disetujui, snapshot pemilik): port `127.0.0.1:5678`, `memswap_limit 768m`,
+  `NODE_OPTIONS=--max-old-space-size=320`, `MALLOC_ARENA_MAX=2`, `N8N_RUNNERS_MAX_OLD_SPACE_SIZE=160`. Swap 492→116 MB.
+  Pencatat RAM/swap per jam: `/root/backup-mrproperti/MRP-pantau-swap.log`.
 - Akses: `ssh root@116.212.73.143` dengan `~/.ssh/id_ed25519` (berfungsi dari sesi Claude sejak 21-11-2026).
 - Cek Lavile sebelum & sesudah setiap perubahan: `curl -sI https://lavilecikarang.com | head -1` → 200.
 - Backup DB: `pg_dump` lewat TCP ditolak `pg_hba.conf`; pakai socket lokal:
