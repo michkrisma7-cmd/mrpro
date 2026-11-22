@@ -177,6 +177,92 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
 - Lavile: angka cicilan di prompt "Rp1,6–1,9 jutaan" — hitungan 4,25%/25 th: 299 jt→1,62 jt, 359 jt→1,94 jt,
   449 jt→2,43 jt. Menunggu konfirmasi brosur; JANGAN diubah dulu.
 
+## 22-11-2026 malam — Paket pekerjaan A–D (branch `fitur/chatbot-mrp`, belum di-push)
+Commit: `dfcf780` (A + aturan CLAUDE.md), `da3fd0c` (B4). Cadangan n8n: VPS `/root/n8n-backup/MRP-20261122-225753` (40 workflow).
+Log server: VPS `/root/backup-mrproperti/LOG.md`.
+
+**Selesai**
+- A1 Pemantauan chatbot-mrp (16:29–22:57): 16 permintaan — 10 `groq_ok` (rata 1,1 s, maks 1,7 s), 4 `auth_403`
+  (uji token salah), 2 `pesan_tidak_valid` (uji); 0 error. Sejak dialihkan 16:41 baru 2 permintaan, keduanya tes
+  Claude — belum ada chat konsumen nyata. Workflow n8n `MRP-Chat-groq` (`UI0HBaX7pESdq629`) **DINONAKTIFKAN** 22:58
+  (tidak dihapus; sudah tidak menerima lalu lintas karena Caddy → Go). Balik: `POST /api/v1/workflows/UI0HBaX7pESdq629/activate`.
+  ⚠ Rollback Caddy ke n8n sekarang juga perlu mengaktifkan workflow ini lagi.
+- A2 Prompt baru (`services/chatbot-mrp/prompt.txt`): sapaan Kakak, maks ±70 kata, id hanya di `source_ids`,
+  tidak menawarkan WhatsApp/survei kecuali ditanya, harga tak tercantum → bilang jujur. Tes `go test` lulus
+  (perbandingan 1:1 dengan n8n tetap, hanya teks prompt ditukar). Image `chatbot-mrp:20261122-c` (= `:latest`).
+  Uji 6 pertanyaan lama vs baru (container uji): panjang 34–145 → 23–75 kata, Kak 5/6, id mentah 0/6, sodoran WA 0/6.
+  **BELUM dipasang live** — perlu container dibuat ulang (lihat Menunggu). Teks website "kamu" → "Kakak"
+  (`chat-widget.tsx`, `route.ts`) ikut berlaku setelah deploy.
+- A3 Cuci AC: data layanan halaman `/layanan/*` ada di **`lib/home-services.json`** (bukan DB; tabel `Service`
+  hanya 4 baris, tanpa AC). Kategori `ac` punya `priceGroups` untuk pasang/bongkar + material, tetapi
+  **Cuci AC dan Service AC tidak punya harga**. Selain itu chat dulu tidak membaca `priceGroups` sama sekali →
+  diperbaiki di `lib/chat-knowledge.ts` (sumber `catalog:<slug>:harga`; berlaku setelah deploy). Lint, typecheck, 105 tes lulus.
+- B4 Blog: workflow baru `MRP-MR Properti Blog — Next.js-groq-tulisulang` (`hcy4FGRL9PI5Ywlk`, AKTIF), lama
+  `Zm0ZBgFDJW0P1u7H` dinonaktifkan. Artikel di luar 350–1000 kata → jeda 60 s → tulis ulang sekali (gpt-oss-120b)
+  → validasi lagi; masih di luar → error, tidak terbit. Builder `workflows/n8n/build-mrp-blog-tulisulang.py`.
+  Uji dryRun via webhook (workflow UJI `oCYUDgg4ToTD7gYn`, sudah diarsip): 172 kata → ditulis ulang → 413 kata, lolos.
+  Cek eksekusi asli pertama 23-11 07:00 WIB.
+- B5 Facebook: tidak diaktifkan. Lihat pilihan di Menunggu.
+- B6 Port 5678: sudah **tertutup dari internet** (aturan `DOCKER-USER` DROP eth0 3000,5678 untuk IPv4 & IPv6,
+  permanen via `/etc/systemd/system/docker.service.d/ingress-guard.conf` → `/usr/local/sbin/container-ingress-guard`);
+  dicek dari laptop: 5678 & 3000 tidak terjangkau, editor n8n via domain 200, webhook Lavile via domain 200.
+  Pemakai 5678 di server: Caddy (`n8n:5678` lewat jaringan Docker) dan skrip API (`localhost:5678`) — keduanya tetap
+  jalan bila di-bind 127.0.0.1. Perubahan compose BELUM dilakukan (butuh n8n dibuat ulang → snapshot).
+- D9 Swap: pencatat per jam `/root/backup-mrproperti/MRP-pantau-swap.sh` (cron menit 7, tanda `# MRP-pantau-swap`,
+  cadangan crontab `2026-11-22/MRP-crontab-root.bak-*`) → `/root/backup-mrproperti/MRP-pantau-swap.log`.
+  Temuan 23:23: swap 492 MB = ±270 MB benar-benar di swap + ±210 MB `SwapCached` (sudah di RAM juga).
+  Per container (RAM+swap): **n8n 406+238 MB** (batas 640m, `memswap_limit 1152m` → n8n menekan dirinya sendiri ke swap),
+  mrproweb 132+128 MB (halaman menganggur, swappiness 60), caddy 34+2, chatbot-mrp 5+0.
+
+**Server 22-11-2026 23:25:20 WIB**
+```
+free -h:  Mem 1.9Gi total, 1.1Gi used, 401Mi free, 639Mi buff/cache, 850Mi available; Swap 492Mi/1.0Gi
+docker stats --no-stream:
+chatbot-mrp-uji2 5.1MiB/64MiB · chatbot-mrp-uji 4.4MiB/64MiB · chatbot-mrp 5.6MiB/64MiB
+mrproweb 132.5MiB/768MiB · caddy 23.0MiB/96MiB · n8n-n8n-1 391.5MiB/640MiB (0.5% CPU)
+```
+mrproperti.com & lavilecikarang.com HTTP 200.
+
+**Menunggu keputusan / snapshot pemilik**
+1. Snapshot, lalu (a) pasang prompt baru: `cd /root/chatbot-mrp && docker compose up -d`
+   (balik: `docker tag chatbot-mrp:pra-prompt-20261122 chatbot-mrp:latest && docker compose up -d`);
+   (b) hapus 2 container uji (hook Claude memblokir hapus container): `docker rm -f chatbot-mrp-uji chatbot-mrp-uji2`.
+2. Isi harga **Cuci AC** dan **Service AC** di `lib/home-services.json` kategori `ac` → `priceGroups` (format
+   `{"label": "...", "price": "Rp... – Rp... per unit"}`). Usulan baris: cuci AC wall split 0,5–1 PK; 1,5–2 PK;
+   cassette/standing; cuci besar (bongkar); service/cek AC; isi/tambah freon R32/R410A/R22. Lalu deploy (push main).
+3. Deploy website (push `main`) untuk: teks Kakak + harga layanan masuk chat. Ditunda sampai harga AC diisi?
+4. Facebook — pilihan yang ada (keduanya NONAKTIF, credential sama `Facebook Graph account`, token Page):
+   a. `MR Properti — Terbitkan ke FB Page Mas Meri` (`AI1r5dNMNvBycaSR`): Page ID dikunci `61595418122522`.
+   b. `MR Properti — Terbitkan ke Facebook Pages` (`kifJ7Sx89IfrvFkS`): Page = pemilik token (`me`).
+   Daftar lengkap Page yang bisa diakses token tidak dibuka (perlu mendekripsi token). Catatan: website sudah
+   mengisi `N8N_FACEBOOK_WEBHOOK_URL`, jadi tiap Terbitkan saat ini muncul pesan "pengiriman gagal" (tidak merusak).
+5. Port 5678 → 127.0.0.1 (lapisan kedua; sudah tertutup firewall): ubah `/root/n8n/compose.yml` `- 5678:5678`
+   → `- 127.0.0.1:5678:5678`, lalu `docker compose up -d` di `/root/n8n` (n8n mati ±30–60 s; chat Lavile & blog
+   ikut terhenti sebentar). Image lokal `:latest` = image yang jalan (2.31.5, `cda6baf…`), jadi tidak ganti versi.
+6. Bagian C (chatbot Lavile ke Go) BELUM dimulai: (i) syarat "setelah A selesai" belum terpenuhi (prompt MRP belum
+   live); (ii) kode Lavile semestinya di `~/Proyek/Lavile-Cikarang`, sedangkan aturan MRP melarang sesi ini
+   menyentuh file Lavile; (iii) sambung Caddy butuh snapshot. Perlu izin: kerjakan di sesi/folder Lavile?
+7. C8 cicilan Lavile (usulan teks, menunggu brosur; file Lavile tidak dibuka): "Cicilan mulai ±Rp1,6 jutaan/bulan
+   (tipe 299 jt) hingga ±Rp2,4 jutaan/bulan (tipe Hook 449 jt), simulasi KPR 4,25%/25 tahun tanpa DP; angka final
+   mengikuti brosur & bank." (299→1,62 jt; 359→1,94 jt; 449→2,43 jt.)
+8. Usulan swap (pilih setelah ±2–3 hari data log): (a) n8n `mem_limit` 640m → 768m, atau `memswap_limit` diturunkan
+   ke 768m supaya n8n tidak menimbun swap (keduanya = n8n dibuat ulang → snapshot, bisa digabung dengan no. 5);
+   (b) `sysctl vm.swappiness=20` (tanpa restart, bisa dibalik); (c) pangkas data eksekusi n8n
+   (`EXECUTIONS_DATA_PRUNE=true`, `EXECUTIONS_DATA_MAX_AGE=72`) — juga lewat compose.
+
+**Temuan lain**
+- Chat menjawab "over kredit" keliru (dianggap fasilitas pembiayaan); knowledge tidak punya penjelasannya.
+  Usul: tambah teks over kredit (oper sisa KPR + uang over) ke `site:overview`/`site:kpr`.
+- Listing "Rumah murah eksklusif Rp50 jt" (3KT) kemungkinan salah harga — cek di admin.
+- Node `Jadwal dan Topik` di workflow blog menyimpan API key blog sebagai teks biasa; sebaiknya dipindah ke credential.
+
+**Langkah berikutnya**
+1. Setelah snapshot: no. 1 & 5 (+ 8a) sekaligus, lalu `sh /root/chatbot-mrp/cek-5-titik.sh` + uji 6 pertanyaan.
+2. 23-11 07:00 WIB: cek eksekusi blog `hcy4FGRL9PI5Ywlk` (terbit, tulis ulang terpakai atau tidak).
+3. 23–25-11: baca `MRP-pantau-swap.log`; pilih usulan swap.
+4. Isi harga AC → deploy website.
+5. Bagian C setelah izin lokasi kerja Lavile.
+
 ## Status 22-11-2026: SELESAI
 Pemilik menyatakan pekerjaan selesai. Yang ditunda (jangan dikerjakan tanpa permintaan baru):
 - Kalender 12 judul blog (usulan di VPS `seo/LAPORAN-SEO.md`) — DITUNDA.
