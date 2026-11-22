@@ -1,5 +1,7 @@
 import { randomUUID } from "node:crypto";
 import {
+  acPriceReply,
+  asksUnpricedAcService,
   chatInput,
   groundedAnswer,
   handoffReply,
@@ -88,6 +90,7 @@ export async function POST(request: Request) {
       { status, headers },
     );
   if (outsideChatScope(message)) return fallback(scopeReply);
+  if (asksUnpricedAcService(message)) return fallback(acPriceReply);
   if (
     /\b(admin|manusia|orang langsung|whatsapp|wa|pesan jasa|booking|jadwalkan survei)\b/i.test(
       message,

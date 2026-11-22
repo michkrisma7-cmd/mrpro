@@ -98,7 +98,8 @@ func gantiPromptN8n(t *testing.T, want map[string]any) {
 }
 
 func TestPromptBaru(t *testing.T) {
-	for _, s := range []string{`"Kakak"`, "JANGAN pernah menulis id", "JANGAN menawarkan WhatsApp"} {
+	for _, s := range []string{`"Kakak"`, "JANGAN pernah menulis id", "JANGAN menawarkan WhatsApp",
+		"Pengguna menanyakan harga cuci AC atau service AC.", "Over kredit (oper kredit/take over KPR)"} {
 		if !strings.Contains(systemPrompt, s) {
 			t.Errorf("prompt.txt tidak memuat %q", s)
 		}

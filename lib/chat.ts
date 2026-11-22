@@ -21,6 +21,7 @@ export {
   handoffReply,
   unavailableReply,
   scopeReply,
+  acPriceReply,
   type ChatSource,
   type ChatAnswer,
 } from "./chat-shared";
@@ -62,6 +63,13 @@ export function rankSources(sources: ChatSource[], query: string, take = 8) {
     .sort((a, b) => b.score - a.score)
     .slice(0, take)
     .map((row) => row.source);
+}
+
+// Cuci/service AC has no published price yet; price questions go to the admin.
+export function asksUnpricedAcService(message: string) {
+  const ac = /\b(?:cuci|servis|service|bersih(?:in|kan)?)\s*(?:unit\s*)?ac\b/i;
+  const price = /\b(?:harga\w*|biaya\w*|tarif\w*|ongkos\w*|berapa(?:an)?|price|rate)\b|\brp\b/i;
+  return ac.test(message) && price.test(message);
 }
 
 // Explicit unrelated requests stop before a paid model call. Remaining scope is
