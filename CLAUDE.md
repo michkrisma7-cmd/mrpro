@@ -37,6 +37,9 @@ dalam Bahasa Indonesia yang sederhana. Disusun 21-11-2026 dari catatan Lavile + 
 
 - Dicek 21-11-2026: RAM 1,9 GB (tersedia ±334 MB), swap 1 GB (terpakai ±481 MB), disk sisa 17 GB/30 GB,
   2 vCPU. `mrproweb` 720/768 MB (hampir batas), n8n 415/640 MB. Render video jangan di VPS ini.
+- 22-11-2026 (diubah pemilik sendiri): `/root/web-me/docker-compose.yml` service `mrproweb` mendapat env
+  `MALLOC_ARENA_MAX=2` dan `NODE_OPTIONS=--max-old-space-size=384` (mem_limit tetap 768m). Terverifikasi aktif di
+  container. Dicek 22-11 ±16:00: `mrproweb` 221/768 MB, n8n 308/640 MB, RAM tersedia ±828 MB, swap 195 MB.
 - Akses: `ssh root@116.212.73.143` dengan `~/.ssh/id_ed25519` (berfungsi dari sesi Claude sejak 21-11-2026).
 - Cek Lavile sebelum & sesudah setiap perubahan: `curl -sI https://lavilecikarang.com | head -1` → 200.
 - Backup DB: `pg_dump` lewat TCP ditolak `pg_hba.conf`; pakai socket lokal:
@@ -90,3 +93,7 @@ npm run build                             # tanpa DATABASE_URL = mode demo
 2. Backup bertanggal sebelum mengubah website/n8n yang hidup.
 3. Jangan tampilkan secret utuh (maks 4 karakter terakhir). Biaya/akun pihak ketiga & posting publik: tanya dulu.
 4. Ragu milik MRP atau Lavile → anggap milik Lavile dan tanya.
+5. Pekerjaan mrproperti.com dan lavilecikarang.com tidak boleh saling mengganggu. Perubahan di satu website
+   tidak boleh merusak website lain.
+6. Jaga server bersama (2 GB): perhatikan RAM dan swap. Sebelum perubahan berisiko (Caddy, port, restart/
+   buat ulang container), beri tahu pemilik supaya ia membuat snapshot dulu.

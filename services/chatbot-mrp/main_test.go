@@ -74,6 +74,37 @@ func TestValidasiSamaDenganN8n(t *testing.T) {
 	}
 }
 
+// gantiPromptN8n: sejak 22-11-2026 prompt sengaja berbeda dari n8n (prompt.txt baru).
+// Fixture n8n tetap dipakai untuk semua bagian lain; hanya pesan system yang
+// harus persis prompt lama (testdata/n8n/prompt-n8n.txt) lalu ditukar ke prompt baru.
+func gantiPromptN8n(t *testing.T, want map[string]any) {
+	t.Helper()
+	lama, err := os.ReadFile("testdata/n8n/prompt-n8n.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, k := range []string{"groqBody", "groqBodyCadangan"} {
+		body, _ := want[k].(map[string]any)
+		msgs, _ := body["messages"].([]any)
+		if len(msgs) == 0 {
+			t.Fatalf("%s tanpa messages", k)
+		}
+		sys := msgs[0].(map[string]any)
+		if sys["role"] != "system" || sys["content"] != string(lama) {
+			t.Fatalf("%s: pesan system fixture bukan prompt n8n lama", k)
+		}
+		sys["content"] = systemPrompt
+	}
+}
+
+func TestPromptBaru(t *testing.T) {
+	for _, s := range []string{`"Kakak"`, "JANGAN pernah menulis id", "JANGAN menawarkan WhatsApp"} {
+		if !strings.Contains(systemPrompt, s) {
+			t.Errorf("prompt.txt tidak memuat %q", s)
+		}
+	}
+}
+
 func TestSusunPromptSamaDenganN8n(t *testing.T) {
 	f := loadFixtures(t)
 	if len(f.Prompts) == 0 {
@@ -99,6 +130,7 @@ func TestSusunPromptSamaDenganN8n(t *testing.T) {
 			"groqBodyCadangan": norm(t, groqBody(modelFallback, msgs)),
 		}
 		want := norm(t, c.Out).(map[string]any)
+		gantiPromptN8n(t, want)
 		if !reflect.DeepEqual(got, want) {
 			gb, _ := json.Marshal(got)
 			wb, _ := json.Marshal(want)

@@ -100,7 +100,7 @@ export async function POST(request: Request) {
   try {
     if (!(await allowChatAttempt(session)))
       return fallback(
-        "Pesan kamu cukup banyak. Yuk lanjutkan dengan tim MR Properti lewat WhatsApp, atau coba Chat lagi dalam 15 menit.",
+        "Pesan Kakak cukup banyak. Yuk lanjutkan dengan tim MR Properti lewat WhatsApp, atau coba Chat lagi dalam 15 menit.",
         429,
       );
     const url = process.env.N8N_CHAT_WEBHOOK_URL;

@@ -11,8 +11,8 @@ import {
 } from "./chat";
 
 // Approved public service catalogue stays in sync with the service detail pages.
-const serviceSources: ChatSource[] = homeServices.flatMap((category) =>
-  category.jobs.map((job, i) => ({
+const serviceSources: ChatSource[] = homeServices.flatMap((category) => [
+  ...category.jobs.map((job, i) => ({
     id: `catalog:${category.slug}:${i}`,
     title: `${job.title} — ${category.name}`,
     path: `/layanan/${category.slug}`,
@@ -21,7 +21,25 @@ const serviceSources: ChatSource[] = homeServices.flatMap((category) =>
       ...job.details.map((d) => `${d.label}: ${d.text}`),
     ].join("\n"),
   })),
-);
+  // Price table shown on the service page; jobs without a row here have no
+  // published price, so the chat must say so instead of guessing.
+  ...(category.priceGroups.length
+    ? [
+        {
+          id: `catalog:${category.slug}:harga`,
+          title: `Daftar harga ${category.name}`,
+          path: `/layanan/${category.slug}`,
+          text: [
+            `Daftar harga ${category.name} (perkiraan, harga final dikonfirmasi tim). Pekerjaan yang tidak ada di daftar ini belum punya harga tercantum.`,
+            ...category.priceGroups.flatMap((g) => [
+              `${g.title}:`,
+              ...g.items.map((it) => `- ${it.label}: ${it.price}`),
+            ]),
+          ].join("\n"),
+        },
+      ]
+    : []),
+]);
 
 export async function getChatKnowledge(query: string) {
   if (!databaseConfigured) throw new Error("Knowledge database unavailable");
