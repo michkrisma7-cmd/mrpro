@@ -1,6 +1,6 @@
 # PROGRESS — MR Properti
 
-Terakhir diperbarui: 22-11-2026 ±12:00 (s.d. deploy `5a8119d`; laporan akhir ditulis).
+Terakhir diperbarui: 22-11-2026 (PEKERJAAN DINYATAKAN SELESAI oleh pemilik; s.d. deploy `5a8119d`).
 
 ## Selesai
 
@@ -139,6 +139,13 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
   perlu kalender judul (menunggu pemilik).
 - Laporan akhir Bagian 8: VPS `/root/backup-mrproperti/LAPORAN-AKHIR.md` (bukti 35/37 workflow lama identik,
   Lavile sha256 sama; daftar rollback; keputusan yang menunggu pemilik).
+
+## Status 22-11-2026: SELESAI
+Pemilik menyatakan pekerjaan selesai. Yang ditunda (jangan dikerjakan tanpa permintaan baru):
+- Kalender 12 judul blog (usulan di VPS `seo/LAPORAN-SEO.md`) — DITUNDA.
+- Video media sosial (Bagian 7) — DITUNDA (lihat bawah).
+- Data footer (alamat/NIB) & halaman layanan tukang per kota — belum dikerjakan, menunggu data/permintaan pemilik.
+- Google Search Console & Google Business Profile — ditunda sejak awal.
 
 ## Video media sosial (Bagian 7) — DITUNDA
 Ditunda, keputusan render laptop/Nevacloud belum final. Atas permintaan pemilik (22-11-2026): jangan membuat

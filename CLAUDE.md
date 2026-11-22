@@ -51,7 +51,7 @@ Lihat `PROGRESS.md` (selesai, lokasi backup, yang menunggu pemilik, langkah beri
   rolling 4x sehari, landing SEO wilayah/kecamatan/kategori.
 - Soft-404 diperbaiki (`91c11f7`): jangan pasang `loading.tsx`/Suspense di atas halaman yang bisa `notFound()`.
 - Video (Bagian 7) DITUNDA — jangan buat file/script/setup video sampai pemilik memutuskan.
-- Menunggu pemilik: judul kalender blog, data footer (alamat/NIB), GSC & Business Profile.
+- Status 22-11-2026: selesai. Ditunda: kalender blog, video, data footer, layanan per kota, GSC & Business Profile.
 
 ## Kode penting
 - Urutan listing (rolling 4x sehari + listing baru di atas): `lib/listing-rotation.ts`, dipakai
