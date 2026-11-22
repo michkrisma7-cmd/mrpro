@@ -162,6 +162,16 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
   Cek 5 titik (`/root/chatbot-mrp/cek-5-titik.sh`) sebelum & sesudah: semua LULUS; chat MRP terbukti dilayani Go.
   Workflow `MRP-Chat-groq` di n8n TETAP AKTIF (cadangan) sampai pemilik setujui dimatikan.
   Rollback: `cp <cadangan> /root/caddy/sites/BERSAMA.caddy && docker exec caddy caddy reload --config /etc/caddy/Caddyfile --adapter caddyfile`.
+- **22-11-2026 22:46 WIB — verifikasi ulang** (atas persetujuan tertulis pemilik dengan 5 syarat; route sudah
+  terpasang sejak 16:41, jadi TIDAK diubah/di-reload ulang): caddy & chatbot-mrp satu jaringan Docker `hostme`,
+  `wget http://chatbot-mrp:8080/healthz` dari container caddy → `ok`; `caddy validate` → Valid.
+  `cek-5-titik.sh`: 0 GAGAL — chat MRP 200 (handoff False, 6 sumber, dilayani Go), chat Lavile 200,
+  editor n8n 200, n8n /healthz 200, mrproperti.com 200, lavilecikarang.com 200.
+  `MRP-Chat-groq` aktif=True. Kode `services/chatbot-mrp` sudah di commit `ea8deaf` (branch `fitur/chatbot-mrp`), `.env` di-ignore.
+  `free -h`: Mem 1,9Gi total, 1,2Gi used, 127Mi free, 754Mi buff/cache, **692Mi available**; Swap 362Mi/1,0Gi.
+  `docker stats --no-stream` 22:46 WIB: chatbot-mrp 5,0/64 MiB · mrproweb 252,9/768 MiB · caddy 55,3/96 MiB ·
+  n8n-n8n-1 361,6/640 MiB (1,0% CPU).
+  Catatan: swap naik 195→362 MB sejak sore & caddy 23→55 MB; ikut dipantau.
 - Berikutnya: pantau 1–3 hari (`docker logs chatbot-mrp`, `docker stats`), lalu minta izin matikan workflow n8n,
   baru mulai Lavile. Setelah chatbot selesai: port 5678 → 127.0.0.1 (terpisah).
 - Lavile: angka cicilan di prompt "Rp1,6–1,9 jutaan" — hitungan 4,25%/25 th: 299 jt→1,62 jt, 359 jt→1,94 jt,
