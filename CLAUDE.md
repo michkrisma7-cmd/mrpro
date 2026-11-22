@@ -54,8 +54,9 @@ dalam Bahasa Indonesia yang sederhana. Disusun 21-11-2026 dari catatan Lavile + 
 - Groq gpt-oss-120b dibatasi ±8000 TPM; beri jeda ±25 detik antar-tes. Tes webhook pakai User-Agent browser.
 - Chat MRP: website `POST /api/chat` → webhook `mr-konsultasi` (header `x-mr-token`) → knowledge dari
   `GET /api/chat/knowledge`. Ekspor di `workflows/n8n/` (lihat `CHAT.md`); keadaan live bisa berbeda.
-- Workflow aktif (22-11-2026): `Chatbot Lavile - Groq` (LAVILE), `MRP-Chat-groq` (`UI0HBaX7pESdq629`, MRP),
-  `MRP-MR Properti Blog — Next.js-groq` (`Zm0ZBgFDJW0P1u7H`, MRP). Lama dinonaktifkan, tidak dihapus.
+- Workflow aktif (22-11-2026 malam): `Chatbot Lavile - Groq` (LAVILE), `MRP-MR Properti Blog — Next.js-groq-tulisulang`
+  (`hcy4FGRL9PI5Ywlk`, MRP). Chat MRP dilayani container Go `chatbot-mrp` (Caddy → `chatbot-mrp:8080`);
+  `MRP-Chat-groq` (`UI0HBaX7pESdq629`) dan blog `Zm0ZBgFDJW0P1u7H` dinonaktifkan, tidak dihapus.
 - n8n API key + Groq key: VPS `/root/backup-mrproperti/.keys` (chmod 600, jangan dicetak). Ubah workflow lewat
   API `http://localhost:5678/api/v1/...` (berlaku tanpa restart).
 - Bandingkan credential tanpa membuka nilainya: `bash /root/backup-mrproperti/cek-cred.sh <credentialId>`.
