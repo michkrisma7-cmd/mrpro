@@ -49,7 +49,9 @@ dalam Bahasa Indonesia yang sederhana. Disusun 21-11-2026 dari catatan Lavile + 
 Lihat `PROGRESS.md` (selesai, lokasi backup, yang menunggu pemilik, langkah berikutnya). Ringkas:
 - Tayang s.d. `fb571ca` (22-11-2026): Tahap 5, chatbot & blog Groq, label Pemilik/Agen, Next 16.4.6,
   rolling 4x sehari, landing SEO wilayah/kecamatan/kategori.
-- Menunggu pemilik: tempat render video, judul kalender blog, data footer (alamat/NIB), GSC & Business Profile.
+- Soft-404 diperbaiki (`91c11f7`): jangan pasang `loading.tsx`/Suspense di atas halaman yang bisa `notFound()`.
+- Video (Bagian 7) DITUNDA — jangan buat file/script/setup video sampai pemilik memutuskan.
+- Menunggu pemilik: judul kalender blog, data footer (alamat/NIB), GSC & Business Profile.
 
 ## Kode penting
 - Urutan listing (rolling 4x sehari + listing baru di atas): `lib/listing-rotation.ts`, dipakai

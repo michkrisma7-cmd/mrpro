@@ -1,6 +1,6 @@
 # PROGRESS — MR Properti
 
-Terakhir diperbarui: 22-11-2026 siang (rolling 4x sehari + SEO keyword tayang).
+Terakhir diperbarui: 22-11-2026 siang (rolling + SEO keyword + perbaikan soft-404 tayang).
 
 ## Selesai
 
@@ -114,7 +114,24 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
   `baseline-2026-11-22.csv`). Kalender 12 judul blog ada di laporan — menunggu persetujuan pemilik.
 - Lighthouse mobile sesudah: beranda P52 (sebelum 30–34), SEO 100; landing P35; detail P31 (TBT ±9,6 s).
 - Cadangan: DB `2026-11-22/appdb-pra-rolling-seo.dump`, image `mrpro:pra-rolling-seo-2026-11-22`.
-- Tindak lanjut teknis: soft-404 (halaman tak ada → 200 + noindex, pola lama seluruh situs); TBT tinggi di detail/landing.
+- Tindak lanjut teknis: ~~soft-404~~ (selesai, lihat bawah); TBT tinggi di detail/landing.
+
+## 22-11-2026 siang — Perbaikan soft-404 (SELESAI, tayang `91c11f7`, Actions 44985877261)
+- Masalah: halaman tidak ada (`/wilayah/xx`, `/properti/<slug-salah>`, `/blog/...`, `/layanan/...`) membalas
+  HTTP 200 + noindex (soft-404), juga untuk Googlebot; `/wilayah/xx` punya meta robots ganda bertentangan.
+- Penyebab: `<Suspense fallback={<Loading />}>` di root layout + `app/loading.tsx` memulai streaming sebelum
+  `notFound()` → status terkunci 200 (lihat docs Next 16 `loading.md` › Status codes).
+- Perbaikan: konten halaman tidak lagi dibungkus Suspense (`connection()` tetap, semua rute tetap dinamis);
+  kerangka kartu dipindah ke `components/page-skeleton.tsx` (dipakai beranda); `app/not-found.tsx` set robots
+  noindex. **Jangan tambahkan lagi `loading.tsx` / Suspense di atas halaman yang bisa `notFound()`.**
+- Bonus: judul detail tidak lagi berakhir "… Dijual di – Rp" (0/39 judul bermasalah).
+- Bukti live: semua halaman tidak ada → 404 (browser & Googlebot); 116/116 URL sitemap → 200 + index, follow.
+- Cadangan: DB `2026-11-22/appdb-pra-soft404.dump`, image `mrpro:pra-soft404-2026-11-22`.
+  Rollback: `git revert 96b3e09 91c11f7` + push, atau tag image itu → `latest` + `docker compose up -d`.
+
+## Video media sosial (Bagian 7) — DITUNDA
+Ditunda, keputusan render laptop/Nevacloud belum final. Atas permintaan pemilik (22-11-2026): jangan membuat
+file, script, atau setup apa pun untuk video sampai ada keputusan.
 
 ## Lokasi backup
 | Apa | Lokasi |
@@ -129,8 +146,7 @@ Restore DB: `sudo -u postgres pg_restore --clean --no-owner -d appdb /root/backu
 
 ## Menunggu keputusan / aksi pemilik
 1. ~~Deploy, n8n API key, Groq API key~~ — selesai 21-11-2026 (key di `/root/backup-mrproperti/.keys`, chmod 600).
-4. Tahap 6 (video): VPS tidak cukup RAM (tersedia ±334 MB) → pilih render di laptop atau layanan
-   berbayar (Creatomate/Shotstack — perlu persetujuan biaya).
+4. Tahap 6 (video): DITUNDA, keputusan render laptop/Nevacloud belum final. Jangan buat apa pun untuk video.
 5. ~~Upgrade keamanan Next.js~~ — selesai 22-11-2026 (16.4.6).
 
 ## Langkah berikutnya
@@ -155,6 +171,6 @@ Restore DB: `sudo -u postgres pg_restore --clean --no-owner -d appdb /root/backu
 4. Tahap 5 sisa (butuh DB): poin 8–12 (typo fasilitas, rapikan deskripsi — tampilkan contoh dulu,
    laporan listing perlu dicek, listing luar area, label Agen/Pemilik), 13 (data footer), 14, 19,
    badge "Terverifikasi" (kolom baru). Selidiki TBT ±9,5 s di beranda.
-5. ~~Tahap 4.5 rolling~~ selesai 22-11. Tahap 6 video setelah tempat render diputuskan. Tahap 7 laporan akhir.
+5. ~~Tahap 4.5 rolling~~ selesai 22-11. Tahap 6 video DITUNDA (lihat atas). Tahap 7 laporan akhir.
 6. SEO lanjutan: tulis 12 artikel blog (setelah judul disetujui), halaman layanan per kota (2.4.4),
    Google Search Console + Business Profile (ditunda, menunggu pemilik). Tambah listing di kategori noindex.
