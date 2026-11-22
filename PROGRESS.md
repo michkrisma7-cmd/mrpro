@@ -1,6 +1,6 @@
 # PROGRESS — MR Properti
 
-Terakhir diperbarui: 22-11-2026 siang (rolling + SEO keyword + perbaikan soft-404 tayang).
+Terakhir diperbarui: 22-11-2026 ±12:00 (s.d. deploy `5a8119d`; laporan akhir ditulis).
 
 ## Selesai
 
@@ -128,6 +128,17 @@ n8n `Header Auth account` (`HFM0ZWUl3WznfZ1H`) yang dipakai workflow aktif
 - Bukti live: semua halaman tidak ada → 404 (browser & Googlebot); 116/116 URL sitemap → 200 + index, follow.
 - Cadangan: DB `2026-11-22/appdb-pra-soft404.dump`, image `mrpro:pra-soft404-2026-11-22`.
   Rollback: `git revert 96b3e09 91c11f7` + push, atau tag image itu → `latest` + `docker compose up -d`.
+
+## 22-11-2026 ±12:00 — Audit teknis 2.6 lanjutan (SELESAI, tayang `5a8119d`)
+- Listing `ARCHIVED` (terjual/tidak tersedia) → redirect permanen ke `/wilayah/<area>` (atau `/properti`),
+  bukan 404 (`getRetiredListingTarget` di `lib/data.ts`). REJECTED/tidak ada tetap 404.
+- `www.mrproperti.com` error 525 → blok Caddy baru `redir` 301 ke apex (append + validate + reload, tanpa restart;
+  cadangan `2026-11-22/Caddyfile.pra-www`). Lavile tetap 200.
+- Peta Google di detail = facade "Tampilkan peta lokasi" (`components/map-embed.tsx`): detail P58, 532 KB, LCP 4,2 s.
+- Blog Groq terbit 07:00 & 11:00 WIB (terverifikasi), tetapi judul berpola "… Koridor Bekasi‑…‑Cikampek" →
+  perlu kalender judul (menunggu pemilik).
+- Laporan akhir Bagian 8: VPS `/root/backup-mrproperti/LAPORAN-AKHIR.md` (bukti 35/37 workflow lama identik,
+  Lavile sha256 sama; daftar rollback; keputusan yang menunggu pemilik).
 
 ## Video media sosial (Bagian 7) — DITUNDA
 Ditunda, keputusan render laptop/Nevacloud belum final. Atas permintaan pemilik (22-11-2026): jangan membuat
