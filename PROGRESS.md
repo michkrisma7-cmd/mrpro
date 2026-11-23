@@ -1,6 +1,6 @@
 # PROGRESS — MR Properti
 
-Terakhir diperbarui: 22-11-2026 (PEKERJAAN DINYATAKAN SELESAI oleh pemilik; s.d. deploy `5a8119d`).
+Terakhir diperbarui: 23-11-2026 (pemeriksaan kapasitas RAM: CUKUP 2 GB; lihat bagian 23-11-2026 10:07).
 
 ## Selesai
 
@@ -300,7 +300,7 @@ chatbot-mrp-uji2 4.1MiB/64MiB · chatbot-mrp-uji 6.4MiB/64MiB · caddy 13.9MiB/9
 ```
 
 **Menunggu pemilik**
-- Hapus 2 container uji (hook Claude memblokir): `docker rm -f chatbot-mrp-uji chatbot-mrp-uji2`.
+- ~~Hapus 2 container uji~~ — SUDAH dihapus pemilik 23-11-2026 10.16.
 - Harga cuci/service AC (kalau sudah ada) → isi `lib/home-services.json` kategori `ac` lalu hapus gerbang
   `asksUnpricedAcService` + aturan AC di `services/chatbot-mrp/prompt.txt`.
 - Facebook: ditunda pemilik. Bagian C (Lavile ke Go): sesi/folder Lavile.
@@ -312,6 +312,66 @@ chatbot-mrp-uji2 4.1MiB/64MiB · chatbot-mrp-uji 6.4MiB/64MiB · caddy 13.9MiB/9
 3. Pantau `docker logs chatbot-mrp` untuk chat konsumen nyata (hasil, ms) setelah prompt baru.
 4. Usulan kecil: sapaan "Kak" belum selalu muncul (over kredit tanpa "Kak"); API key blog di node `Jadwal dan Topik`
    sebaiknya pindah ke credential.
+
+## 23-11-2026 ±10:30–10:55 WIB — Aturan izin disederhanakan + paket Lavile (diminta pemilik)
+
+Aturan izin disederhanakan (final, 23-11-2026 ±10:55): `~/.claude/settings.json` = `defaultMode: acceptEdits` +
+izinkan semua Bash/Read/Edit/Write/WebFetch (daftar allow/ask per perintah dihapus; `.claude/settings.json` Lavile
+dikosongkan; MRP tidak punya). Penjaga tunggal = hook `~/.claude/hooks/guard.py` (v3): mengurai perintah per segmen
+dan hanya menilai perintah yang benar-benar dijalankan (heredoc, echo, string, isi .md diabaikan; ikut menelusuri
+`ssh host '...'`, `bash -c`, `docker exec`). Minta konfirmasi hanya untuk: reboot/shutdown/poweroff; apt
+upgrade/full-upgrade/do-release-upgrade; docker system prune, docker volume rm, docker compose down; docker rm/stop
+container produksi (mrproweb, n8n, caddy, chatbot-mrp, chatbot Lavile); ufw/iptables yang mengubah aturan; rm -rf pada
+/, /root, /srv, /home, /etc, /var, /tmp itu sendiri, folder data website, volume docker; git push --force. Diuji 29
+contoh (17 boleh, 12 tanya), sesuai harapan. CLAUDE.md global/MRP/Lavile ditulis ulang ≤15 baris; rincian teknis
+dipindah ke `~/mr-properti/CATATAN-SERVER.md` dan `~/Proyek/Lavile-Cikarang/docs/CATATAN-SERVER.md`.
+Cadangan semua file aturan lama: `~/.claude/backup-aturan-20261123/` (juga `~/.claude/backups/*-20261123-1026`).
+- Tidak diubah: `AGENTS.md` MRP (larangan CI/CD tetap).
+- Paket Lavile 1–6 dikerjakan dari sesi ini; detail di `~/Proyek/Lavile-Cikarang/PROGRESS.md`. Di server bersama
+  hanya `/root/caddy/sites/LVL.caddy` yang diubah (reload, bukan restart); MRP.caddy, mrproweb, n8n tidak diubah;
+  mrproperti.com tetap 200 (www 301) setelah setiap reload. RAM tersedia 778 MB sebelum → 792 MB sesudah.
+- Container uji `chatbot-mrp-uji` dan `chatbot-mrp-uji2` SUDAH dihapus pemilik (23-11-2026 10.16 WIB).
+
+## 23-11-2026 10:07 WIB — Pemeriksaan kapasitas RAM (hanya baca, tidak ada yang diubah)
+
+**Keputusan: CUKUP 2 GB.** Tidak perlu resize ke 4 GB.
+
+Kondisi sekarang (10:07 WIB, uptime 42 hari, load 0,16 / 0,06 / 0,02, 2 CPU):
+```
+free -h:  Mem 1.9Gi total, 1.2Gi used, 391Mi free, 576Mi buff/cache, 760Mi available; Swap 268Mi/1.0Gi
+df -h /:  30G, terpakai 14G (47%)
+docker stats: n8n-n8n-1 432/640 MiB (68%) · mrproweb 255/768 MiB (33%) · caddy 35/96 MiB (37%)
+              chatbot-mrp 6/64 MiB · chatbot-mrp-uji 5/64 · chatbot-mrp-uji2 4/64
+```
+Riwayat sejak konfigurasi baru (n8n dibuat ulang 22-11 23:43 WIB), dari `MRP-pantau-swap.log` + sysstat per 10 menit:
+- RAM tersedia terendah: **761 MB** (log, 23-11 10:07) / 774 MB (sar, 23-11 00:40).
+- Swap tertinggi: **363 MB** (sar, 23-11 02:20; log 03:07 = 328 MB). Sejak 03:07 stabil ±268 MB. 0 sampel > 600 MB.
+- OOM: tidak ada di `dmesg`/`journalctl -k`. Semua container `RestartCount=0`, `OOMKilled=false`
+  (start 22-11 malam = pembuatan ulang terencana, bukan crash). cgroup `oom_kill 0` di semua container.
+- n8n: hourly 335–487 MB (maks 76% batas). TETAPI cgroup mencatat `memory.peak` 640 MB dan `memory.events max 6`
+  (6 kali menyentuh batas), plus `memory.swap.events fail 5803` (jatah swap 128 MB sempat penuh, sekitar 02–03 WIB,
+  saat itu tidak ada eksekusi workflow). Isi sekarang: anon 373 MB, file 52 MB → anon TIDAK naik terus.
+  Paling dekat batas = n8n; container lain jauh dari batas.
+
+Data lama sebelum perbaikan (sebagai pembanding, tidak dipakai untuk keputusan): 20-11 RAM tersedia sempat 288 MB
+(21:30), swap 600–1000 MB hampir sepanjang 20–21-11 (116 dan 93 dari 143 sampel); 22-11 maks 729 MB. Masalah itu
+hilang setelah Tahap 1 (mrproweb) dan n8n `memswap_limit` 768m.
+
+Alasan cukup 2 GB: sejak perbaikan tidak ada OOM/restart, RAM tersedia tidak pernah < 760 MB, swap maks 363 MB.
+Satu-satunya titik sempit adalah **batas container n8n (640m)**, bukan RAM server — 4 GB tidak memperbaikinya kalau
+batas n8n tidak dinaikkan, sedangkan menaikkan batas itu muat di 2 GB (sisa ±760 MB).
+
+Yang bisa dihemat / disiapkan (belum dikerjakan, perlu persetujuan + cadangan):
+1. ~~Hapus container uji~~ — SUDAH dihapus pemilik 23-11 10.16.
+2. Kalau n8n terus menyentuh batas: naikkan `mem_limit` 640m → 704m (n8n dibuat ulang ±30 s).
+3. Chatbot Lavile pindah dari n8n ke Go: n8n tinggal 1 workflow (blog) → lonjakan per-chat hilang, batas n8n bisa
+   tetap 640m. Hemat besar (±430 MB) hanya kalau blog juga keluar dan n8n dimatikan; dasar n8n ±400 MB idle.
+4. `sysctl vm.swappiness=20` (tanpa restart) kalau swap mrproweb (81 MB idle) mengganggu.
+
+Cek tambahan: eksekusi blog 23-11 07:0x WIB `success` (langkah 1 di bawah terjawab). Chat Lavile 23-11 04:xx WIB 1 error.
+
+**Langkah berikutnya:** jalankan paket perbaikan website Lavile (SEO/robots, app.js, header keamanan, optimasi,
+validasi HTML) — di sesi/folder Lavile. Pencatat RAM per jam tetap jalan; cek ulang 25-11.
 
 ## Status 22-11-2026: SELESAI
 Pemilik menyatakan pekerjaan selesai. Yang ditunda (jangan dikerjakan tanpa permintaan baru):
