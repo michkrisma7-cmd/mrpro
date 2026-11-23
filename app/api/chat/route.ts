@@ -135,7 +135,12 @@ export async function POST(request: Request) {
       headers: { "Content-Type": "application/json", "x-mr-token": key },
       // Sources go along so the model answers from exactly the set the
       // website will accept in groundedAnswer.
-      body: JSON.stringify({ message, history, sources: knowledge.sources }),
+      body: JSON.stringify({
+        sessionId: session,
+        message,
+        history,
+        sources: knowledge.sources,
+      }),
       cache: "no-store",
       redirect: "error",
       signal: AbortSignal.timeout(45000),

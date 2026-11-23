@@ -233,7 +233,7 @@ func post(t *testing.T, url, token, body string) (int, string) {
 
 const rahasiaPesan = "RAHASIA-KONSUMEN-0812"
 
-var bodyDenganSumber = `{"message":"` + rahasiaPesan + ` rumah di Cikarang?","history":[],"sources":[{"id":"site:overview","title":"MR","text":"x"},{"id":"property:1","title":"Rumah","text":"y"}]}`
+var bodyDenganSumber = `{"sessionId":"sesi-uji-123","message":"` + rahasiaPesan + ` rumah di Cikarang?","history":[],"sources":[{"id":"site:overview","title":"MR","text":"x"},{"id":"property:1","title":"Rumah","text":"y"}]}`
 
 func TestAuth(t *testing.T) {
 	srv, _ := setup(t, &fakeGroq{}, nil)
@@ -252,7 +252,7 @@ func TestAuth(t *testing.T) {
 func TestPesanTidakValidHTTP(t *testing.T) {
 	g := &fakeGroq{}
 	srv, _ := setup(t, g, nil)
-	code, body := post(t, srv.URL, "rahasia", `{"message":"   "}`)
+	code, body := post(t, srv.URL, "rahasia", `{"sessionId":"sesi-uji-123","message":"   "}`)
 	if code != 200 || body != `{"reply":"`+invalidReply+`","handoff":false,"source_ids":[]}` {
 		t.Fatalf("%d %s", code, body)
 	}
@@ -317,7 +317,7 @@ func TestTanpaSumberAmbilKnowledge(t *testing.T) {
 	})
 	g := &fakeGroq{replies: map[string]string{modelPrimary: content(`{"reply":"Halo!","handoff":false,"source_ids":["site:overview"]}`)}}
 	srv, _ := setup(t, g, kb)
-	code, body := post(t, srv.URL, "rahasia", `{"message":"  halo & salam  ","history":[]}`)
+	code, body := post(t, srv.URL, "rahasia", `{"sessionId":"sesi-uji-123","message":"  halo & salam  ","history":[]}`)
 	if code != 200 || !strings.Contains(body, `"Halo!"`) {
 		t.Fatalf("%d %s", code, body)
 	}
@@ -328,8 +328,34 @@ func TestTanpaSumberAmbilKnowledge(t *testing.T) {
 
 func TestKnowledgeMati500(t *testing.T) {
 	srv, _ := setup(t, &fakeGroq{}, nil)
-	code, _ := post(t, srv.URL, "rahasia", `{"message":"halo"}`)
+	code, _ := post(t, srv.URL, "rahasia", `{"sessionId":"sesi-uji-123","message":"halo"}`)
 	if code != 500 {
 		t.Fatal(code)
+	}
+}
+
+func TestBodyKosongDanTanpaSession(t *testing.T) {
+	g := &fakeGroq{}
+	srv, logs := setup(t, g, nil)
+	kasus := map[string]string{
+		"":                                        "body_kosong",
+		"   ":                                     "body_kosong",
+		"bukan json":                              "body_kosong",
+		`{"message":"halo"}`:                      "tanpa_session",
+		`{"sessionId":"","message":"halo"}`:       "tanpa_session",
+		`{"sessionId":"abc","message":"halo"}`:    "tanpa_session",
+		`{"sessionId":123456789,"message":"halo"}`: "tanpa_session",
+		`{"sessionId":"<script>x</script>","message":"halo"}`: "tanpa_session",
+		`[1,2]`:                                   "tanpa_session",
+	}
+	for b, hasil := range kasus {
+		logs.Reset()
+		code, _ := post(t, srv.URL, "rahasia", b)
+		if code != 400 || !strings.Contains(logs.String(), `"hasil":"`+hasil+`"`) {
+			t.Errorf("body %q: %d %s", b, code, logs.String())
+		}
+	}
+	if len(g.models) != 0 {
+		t.Fatal("Groq tidak boleh dipanggil")
 	}
 }

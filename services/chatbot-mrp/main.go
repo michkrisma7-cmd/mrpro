@@ -167,7 +167,21 @@ func (s *server) handle(w http.ResponseWriter, r *http.Request) {
 
 	raw, _ := io.ReadAll(io.LimitReader(r.Body, 1<<20))
 	var body any
-	_ = json.Unmarshal(raw, &body)
+	if len(bytes.TrimSpace(raw)) == 0 || json.Unmarshal(raw, &body) != nil {
+		ll.Hasil, ll.Status = "body_kosong", 400
+		writeJSON(w, 400, map[string]any{"code": 400, "message": "Body JSON wajib diisi."})
+		return
+	}
+	sid, ok := sessionID(body)
+	if !ok {
+		ll.Hasil, ll.Status = "tanpa_session", 400
+		writeJSON(w, 400, map[string]any{"code": 400, "message": "sessionId wajib diisi."})
+		return
+	}
+	// Log a short hash so requests from one visitor can be grouped without
+	// storing the cookie value itself.
+	sum := sha256.Sum256([]byte(sid))
+	ll.Sesi = hex.EncodeToString(sum[:4])
 	in := validate(body)
 	if !in.Valid {
 		ll.Hasil, ll.Status = "pesan_tidak_valid", 200
@@ -240,6 +254,25 @@ type answer struct {
 	Reply     string   `json:"reply"`
 	Handoff   bool     `json:"handoff"`
 	SourceIDs []string `json:"source_ids"`
+}
+
+// sessionID returns body.sessionId when it is 8–128 characters of
+// [A-Za-z0-9_-] (the website sends its mr_chat cookie, a UUID).
+func sessionID(body any) (string, bool) {
+	m, ok := body.(map[string]any)
+	if !ok {
+		return "", false
+	}
+	s, ok := m["sessionId"].(string)
+	if !ok || len(s) < 8 || len(s) > 128 {
+		return "", false
+	}
+	for _, c := range s {
+		if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '-' || c == '_') {
+			return "", false
+		}
+	}
+	return s, true
 }
 
 func writeJSON(w http.ResponseWriter, status int, v any) {
