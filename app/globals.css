@@ -6167,3 +6167,10 @@ body {
 .detail-map-facade:focus-visible {
   background: var(--cream);
 }
+
+/* Kecepatan (23-11-2026): kartu di bawah layar tidak di-layout/di-render
+   sebelum mendekati viewport. Ukuran perkiraan mencegah lompatan scrollbar. */
+.property-grid > .property-card:nth-child(n + 4) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
+}

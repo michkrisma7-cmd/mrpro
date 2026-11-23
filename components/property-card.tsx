@@ -85,8 +85,14 @@ export function PropertyCard({
             fill
             sizes="(max-width: 640px) 92vw, (max-width: 1100px) 31vw, 400px"
             className="cover"
-            loading={index < 3 ? "eager" : "lazy"}
-            fetchPriority={index === 0 ? "high" : undefined}
+            // Kartu pertama = elemen LCP: preload di <head> supaya unduhan
+            // dimulai sebelum HTML kartu sampai. preload tidak boleh digabung
+            // dengan loading/fetchPriority (docs Next 16).
+            {...(index === 0
+              ? { preload: true }
+              : {
+                  loading: index < 3 ? ("eager" as const) : ("lazy" as const),
+                })}
           />
         </Link>
         <span className="property-badge">
