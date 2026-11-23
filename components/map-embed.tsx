@@ -18,10 +18,11 @@ export function MapEmbed({ title, query }: { title: string; query: string }) {
       type="button"
       className="detail-map detail-map-facade"
       onClick={() => setOpen(true)}
-      aria-label={`Tampilkan peta: ${title}`}
     >
       <MapPin size={28} aria-hidden="true" />
-      <span>Tampilkan peta lokasi</span>
+      <span>
+        Tampilkan peta lokasi<span className="sr-only">: {title}</span>
+      </span>
     </button>
   );
 }

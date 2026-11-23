@@ -405,7 +405,7 @@ fieldset.kpr-bank-picker {
   }
 }
 :root {
-  --brand-red: #fb3000;
+  --brand-red: #d92900;
   --ink: #1d3f35;
   --ink-dark: #17372e;
   --sage: #7f947a;
@@ -926,7 +926,7 @@ svg {
   padding: 0;
   font-size: 11px;
   background: transparent;
-  color: #8a9186;
+  color: #626b5a;
   outline-offset: 4px;
 }
 .search-form .button {
@@ -1404,7 +1404,7 @@ svg {
 }
 .property-contact-whatsapp {
   padding: 6px 8px;
-  background: #128c46;
+  background: #0f7d3e;
   color: #fff;
   font-size: 13px;
   font-weight: 650;
@@ -1884,7 +1884,7 @@ svg {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #87907f;
+  color: #626b5a;
   font-size: 10px;
   margin-bottom: 36px;
   flex-wrap: wrap;
@@ -1893,7 +1893,7 @@ svg {
   color: #556b4b;
 }
 .breadcrumb > span {
-  color: #b3bbaa;
+  color: #626b5a;
 }
 .page-heading {
   margin-bottom: 32px;
@@ -1936,7 +1936,7 @@ svg {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #8b9481;
+  color: #626b5a;
   font-size: 10px;
 }
 .sort-label select {
@@ -2124,7 +2124,7 @@ svg {
   border-top: 1px solid var(--line);
   padding-top: 20px;
   margin-top: 23px;
-  color: #8a9580;
+  color: #626b5a;
   font-size: 10px;
 }
 .service-process {
@@ -4316,7 +4316,7 @@ td .text-button {
   font-size: 9px;
   letter-spacing: 0;
   font-weight: 400;
-  color: #8a9580;
+  color: #626b5a;
   margin-bottom: 3px;
 }
 
@@ -5884,7 +5884,7 @@ body {
   gap: 5px;
 }
 .property-price {
-  color: #f36b13;
+  color: #b84c00;
 }
 .property-body .property-specs {
   order: 1;

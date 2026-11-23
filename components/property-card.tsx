@@ -1,12 +1,9 @@
-"use client";
 import { propertyLocation } from "@/lib/property-location";
 import { isRegionKey } from "@/lib/region-config";
-import { useSyncExternalStore } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useFavorites } from "@/lib/favorites";
+import { FavoriteButton } from "./favorite-button";
 import {
-  Heart,
   UserRound,
   MapPin,
   BedDouble,
@@ -26,8 +23,6 @@ import {
   listingWhatsappLink,
 } from "@/lib/listing-contact";
 
-const subscribeOrigin = () => () => {};
-const browserOrigin = () => window.location.origin;
 const specKeys = ["kamar_tidur", "kamar_mandi", "luas_tanah", "luas_bangunan"];
 const postedDate = new Intl.DateTimeFormat("id-ID", {
   day: "numeric",
@@ -62,19 +57,13 @@ export function PropertyCard({
   /** Posisi di grid: kartu teratas dimuat langsung karena jadi elemen LCP. */
   index?: number;
 }) {
-  const { ids, toggle: toggleFavorite } = useFavorites();
-  const saved = ids.includes(p.id);
   const ownerName = p.submitterName?.trim() || p.ownerName;
   const role = advertiserLabel(p.advertiserType);
-  const origin = useSyncExternalStore(subscribeOrigin, browserOrigin, siteUrl);
   const detailPath = listingDetailPath(p.slug);
   const number = listingContactNumber(p.whatsapp);
   const whatsapp = number
-    ? listingWhatsappLink(number, p.title, new URL(detailPath, origin).href)
+    ? listingWhatsappLink(number, p.title, new URL(detailPath, siteUrl()).href)
     : null;
-  function toggle() {
-    toggleFavorite(p.id);
-  }
   const visible = fields.filter((f) => f.showOnCard && filled(p.values[f.key]));
   const price = visible.find((f) => f.type === "PRICE");
   const locationField = visible.find((f) => f.key === "lokasi");
@@ -94,7 +83,7 @@ export function PropertyCard({
             src={p.gallery[0] || "/images/hero.webp"}
             alt={title}
             fill
-            sizes="(max-width: 640px) 92vw, (max-width: 900px) 46vw, 30vw"
+            sizes="(max-width: 640px) 92vw, (max-width: 1100px) 31vw, 400px"
             className="cover"
             loading={index < 3 ? "eager" : "lazy"}
             fetchPriority={index === 0 ? "high" : undefined}
@@ -105,15 +94,7 @@ export function PropertyCard({
             ? `${visible.find((f) => f.key === "transaksi")?.cardLabel || visible.find((f) => f.key === "transaksi")?.name}: ${String(p.values.transaksi)}`
             : "Properti"}
         </span>
-        <button
-          type="button"
-          onClick={toggle}
-          className={`favorite-button ${saved ? "is-saved" : ""}`}
-          aria-label={saved ? "Hapus dari tersimpan" : "Simpan properti"}
-          aria-pressed={saved}
-        >
-          <Heart size={18} fill={saved ? "currentColor" : "none"} />
-        </button>
+        <FavoriteButton id={p.id} />
         {p.featured && <span className="featured-badge">Pilihan MR</span>}
         {p.gallery.length > 1 && (
           <span className="photo-count-badge">

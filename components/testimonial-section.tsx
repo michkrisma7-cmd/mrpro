@@ -22,6 +22,25 @@ export function TestimonialSection({
       <div className="testimonial-grid">
         {testimonials.map((item) => (
           <figure className="testimonial-card" key={item.id}>
+            <div className="testimonial-avatar">
+              {item.photoId ? (
+                <Image
+                  src={`/api/media/${item.photoId}`}
+                  alt={`Foto ${item.name}`}
+                  width={56}
+                  height={56}
+                  unoptimized
+                />
+              ) : (
+                <span aria-hidden="true">
+                  {item.name
+                    .split(/\s+/)
+                    .slice(0, 2)
+                    .map((word) => word[0])
+                    .join("")}
+                </span>
+              )}
+            </div>
             <div className="testimonial-heading">
               <p className="testimonial-category">{item.category}</p>
               <div
@@ -44,25 +63,6 @@ export function TestimonialSection({
               <strong>{item.name}</strong>
               <span>{item.status}</span>
             </figcaption>
-            <div className="testimonial-avatar">
-              {item.photoId ? (
-                <Image
-                  src={`/api/media/${item.photoId}`}
-                  alt={`Foto ${item.name}`}
-                  width={56}
-                  height={56}
-                  unoptimized
-                />
-              ) : (
-                <span aria-hidden="true">
-                  {item.name
-                    .split(/\s+/)
-                    .slice(0, 2)
-                    .map((word) => word[0])
-                    .join("")}
-                </span>
-              )}
-            </div>
           </figure>
         ))}
       </div>
