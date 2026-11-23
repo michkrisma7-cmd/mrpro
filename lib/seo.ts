@@ -25,6 +25,18 @@ export function indexingEnabled(
     return false;
   }
 }
+export const titleLimit = 65;
+/** `<title>`: "judul | MR Properti" bila muat ≤65 karakter; kalau tidak, judul
+ * saja, dipotong di batas kata (Google memotong judul ±60 karakter). */
+export function documentTitle(title: string) {
+  const clean = title.replace(/\s+/g, " ").trim();
+  const withBrand = `${clean} | ${brand}`;
+  if (withBrand.length <= titleLimit) return withBrand;
+  if (clean.length <= titleLimit) return clean;
+  const cut = clean.slice(0, titleLimit - 1);
+  const space = cut.lastIndexOf(" ");
+  return `${(space > 30 ? cut.slice(0, space) : cut).replace(/[\s,:;–—-]+$/, "")}…`;
+}
 export function pageMetadata({
   title,
   description,
@@ -51,7 +63,7 @@ export function pageMetadata({
     (image) => new URL(image, siteUrl()).href,
   );
   return {
-    title: absoluteTitle ? { absolute: title } : title,
+    title: { absolute: absoluteTitle ? title : documentTitle(title) },
     description: summary,
     alternates: { canonical: path },
     robots: {

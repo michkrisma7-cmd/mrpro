@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AreaLinks } from "@/components/area-links";
 import { catalogSeo, pageMetadata } from "@/lib/seo";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getCatalog, getFields } from "@/lib/data";
 import { SearchForm } from "@/components/search-form";
 import { ListingGrid } from "@/components/listing-grid";
@@ -33,6 +34,8 @@ export default async function Properties({
     getFields(),
   ]);
   const { listings, total, page, pages } = catalog;
+  // Halaman di luar jumlah halaman = 404 sungguhan, bukan halaman kosong 200.
+  if (page > Math.max(1, pages)) notFound();
   function pageLink(n: number) {
     const query = new URLSearchParams(params);
     query.set("page", String(n));
@@ -119,6 +122,7 @@ export default async function Properties({
           : `${total} properti ditemukan`}
         {!databaseConfigured && " · Data contoh untuk pratinjau"}
       </p>
+      <h2 className="sr-only">Daftar properti</h2>
       <ListingGrid
         listings={listings}
         fields={fields}

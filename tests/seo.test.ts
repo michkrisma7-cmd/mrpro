@@ -7,6 +7,8 @@ import {
   catalogSeo,
   breadcrumbs,
   jsonLd,
+  documentTitle,
+  titleLimit,
 } from "../lib/seo";
 import robots from "../app/robots";
 const live = {
@@ -106,4 +108,22 @@ test("official contact normalization rejects placeholders and unrelated country 
     assert.equal(businessPhone(value), "+6281234567890");
   for (const value of ["", "123", "+1 202 555 0123", "081234567890 ext 1"])
     assert.equal(businessPhone(value), undefined);
+});
+
+test("document titles stay within the limit and keep the brand when it fits", () => {
+  assert.equal(documentTitle("Kalkulator KPR"), "Kalkulator KPR | MR Properti");
+  const mid = "Jasa Pembuatan dan Perbaikan Pagar di Bekasi dan Cikarang";
+  assert.equal(documentTitle(mid), mid);
+  const long =
+    "Optimalkan Konsumsi Listrik Rumah di Koridor Bekasi-Cikarang-Karawang-Cikampek untuk Keluarga Muda";
+  const cut = documentTitle(long);
+  assert.ok(cut.length <= titleLimit, cut);
+  assert.ok(cut.endsWith("…") && long.startsWith(cut.slice(0, -1)), cut);
+  assert.equal(documentTitle("  Spasi   ganda  "), "Spasi ganda | MR Properti");
+  assert.deepEqual(
+    pageMetadata({ title: "Blog", description: "x", path: "/blog" }).title,
+    {
+      absolute: "Blog | MR Properti",
+    },
+  );
 });

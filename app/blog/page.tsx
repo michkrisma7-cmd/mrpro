@@ -22,6 +22,7 @@ export default async function Blog() {
           </p>
         </div>
       </div>
+      <h2 className="sr-only">Daftar artikel</h2>
       <BlogList posts={await getBlogPosts()} />
     </section>
   );
