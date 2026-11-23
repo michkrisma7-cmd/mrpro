@@ -18,6 +18,40 @@
 .mr-chat a {
   text-decoration: none;
 }
+.mr-chat-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+.mr-chat-actions .mr-chat-launcher {
+  margin-left: 0;
+}
+.mr-wa-float {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #128c4a;
+  color: #fff;
+  box-shadow:
+    0 6px 24px #163d3430,
+    inset 0 1px #ffffff20;
+  transition:
+    transform 0.2s,
+    background 0.2s;
+}
+.mr-wa-float:hover {
+  transform: translateY(-3px);
+  background: #0e7a3f;
+}
+.mr-wa-float:focus-visible,
+.mr-chat-launcher:focus-visible {
+  outline: 3px solid #d7e3b4;
+  outline-offset: 2px;
+}
 .mr-chat-launcher {
   display: flex;
   gap: 11px;
@@ -390,6 +424,10 @@
   }
   .mr-chat-launcher {
     padding: 13px 16px;
+  }
+  .mr-wa-float {
+    width: 48px;
+    height: 48px;
   }
   .mr-chat-form textarea {
     font-size: 16px;

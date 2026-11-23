@@ -7,7 +7,6 @@ import { PageSkeleton as Loading } from "@/components/page-skeleton";
 import { PublicationNotice } from "@/components/publication-notice";
 import {
   Calculator,
-  Headset,
   ArrowUpRight,
   ArrowRight,
   ShieldCheck,
@@ -23,7 +22,6 @@ import { databaseConfigured } from "@/lib/db";
 import { PropertyCard } from "@/components/property-card";
 import { HomeServiceGrid } from "@/components/home-service-grid";
 import { HeroSearch } from "@/components/hero-search";
-import { whatsappLink } from "@/lib/format";
 import { getBlogPosts } from "@/lib/blog";
 import { getTestimonials } from "@/lib/testimonials";
 import { TestimonialSection } from "@/components/testimonial-section";
@@ -170,10 +168,6 @@ async function HomeContent({
   const catalogHref = category
     ? `/properti?${new URLSearchParams({ jenis: category, page: "2" })}`
     : "/properti?page=2";
-  const wa = whatsappLink(
-    settings.whatsapp,
-    "Halo MR Properti, saya ingin konsultasi properti.",
-  );
   return (
     <>
       <script
@@ -246,9 +240,6 @@ async function HomeContent({
             <Link href="/kalkulator-kpr">
               <Calculator size={18} /> Kalkulator KPR
             </Link>
-            <Link href={wa || "/tentang-kami"}>
-              <Headset size={18} /> Bantuan Admin
-            </Link>
           </div>
           <span className="listing-note">
             {!databaseConfigured
@@ -295,10 +286,8 @@ async function HomeContent({
         )}
         <div className="section-footnote">
           <CircleCheck size={15} />
-          Butuh bantuan memilih?{" "}
-          <Link href={wa || "/titip-properti"}>
-            Ceritakan kebutuhan Anda <ArrowUpRight size={13} />
-          </Link>
+          Butuh bantuan memilih? Tekan tombol Chat atau WhatsApp di pojok kanan
+          bawah.
         </div>
       </section>
       <div className="trust-strip home-trust-strip">
@@ -473,8 +462,8 @@ async function HomeContent({
             Properti impian atau rumah yang lebih nyaman. Mari wujudkan bersama.
           </p>
         </div>
-        <Link className="button button-cream" href={wa || "/properti"}>
-          {wa ? "Konsultasi Sekarang" : "Jelajahi Properti"}
+        <Link className="button button-cream" href="/properti">
+          Jelajahi Properti
           <ArrowUpRight size={19} />
         </Link>
       </section>

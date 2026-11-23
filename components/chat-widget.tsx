@@ -15,6 +15,7 @@ import {
 import { whatsappLink } from "@/lib/format";
 import { unavailableReply, type ChatAnswer } from "@/lib/chat-shared";
 import "./chat-widget.css";
+import { WhatsappFloat } from "./whatsapp-float";
 
 type Message = {
   id: number;
@@ -292,27 +293,30 @@ export function ChatWidget({
           </div>
         </section>
       )}
-      <button
-        type="button"
-        ref={launcher}
-        className={`mr-chat-launcher${open ? " is-open" : ""}`}
-        aria-label={open ? "Minimalkan Chat" : "Buka Chat"}
-        aria-expanded={open}
-        aria-controls="mr-chat-panel"
-        onClick={() => (open ? close() : setOpen(true))}
-      >
-        {open ? (
-          <ArrowDown size={21} />
-        ) : (
-          <MessageCircle size={22} strokeWidth={1.7} />
-        )}
-        <span>Chat</span>
-        {!open && (
-          <span className="mr-chat-launcher-plus">
-            <Plus size={14} />
-          </span>
-        )}
-      </button>
+      <div className="mr-chat-actions">
+        <WhatsappFloat whatsapp={whatsapp} />
+        <button
+          type="button"
+          ref={launcher}
+          className={`mr-chat-launcher${open ? " is-open" : ""}`}
+          aria-label={open ? "Minimalkan Chat" : "Buka Chat"}
+          aria-expanded={open}
+          aria-controls="mr-chat-panel"
+          onClick={() => (open ? close() : setOpen(true))}
+        >
+          {open ? (
+            <ArrowDown size={21} />
+          ) : (
+            <MessageCircle size={22} strokeWidth={1.7} />
+          )}
+          <span>Chat</span>
+          {!open && (
+            <span className="mr-chat-launcher-plus">
+              <Plus size={14} />
+            </span>
+          )}
+        </button>
+      </div>
     </div>
   );
 }
