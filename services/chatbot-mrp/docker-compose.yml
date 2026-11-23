@@ -1,0 +1,26 @@
+# MRP — chatbot pengganti workflow n8n "MRP-Chat-groq".
+# Port hanya 127.0.0.1 (tes dari host); Caddy nanti lewat jaringan hostme (chatbot-mrp:8080).
+name: chatbot-mrp
+services:
+  chatbot-mrp:
+    image: chatbot-mrp:latest
+    container_name: chatbot-mrp
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      GOMEMLIMIT: 48MiB
+    mem_limit: 64m
+    memswap_limit: 64m
+    cpus: 0.5
+    pids_limit: 64
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    ports: ["127.0.0.1:8081:8080"]
+    networks: [hostme]
+    logging:
+      driver: json-file
+      options: { max-size: "5m", max-file: "3" }
+networks:
+  hostme:
+    external: true

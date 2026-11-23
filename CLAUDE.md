@@ -1,73 +1,13 @@
-# MR Properti — mrproperti.com
+# MR Properti (MRP) — mrproperti.com
+Laporan diawali "[MRP]"; backup/file sementara berawalan `MRP-`. Bahasa Indonesia sederhana.
 
-Baca juga `AGENTS.md` (aturan Next.js 16, larangan CI/CD, target produksi). Jawab dan tulis catatan
-dalam Bahasa Indonesia yang sederhana. Disusun 21-11-2026 dari catatan Lavile + perintah pemilik.
+- Claude bebas bekerja. Minta izin hanya untuk daftar berisiko di `~/.claude/CLAUDE.md` (dijaga hook guard.py).
+- Boleh membaca MRP dan Lavile. Ubah Lavile hanya kalau tugas menyebutnya. Jangan merusak website lain.
+- Caddy: ubah hanya `/root/caddy/sites/MRP.caddy`. Alur: backup → `docker exec caddy caddy validate --config
+  /etc/caddy/Caddyfile --adapter caddyfile` → `caddy reload` (bukan restart) → `curl -I` kedua domain (+www).
+- Server RAM 2 GB: jangan pasang alat berat, jangan kerja berat paralel, catat `free -h` sebelum & sesudah kerja besar.
+- Push ke `main` = deploy produksi (GitHub Actions) → kerja di branch, push setelah tes + build lulus.
+  Larangan ubah CI/CD tetap berlaku (lihat `AGENTS.md`).
+- Akhiri setiap tugas dengan mencatat hasil dan langkah berikutnya di `PROGRESS.md`.
 
-## Ringkas
-- Next.js 16 + Prisma (PostgreSQL), repo `michkrisma7-cmd/mrpro`, folder lokal `~/mr-properti`.
-- Produksi: container `mrproweb` (port 3000) di VPS Nevacloud `116.212.73.143` (hostname `n8n-mrproperti`),
-  dideploy oleh GitHub Actions `deploy-vps.yml` **setiap push ke `main`**. Push ke `main` juga memicu
-  Vercel (`beta.mrproperti.com`). Jadi: kerja di branch lokal; push/merge ke `main` = deploy produksi,
-  hanya setelah backup + tes + build lulus dan pemilik setuju. Jangan ubah CI/CD (lihat AGENTS.md).
-- Kontak WhatsApp (kedua website): 08811063079 / 628811063079 / https://wa.me/628811063079.
-
-## Server bersama (jangan ganggu Lavile)
-| Komponen | Pemilik | Catatan |
-| --- | --- | --- |
-| `caddy` (80/443), config host `/root/caddy/Caddyfile` | BERSAMA | Jangan restart; reload hanya setelah validasi |
-| `n8n-n8n-1` (n8n 2.31.5, SQLite, batas 640 MB) | BERSAMA | https://n8n.mrproperti.com, jangan restart |
-| `mrproweb` + `/root/web-me` (compose project `web-me`) | MRP | Bukan checkout git; image dari GHCR |
-| `/srv/lavilecikarang/` (situs statis via Caddy) | LAVILE | Jangan disentuh |
-| Workflow `Chatbot Lavile - Groq` (ID `LavileChatGroq01`) | LAVILE | Jangan diubah; boleh disalin jadi `MRP-...` |
-
-| PostgreSQL di host (`appdb`, dari container lewat `172.18.0.1:5432`) | MRP | Satu-satunya DB aplikasi |
-| Media listing | MRP | S3 eksternal (Neon), bukan di VPS |
-
-- Dicek 21-11-2026: RAM 1,9 GB (tersedia ±334 MB), swap 1 GB (terpakai ±481 MB), disk sisa 17 GB/30 GB,
-  2 vCPU. `mrproweb` 720/768 MB (hampir batas), n8n 415/640 MB. Render video jangan di VPS ini.
-- Akses: `ssh root@116.212.73.143` dengan `~/.ssh/id_ed25519` (berfungsi dari sesi Claude sejak 21-11-2026).
-- Cek Lavile sebelum & sesudah setiap perubahan: `curl -sI https://lavilecikarang.com | head -1` → 200.
-- Backup DB: `pg_dump` lewat TCP ditolak `pg_hba.conf`; pakai socket lokal:
-  `sudo -u postgres pg_dump --no-owner -Fc appdb > <folder>/appdb.dump`.
-- Folder backup & log MRP di VPS: `/root/backup-mrproperti/<tanggal>/` dan `/root/backup-mrproperti/LOG.md`.
-
-## n8n
-- Backup dulu (skill `backup-n8n`, hasil di `/root/n8n-backup/<tanggal>/`).
-- Workflow MRP yang aktif jangan diedit langsung: duplikat `MRP-<nama>`, tes, lalu tukar; nonaktifkan, jangan hapus.
-- Perubahan tanpa restart n8n: lihat memori `n8n-update-tanpa-restart` (transaksi SQLite `workflow_history`
-  + `workflow_entity`, lalu pastikan baris `webhook_entity` ada).
-- Groq gpt-oss-120b dibatasi ±8000 TPM; beri jeda ±25 detik antar-tes. Tes webhook pakai User-Agent browser.
-- Chat MRP: website `POST /api/chat` → webhook `mr-konsultasi` (header `x-mr-token`) → knowledge dari
-  `GET /api/chat/knowledge`. Ekspor di `workflows/n8n/` (lihat `CHAT.md`); keadaan live bisa berbeda.
-- Workflow aktif (21-11-2026): `Chatbot Lavile - Groq` (LAVILE), `MR Properti — Chat Next v2.js`
-  (`inj1Io85s1qSdDNZ`, MRP), `MR Properti Blog — Next.js` (`cpGzooOPgTWuBXQc`, MRP).
-- Chat MRP rusak: credential `Header Auth account` (`HFM0ZWUl3WznfZ1H`) memeriksa header `Authorization`,
-  bukan `x-mr-token` → semua chat 403. Perbaikan menunggu n8n API key + Groq key (lihat `PROGRESS.md`).
-- Bandingkan credential tanpa membuka nilainya: `bash /root/backup-mrproperti/cek-cred.sh <credentialId>`.
-
-## Status & langkah berikutnya
-Lihat `PROGRESS.md` (selesai, lokasi backup, yang menunggu pemilik, langkah berikutnya). Ringkas:
-- Branch `perbaikan/profesional` (rotasi listing + Tahap 5 + dokumen) siap deploy, belum di-push.
-- Menunggu: persetujuan deploy, n8n API key, Groq API key (`MRP Groq`), keputusan tempat render video.
-
-## Kode penting
-- Urutan listing: `lib/catalog-query.ts` (beranda + `/properti`), `lib/area-query.ts` (`/wilayah/*`).
-- Data/caching: `lib/data.ts`, `lib/area-data.ts` (`unstable_cache` 60 detik, kunci = argumen).
-- Chat: `app/api/chat/route.ts` (gerbang handoff di sisi website), `lib/chat-knowledge.ts`, `lib/chat.ts`.
-
-## Perintah
-```bash
-source ~/.nvm/nvm.sh
-npx -y bun@1 install --frozen-lockfile   # dependency sesuai bun.lock
-npm run db:generate                       # wajib sebelum tes
-npx tsx --test tests/*.test.ts            # unit test
-npx eslint lib app tests && npm run typecheck
-npm run build                             # tanpa DATABASE_URL = mode demo
-```
-
-## Aturan
-1. Kerja hanya di folder website yang sedang dikerjakan; jangan buka folder kunci cadangan rahasia
-   (lihat `~/.claude/CLAUDE.md`).
-2. Backup bertanggal sebelum mengubah website/n8n yang hidup.
-3. Jangan tampilkan secret utuh (maks 4 karakter terakhir). Biaya/akun pihak ketiga & posting publik: tanya dulu.
-4. Ragu milik MRP atau Lavile → anggap milik Lavile dan tanya.
+Rincian teknis (server, container, n8n, perintah tes/build, kode penting): `CATATAN-SERVER.md`.
